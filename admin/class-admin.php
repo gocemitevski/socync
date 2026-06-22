@@ -432,10 +432,11 @@ class SocialSync_Admin {
         update_option( 'socialsync_linkedin_client_id', $client_id );
         update_option( 'socialsync_linkedin_client_secret', $client_secret );
 
-        $state = wp_generate_password( 32, false );
+        $raw_state = wp_generate_password( 32, false );
+        $state     = 'linkedin_' . $raw_state;
         set_transient( 'socialsync_linkedin_oauth_state', $state, 300 );
 
-        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback&platform=linkedin' );
+        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback' );
 
         $auth_url = add_query_arg( array(
             'response_type' => 'code',
@@ -484,10 +485,11 @@ class SocialSync_Admin {
         update_option( 'socialsync_facebook_app_id', $client_id );
         update_option( 'socialsync_facebook_app_secret', $client_secret );
 
-        $state = wp_generate_password( 32, false );
+        $raw_state = wp_generate_password( 32, false );
+        $state     = 'facebook_' . $raw_state;
         set_transient( 'socialsync_facebook_oauth_state', $state, 300 );
 
-        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback&platform=facebook' );
+        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback' );
 
         $auth_url = add_query_arg( array(
             'response_type' => 'code',
@@ -656,17 +658,23 @@ class SocialSync_Admin {
             wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
         }
 
-        $platform = sanitize_text_field( wp_unslash( $_GET['platform'] ?? '' ) );
-        $code     = sanitize_text_field( wp_unslash( $_GET['code'] ?? '' ) );
-        $state    = sanitize_text_field( wp_unslash( $_GET['state'] ?? '' ) );
-        $error    = sanitize_text_field( wp_unslash( $_GET['error'] ?? '' ) );
+        $code  = sanitize_text_field( wp_unslash( $_GET['code'] ?? '' ) );
+        $state = sanitize_text_field( wp_unslash( $_GET['state'] ?? '' ) );
+        $error = sanitize_text_field( wp_unslash( $_GET['error'] ?? '' ) );
 
         if ( ! empty( $error ) ) {
             wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( $error ) ) );
             exit;
         }
 
-        if ( empty( $platform ) || empty( $code ) || empty( $state ) ) {
+        if ( empty( $code ) || empty( $state ) ) {
+            wp_die( esc_html__( 'Invalid OAuth callback parameters.', 'social-sync' ) );
+        }
+
+        // Extract platform from the state parameter (prefixed with platform_).
+        $parts   = explode( '_', $state, 2 );
+        $platform = $parts[0] ?? '';
+        if ( ! in_array( $platform, array( 'linkedin', 'facebook' ), true ) ) {
             wp_die( esc_html__( 'Invalid OAuth callback parameters.', 'social-sync' ) );
         }
 
@@ -676,7 +684,7 @@ class SocialSync_Admin {
         }
         delete_transient( 'socialsync_' . $platform . '_oauth_state' );
 
-        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback&platform=' . $platform );
+        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback' );
 
         switch ( $platform ) {
             case 'linkedin':
