@@ -239,10 +239,13 @@ class SocialSync_Admin {
             'facebook' => __( 'Facebook', 'social-sync' ),
             'bluesky'  => __( 'Bluesky', 'social-sync' ),
         );
+        echo '<div class="socialsync-custom-content">';
         foreach ( $custom_platforms as $key => $label ) {
             printf(
-                '<p><label for="socialsync_%1$s_content">%2$s</label>
-                <textarea id="socialsync_%1$s_content" name="%3$s" class="large-text" rows="3" placeholder="%4$s"></textarea></p>',
+                '<div class="socialsync-custom-item">
+                    <label for="socialsync_%1$s_content">%2$s</label>
+                    <textarea id="socialsync_%1$s_content" name="%3$s" class="large-text" rows="3" placeholder="%4$s"></textarea>
+                </div>',
                 esc_attr( $key ),
                 esc_html( $label ),
                 esc_attr( '_socialsync_' . $key . '_content' ),
@@ -250,6 +253,7 @@ class SocialSync_Admin {
                 esc_attr( sprintf( __( 'Custom %s post content...', 'social-sync' ), $label ) )
             );
         }
+        echo '</div>';
 
         echo '<hr class="wp-editor-separator">';
         echo '<h3>' . esc_html__( 'Schedule', 'social-sync' ) . '</h3>';
