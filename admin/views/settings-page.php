@@ -160,43 +160,27 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 </form>
             <?php endif; ?>
 
-            <?php
-            $linkedin_orgs = array();
-            $orgs_response = get_option( 'socialsync_linkedin_orgs_cache', null );
-            if ( null === $orgs_response ) {
-                $provider = new SocialSync_LinkedIn_Provider();
-                $orgs = $provider->get_organizations();
-                if ( ! is_wp_error( $orgs ) && ! empty( $orgs ) ) {
-                    $linkedin_orgs = $orgs;
-                    update_option( 'socialsync_linkedin_orgs_cache', $orgs );
-                }
-            } else {
-                $linkedin_orgs = $orgs_response;
-            }
-            $linkedin_org_id = get_option( 'socialsync_linkedin_org_id', '' );
-            ?>
-            <?php if ( $linkedin_connected && $linkedin_token && ! empty( $linkedin_orgs ) ) : ?>
+            <?php if ( $linkedin_connected && $linkedin_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Organization Settings', 'social-sync' ); ?></h3>
+                <p class="description"><?php esc_html_e( 'To post as a LinkedIn Page instead of your personal profile, enter your Page ID below. Leave empty to post as yourself.', 'social-sync' ); ?></p>
+                <p class="description">
+                    <?php esc_html_e( 'How to find your Page ID:', 'social-sync' ); ?>
+                    <a href="https://www.linkedin.com/help/linkedin/answer/a521928" target="_blank"><?php esc_html_e( 'LinkedIn Help Center', 'social-sync' ); ?></a>
+                </p>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_select_linkedin_org', 'socialsync-select-linkedin-org-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_select_linkedin_org">
                     <table class="form-table" role="presentation">
                         <tr>
-                            <th scope="row"><label for="linkedin_org_id"><?php esc_html_e( 'Post as Organization', 'social-sync' ); ?></label></th>
+                            <th scope="row"><label for="linkedin_org_id"><?php esc_html_e( 'LinkedIn Page ID', 'social-sync' ); ?></label></th>
                             <td>
-                                <select name="linkedin_org_id" id="linkedin_org_id">
-                                    <option value="">— <?php esc_html_e( 'Post as User (Profile)', 'social-sync' ); ?> —</option>
-                                    <?php foreach ( $linkedin_orgs as $org ) : ?>
-                                        <option value="<?php echo esc_attr( $org['id'] ); ?>" <?php selected( $linkedin_org_id, $org['id'] ); ?>>
-                                            <?php echo esc_html( $org['name'] ); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <input type="text" id="linkedin_org_id" name="linkedin_org_id" value="<?php echo esc_attr( $linkedin_org_id ); ?>" class="large-text" placeholder="<?php esc_attr_e( 'e.g. 1234567', 'social-sync' ); ?>">
+                                <p class="description"><?php esc_html_e( 'Your LinkedIn Page numeric ID. When set, posts will be published as this Page instead of your profile.', 'social-sync' ); ?></p>
                             </td>
                         </tr>
                     </table>
-                    <p class="submit"><button type="submit" class="button button-primary"><?php esc_html_e( 'Save Organization Selection', 'social-sync' ); ?></button></p>
+                    <p class="submit"><button type="submit" class="button button-primary"><?php esc_html_e( 'Save Page ID', 'social-sync' ); ?></button></p>
                 </form>
             <?php endif; ?>
         </div>
