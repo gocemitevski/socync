@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: SocialSync - Automatic X, Bluesky, LinkedIn & Facebook Posting for WordPress
- * Description: Automatically publish your WordPress posts to X (Twitter), Bluesky, LinkedIn and Facebook when you publish content on your site.
+ * Plugin Name: SocialSync - Automatic X (Twitter), LinkedIn, Facebook & Bluesky Posting for WordPress
+ * Description: Automatically publish your WordPress posts to X (Twitter), LinkedIn, Facebook and Bluesky when you publish content on your site.
  * Version: 1.0.0
  * Author: SocialSync Contributors
  * License: GPL v2 or later
