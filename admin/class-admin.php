@@ -1054,7 +1054,6 @@ class SocialSync_Admin {
         }
 
         if ( $post_now ) {
-            $settings       = get_option( 'socialsync_settings', array() );
             $platform_errors = array();
             $platform_ok     = array();
 
@@ -1077,18 +1076,7 @@ class SocialSync_Admin {
                         continue 2;
                 }
 
-                $post_content = $content;
-
-                $prefix_key = $platform_slug . '_prefix_text';
-                if ( ! empty( $settings[ $prefix_key ] ) ) {
-                    $post_content = $settings[ $prefix_key ] . ' ' . $post_content;
-                }
-                $hashtags_key = $platform_slug . '_hashtags';
-                if ( ! empty( $settings[ $hashtags_key ] ) ) {
-                    $post_content .= "\n\n" . $settings[ $hashtags_key ];
-                }
-
-                $result = $provider->publish( $post_content );
+                $result = $provider->publish( $content );
 
                 if ( is_wp_error( $result ) ) {
                     $platform_errors[ $platform_slug ] = $result->get_error_message();
