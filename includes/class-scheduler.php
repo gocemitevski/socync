@@ -328,7 +328,7 @@ class SocialSync_Scheduler {
             $settings = get_option( 'socialsync_settings', array() );
             $prefix_key = $platform_slug . '_prefix_text';
             if ( ! empty( $settings[ $prefix_key ] ) ) {
-                $content = $settings[ $prefix_key ] . ' ' . $content;
+                $content = $settings[ $prefix_key ] . ': ' . $content;
             }
             $hashtags_key = $platform_slug . '_hashtags';
             if ( ! empty( $settings[ $hashtags_key ] ) ) {

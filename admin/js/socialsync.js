@@ -13,13 +13,12 @@ jQuery(document).ready(function($) {
         if (e.type === 'keydown' && e.which !== 13 && e.which !== 32) return;
         var tabId = $(this).data('tab');
         activateTab(tabId);
-        location.hash = tabId;
+        if (window.history.replaceState) {
+            var url = new URL(window.location);
+            url.searchParams.set('tab', tabId);
+            window.history.replaceState({}, '', url);
+        }
     });
-
-    var hash = location.hash.replace('#', '');
-    if (hash && $tabs.filter('[data-tab="' + hash + '"]').length) {
-        activateTab(hash);
-    }
 
     var $scheduleSelect = $('select[name="_socialsync_schedule_type"]');
     var $scheduleDateInput = $('input[name="_socialsync_schedule_date"]');
@@ -98,7 +97,7 @@ jQuery(document).ready(function($) {
             var text = custom || defaultText;
             var prefix = $(this).data('prefix');
             var hashtags = $(this).data('hashtags');
-            if (prefix) text = prefix + ' ' + text;
+            if (prefix) text = prefix + ': ' + text;
             if (hashtags) text = text + '\n\n' + hashtags;
             $pre.text(text);
 
