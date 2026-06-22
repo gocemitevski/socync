@@ -438,13 +438,13 @@ class SocialSync_Admin {
 
         $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback' );
 
-        $auth_url = add_query_arg( array(
+        $auth_url = 'https://www.linkedin.com/oauth/v2/authorization?' . http_build_query( array(
             'response_type' => 'code',
             'client_id'     => $client_id,
             'redirect_uri'  => $redirect_uri,
             'scope'         => 'w_member_social w_organization_social r_organization_social r_liteprofile r_emailaddress r_refresh_token',
             'state'         => $state,
-        ), 'https://www.linkedin.com/oauth/v2/authorization' );
+        ), '', '&', PHP_QUERY_RFC3986 );
 
         wp_redirect( $auth_url );
         exit;
@@ -491,13 +491,13 @@ class SocialSync_Admin {
 
         $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback' );
 
-        $auth_url = add_query_arg( array(
+        $auth_url = 'https://www.facebook.com/v18.0/dialog/oauth?' . http_build_query( array(
             'response_type' => 'code',
             'client_id'     => $client_id,
             'redirect_uri'  => $redirect_uri,
             'state'         => $state,
             'scope'         => 'pages_manage_posts,pages_read_engagement',
-        ), 'https://www.facebook.com/v18.0/dialog/oauth' );
+        ), '', '&', PHP_QUERY_RFC3986 );
 
         wp_redirect( $auth_url );
         exit;
