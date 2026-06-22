@@ -11,8 +11,15 @@
     margin: 16px 0;
 }
 
+#socialsync-preview-area {
+    display: flex;
+    flex-direction: row;
+    gap: var(--socialsync-gap);
+}
+
 .socialsync-platform-preview {
-    margin-bottom: var(--socialsync-gap);
+    flex: 1;
+    min-width: 0;
 }
 
 .socialsync-platform-preview strong {
