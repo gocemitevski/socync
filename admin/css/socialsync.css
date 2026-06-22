@@ -49,8 +49,6 @@
     line-height: 1.5;
     white-space: pre-wrap;
     word-wrap: break-word;
-    max-height: 120px;
-    overflow-y: auto;
 }
 
 .socialsync-admin-wrapper {
