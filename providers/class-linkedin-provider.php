@@ -37,10 +37,16 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         );
 
         if ( is_wp_error( $response ) ) {
+            $this->log_error( 'LinkedIn get_organizations API error', array(
+                'message' => $response->get_error_message(),
+            ) );
             return $response;
         }
 
         if ( ! isset( $response['elements'] ) || ! is_array( $response['elements'] ) ) {
+            $this->log_error( 'LinkedIN get_organizations: no elements in response', array(
+                'response_keys' => array_keys( $response ),
+            ) );
             return array();
         }
 
