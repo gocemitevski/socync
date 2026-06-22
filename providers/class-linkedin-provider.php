@@ -44,7 +44,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         }
 
         if ( ! isset( $response['elements'] ) || ! is_array( $response['elements'] ) ) {
-            $this->log_error( 'LinkedIN get_organizations: no elements in response', array(
+            $this->log_error( 'LinkedIn get_organizations: no elements in response', array(
                 'response_keys' => array_keys( $response ),
             ) );
             return array();
