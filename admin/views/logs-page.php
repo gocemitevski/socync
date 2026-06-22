@@ -131,7 +131,7 @@ if ( $status_filter ) {
             <?php else : ?>
                 <?php foreach ( $entries as $entry ) : ?>
                     <tr>
-                        <td class="column-source"><?php echo 'wp_post' === $entry['type'] ? esc_html__( 'WP Post', 'social-sync' ) : esc_html__( 'Scheduled', 'social-sync' ); ?></td>
+                        <td class="column-source"><?php echo 'oauth' === $entry['platform'] ? esc_html__( 'SocialSync', 'social-sync' ) : ( 'wp_post' === $entry['type'] ? esc_html__( 'WP Post', 'social-sync' ) : esc_html__( 'Scheduled', 'social-sync' ) ); ?></td>
                         <td class="column-content column-primary" data-colname="<?php esc_attr_e( 'Content', 'social-sync' ); ?>">
                             <?php if ( 'wp_post' === $entry['type'] && $entry['post_id'] ) : ?>
                                 <strong><a href="<?php echo esc_url( get_edit_post_link( $entry['post_id'] ) ); ?>"><?php echo esc_html( $entry['title'] ); ?></a></strong>
