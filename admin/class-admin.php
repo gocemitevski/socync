@@ -530,7 +530,7 @@ class SocialSync_Admin {
         check_admin_referer( 'socialsync_connect_bluesky', 'socialsync-connect-bluesky-nonce' );
 
         $identifier   = sanitize_text_field( wp_unslash( $_POST['bluesky_identifier'] ?? '' ) );
-        $app_password = sanitize_text_field( wp_unslash( $_POST['bluesky_app_password'] ?? '' ) );
+        $app_password = wp_unslash( $_POST['bluesky_app_password'] ?? '' );
 
         if ( empty( $identifier ) || empty( $app_password ) ) {
             wp_die( esc_html__( 'Identifier and App Password are required.', 'social-sync' ) );

@@ -69,6 +69,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $app_password = $this->get_app_password();
 
         if ( empty( $identifier ) || empty( $app_password ) ) {
+            $this->log_error( 'Bluesky create_session called with empty identifier or password', array() );
             return false;
         }
 
@@ -84,17 +85,28 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         ) );
 
         if ( is_wp_error( $response ) ) {
+            $this->log_error( 'Bluesky create_session wp_error: ' . $response->get_error_message(), array() );
             return false;
         }
 
         $status_code = wp_remote_retrieve_response_code( $response );
+        $body_str    = wp_remote_retrieve_body( $response );
+        $body        = json_decode( $body_str, true );
+
         if ( ! is_numeric( $status_code ) || intval( $status_code ) < 200 || intval( $status_code ) >= 300 ) {
+            $error_msg = 'Bluesky API error';
+            if ( isset( $body['error'] ) ) {
+                $error_msg .= ': ' . sanitize_text_field( $body['error'] );
+            }
+            if ( isset( $body['message'] ) ) {
+                $error_msg .= ' - ' . sanitize_text_field( $body['message'] );
+            }
+            $this->log_error( $error_msg, array( 'status' => intval( $status_code ) ) );
             return false;
         }
 
-        $body = json_decode( wp_remote_retrieve_body( $response ), true );
-
         if ( ! isset( $body['accessJwt'] ) ) {
+            $this->log_error( 'Bluesky create_session: no accessJwt in response', array( 'body' => $body_str ) );
             return false;
         }
 
@@ -182,5 +194,21 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         delete_option( 'socialsync_bluesky_app_password' );
         delete_option( 'socialsync_bluesky_connected' );
         return true;
+    }
+
+    protected function log_error( string $message, array $context = array() ): void {
+        $logs = get_option( 'socialsync_logs', array() );
+        $logs[] = array(
+            'id'       => uniqid(),
+            'post_id'  => 0,
+            'platform' => 'bluesky',
+            'status'   => 'failed',
+            'message'  => $message . ( ! empty( $context ) ? ' | ' . wp_json_encode( $context ) : '' ),
+            'date'     => current_time( 'mysql' ),
+        );
+        if ( count( $logs ) > 100 ) {
+            $logs = array_slice( $logs, -50 );
+        }
+        update_option( 'socialsync_logs', $logs );
     }
 }
