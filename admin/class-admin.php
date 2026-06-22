@@ -204,6 +204,7 @@ class SocialSync_Admin {
             'x' => array( 'name' => 'X (Twitter)', 'input_name' => '_socialsync_platforms[x]' ),
             'linkedin' => array( 'name' => 'LinkedIn', 'input_name' => '_socialsync_platforms[linkedin]' ),
             'facebook' => array( 'name' => 'Facebook', 'input_name' => '_socialsync_platforms[facebook]' ),
+            'bluesky' => array( 'name' => 'Bluesky', 'input_name' => '_socialsync_platforms[bluesky]' ),
         );
 
         $selected_platforms = get_post_meta( $current_id, '_socialsync_platforms', true );
@@ -228,23 +229,23 @@ class SocialSync_Admin {
         echo '<h3>' . esc_html__( 'Custom Content', 'social-sync' ) . '</h3>';
         echo '<p class="description">' . esc_html__( 'Leave blank to use the default format (Title + Excerpt + Permalink).', 'social-sync' ) . '</p>';
 
-        printf(
-            '<p><label for="socialsync_x_content">%s</label>
-            <textarea id="socialsync_x_content" name="%s" class="large-text" rows="3" placeholder="%s"></textarea></p>
-            <p><label for="socialsync_linkedin_content">%s</label>
-            <textarea id="socialsync_linkedin_content" name="%s" class="large-text" rows="3" placeholder="%s"></textarea></p>
-            <p><label for="socialsync_facebook_content">%s</label>
-            <textarea id="socialsync_facebook_content" name="%s" class="large-text" rows="3" placeholder="%s"></textarea></p>',
-            esc_html__( 'X (Twitter)', 'social-sync' ),
-            esc_attr( '_socialsync_x_content' ),
-            esc_attr__( 'Custom X post content...', 'social-sync' ),
-            esc_html__( 'LinkedIn', 'social-sync' ),
-            esc_attr( '_socialsync_linkedin_content' ),
-            esc_attr__( 'Custom LinkedIn post content...', 'social-sync' ),
-            esc_html__( 'Facebook', 'social-sync' ),
-            esc_attr( '_socialsync_facebook_content' ),
-            esc_attr__( 'Custom Facebook post content...', 'social-sync' )
+        $custom_platforms = array(
+            'x'        => __( 'X (Twitter)', 'social-sync' ),
+            'linkedin' => __( 'LinkedIn', 'social-sync' ),
+            'facebook' => __( 'Facebook', 'social-sync' ),
+            'bluesky'  => __( 'Bluesky', 'social-sync' ),
         );
+        foreach ( $custom_platforms as $key => $label ) {
+            printf(
+                '<p><label for="socialsync_%1$s_content">%2$s</label>
+                <textarea id="socialsync_%1$s_content" name="%3$s" class="large-text" rows="3" placeholder="%4$s"></textarea></p>',
+                esc_attr( $key ),
+                esc_html( $label ),
+                esc_attr( '_socialsync_' . $key . '_content' ),
+                /* translators: %s: Platform name */
+                esc_attr( sprintf( __( 'Custom %s post content...', 'social-sync' ), $label ) )
+            );
+        }
 
         echo '<hr class="wp-editor-separator">';
         echo '<h3>' . esc_html__( 'Schedule', 'social-sync' ) . '</h3>';
@@ -326,6 +327,7 @@ class SocialSync_Admin {
             'x' => isset( $_POST['_socialsync_platforms[x]'] ),
             'linkedin' => isset( $_POST['_socialsync_platforms[linkedin]'] ),
             'facebook' => isset( $_POST['_socialsync_platforms[facebook]'] ),
+            'bluesky' => isset( $_POST['_socialsync_platforms[bluesky]'] ),
         ));
 
         update_post_meta( $post_id, '_socialsync_schedule_type', sanitize_text_field( wp_unslash( $_POST['_socialsync_schedule_type'] ?? 'immediate' ) ) );
@@ -338,7 +340,7 @@ class SocialSync_Admin {
 
         update_post_meta( $post_id, '_socialsync_publish_on_save', isset( $_POST['_socialsync_publish_on_save'] ) ? '1' : '' );
 
-        foreach ( array( 'x', 'linkedin', 'facebook' ) as $platform ) {
+        foreach ( array( 'x', 'linkedin', 'facebook', 'bluesky' ) as $platform ) {
             $key = '_socialsync_' . $platform . '_content';
             if ( isset( $_POST[ $key ] ) && ! empty( $_POST[ $key ] ) ) {
                 update_post_meta( $post_id, $key, sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) );
