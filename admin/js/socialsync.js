@@ -43,7 +43,6 @@ jQuery(document).ready(function($) {
     var $customFacebook = $('textarea[name="_socialsync_facebook_content"]');
     var $customBluesky = $('textarea[name="_socialsync_bluesky_content"]');
     var $previewArea = $('#socialsync-preview-area');
-    var previewSettings = SocialSyncAdmin.prefix_hashtags || {};
 
     function getPermalink() {
         var $slug = $('#sample-permalink');
@@ -97,11 +96,10 @@ jQuery(document).ready(function($) {
             else if (platform === 'bluesky') custom = $customBluesky.val();
 
             var text = custom || defaultText;
-            var ph = previewSettings[platform];
-            if (ph) {
-                if (ph.prefix) text = ph.prefix + ' ' + text;
-                if (ph.hashtags) text = text + '\n\n' + ph.hashtags;
-            }
+            var prefix = $(this).data('prefix');
+            var hashtags = $(this).data('hashtags');
+            if (prefix) text = prefix + ' ' + text;
+            if (hashtags) text = text + '\n\n' + hashtags;
             $pre.text(text);
 
             if (imageUrl) {

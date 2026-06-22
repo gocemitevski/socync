@@ -294,15 +294,20 @@ class SocialSync_Admin {
 
         echo '<hr class="wp-editor-separator">';
         echo '<h3>' . esc_html__( 'Preview', 'social-sync' ) . '</h3>';
+        $settings = get_option( 'socialsync_settings', array() );
         echo '<div id="socialsync-preview-area" data-featured-image="' . esc_url( get_the_post_thumbnail_url( $current_id, 'medium' ) ?: '' ) . '">';
         foreach ( array('x' => 'X (Twitter)', 'linkedin' => 'LinkedIn', 'facebook' => 'Facebook', 'bluesky' => 'Bluesky') as $key => $label ) {
+            $prefix   = $settings[ $key . '_prefix_text' ] ?? '';
+            $hashtags = $settings[ $key . '_hashtags' ] ?? '';
             printf(
-                '<div class="socialsync-platform-preview" data-platform="%s">
+                '<div class="socialsync-platform-preview" data-platform="%s" data-prefix="%s" data-hashtags="%s">
                     <strong>%s</strong>
                     <img class="socialsync-preview-image" src="" alt="" />
                     <pre class="socialsync-preview-text"></pre>
                 </div>',
                 esc_attr( $key ),
+                esc_attr( $prefix ),
+                esc_attr( $hashtags ),
                 esc_html( $label )
             );
         }
@@ -1009,18 +1014,9 @@ class SocialSync_Admin {
         // Use wp_enqueue_script to load admin JavaScript with nonce verification
         wp_enqueue_script('socialsync-admin-script', plugin_dir_url( __FILE__ ) . 'js/socialsync.js', array('jquery'), $this->version, true);
 
-        $settings = get_option( 'socialsync_settings', array() );
-        $prefix_hashtags = array();
-        foreach ( array( 'x', 'linkedin', 'facebook', 'bluesky' ) as $slug ) {
-            $prefix_hashtags[ $slug ] = array(
-                'prefix'   => $settings[ $slug . '_prefix_text' ] ?? '',
-                'hashtags' => $settings[ $slug . '_hashtags' ] ?? '',
-            );
-        }
         wp_localize_script('socialsync-admin-script', 'SocialSyncAdmin', array(
-            'confirm_delete'  => __( 'Delete this scheduled post?', 'social-sync' ),
-            'confirm_cancel'  => __( 'Cancel this scheduled post?', 'social-sync' ),
-            'prefix_hashtags' => $prefix_hashtags,
+            'confirm_delete' => __( 'Delete this scheduled post?', 'social-sync' ),
+            'confirm_cancel' => __( 'Cancel this scheduled post?', 'social-sync' ),
         ));
     }
 
