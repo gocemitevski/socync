@@ -683,7 +683,7 @@ class SocialSync_Admin {
         $error = sanitize_text_field( wp_unslash( $_GET['error'] ?? '' ) );
 
         if ( ! empty( $error ) ) {
-            $this->log_callback_event( 'OAuth error returned', array( 'error' => $error ) );
+            $this->log_callback_event( 'OAuth error returned: ' . $error, array() );
             wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( $error ) ) );
             exit;
         }
@@ -735,13 +735,16 @@ class SocialSync_Admin {
      */
     private function log_callback_event( string $message, array $context = array() ): void {
         $logs = get_option( 'socialsync_logs', array() );
+        $full_message = $message;
+        if ( ! empty( $context ) ) {
+            $full_message .= ' | ' . wp_json_encode( $context );
+        }
         $logs[] = array(
             'id'       => uniqid(),
             'post_id'  => 0,
             'platform' => 'oauth',
             'status'   => 'info',
-            'message'  => $message,
-            'context'  => json_encode( $context ),
+            'message'  => $full_message,
             'date'     => current_time( 'mysql' ),
         );
         if ( count( $logs ) > 100 ) {
