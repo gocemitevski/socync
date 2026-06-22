@@ -84,8 +84,7 @@ jQuery(document).ready(function($) {
         var imageUrl = getFeaturedImage();
 
         $previews.each(function() {
-            var $pre = $(this).find('.socialsync-preview-text');
-            var $img = $(this).find('.socialsync-preview-image');
+            var $container = $(this).find('.socialsync-preview-text');
             var platform = $(this).data('platform');
             var custom = '';
 
@@ -99,13 +98,7 @@ jQuery(document).ready(function($) {
             var hashtags = $(this).data('hashtags');
             if (prefix) text = prefix + ': ' + text;
             if (hashtags) text = text + '\n\n' + hashtags;
-            $pre.text(text);
-
-            if (imageUrl) {
-                $img.attr('src', imageUrl);
-            } else {
-                $img.removeAttr('src');
-            }
+            $container.html('<img class="socialsync-preview-image" src="' + (imageUrl || '') + '" alt="" />\n' + text);
         });
     }
 
