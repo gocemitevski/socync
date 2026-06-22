@@ -524,32 +524,40 @@ class SocialSync_Admin {
      * Connect Bluesky account via session (app password).
      */
     public function handle_connect_bluesky(): void {
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
-        }
-        check_admin_referer( 'socialsync_connect_bluesky', 'socialsync-connect-bluesky-nonce' );
-
-        $identifier   = sanitize_text_field( wp_unslash( $_POST['bluesky_identifier'] ?? '' ) );
-        $app_password = wp_unslash( $_POST['bluesky_app_password'] ?? '' );
-
-        if ( empty( $identifier ) || empty( $app_password ) ) {
-            wp_die( esc_html__( 'Identifier and App Password are required.', 'social-sync' ) );
-        }
-
-        update_option( 'socialsync_bluesky_identifier', $identifier );
-        update_option( 'socialsync_bluesky_app_password', $app_password );
-
-        $provider = new SocialSync_Bluesky_Provider();
-        if ( ! $provider->is_connected() ) {
-            if ( ! $provider->refresh_token() ) {
-                delete_option( 'socialsync_bluesky_identifier' );
-                delete_option( 'socialsync_bluesky_app_password' );
-                wp_die( esc_html__( 'Failed to authenticate with Bluesky. Check your identifier and App Password.', 'social-sync' ) );
+        try {
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
             }
-        }
+            check_admin_referer( 'socialsync_connect_bluesky', 'socialsync-connect-bluesky-nonce' );
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1' ) );
-        exit;
+            $identifier   = sanitize_text_field( wp_unslash( $_POST['bluesky_identifier'] ?? '' ) );
+            $app_password = wp_unslash( $_POST['bluesky_app_password'] ?? '' );
+
+            if ( empty( $identifier ) || empty( $app_password ) ) {
+                wp_die( esc_html__( 'Identifier and App Password are required.', 'social-sync' ) );
+            }
+
+            update_option( 'socialsync_bluesky_identifier', $identifier );
+            update_option( 'socialsync_bluesky_app_password', $app_password );
+
+            $provider = new SocialSync_Bluesky_Provider();
+            if ( ! $provider->is_connected() ) {
+                error_log( 'SocialSync Bluesky: calling refresh_token (create_session)' );
+                $result = $provider->refresh_token();
+                error_log( 'SocialSync Bluesky: refresh_token returned ' . ( $result ? 'true' : 'false' ) );
+                if ( ! $result ) {
+                    delete_option( 'socialsync_bluesky_identifier' );
+                    delete_option( 'socialsync_bluesky_app_password' );
+                    wp_die( esc_html__( 'Failed to authenticate with Bluesky. Check your identifier and App Password.', 'social-sync' ) );
+                }
+            }
+
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1' ) );
+            exit;
+        } catch ( \Throwable $e ) {
+            error_log( 'SocialSync Bluesky fatal error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
+            wp_die( esc_html__( 'Bluesky connection error: ', 'social-sync' ) . esc_html( $e->getMessage() ) );
+        }
     }
 
     /**
