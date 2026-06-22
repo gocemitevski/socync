@@ -65,8 +65,10 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     private function create_session(): bool {
-        $identifier  = $this->get_identifier();
+        $identifier   = $this->get_identifier();
         $app_password = $this->get_app_password();
+
+        error_log( 'SocialSync Bluesky create_session: identifier=' . $identifier . ' password_len=' . strlen( $app_password ) );
 
         if ( empty( $identifier ) || empty( $app_password ) ) {
             $this->log_error( 'Bluesky create_session called with empty identifier or password', array() );
@@ -85,6 +87,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         ) );
 
         if ( is_wp_error( $response ) ) {
+            error_log( 'SocialSync Bluesky create_session wp_error: ' . $response->get_error_message() );
             $this->log_error( 'Bluesky create_session wp_error: ' . $response->get_error_message(), array() );
             return false;
         }
@@ -92,6 +95,8 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $status_code = wp_remote_retrieve_response_code( $response );
         $body_str    = wp_remote_retrieve_body( $response );
         $body        = json_decode( $body_str, true );
+
+        error_log( 'SocialSync Bluesky create_session status=' . $status_code . ' body=' . $body_str );
 
         if ( ! is_numeric( $status_code ) || intval( $status_code ) < 200 || intval( $status_code ) >= 300 ) {
             $error_msg = 'Bluesky API error';
