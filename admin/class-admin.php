@@ -669,7 +669,12 @@ class SocialSync_Admin {
      * Process an OAuth callback for a given platform.
      */
     private function process_oauth_callback( string $platform ): void {
+        $this->log_callback_event( 'OAuth callback received for ' . $platform, array(
+            'get_params' => $_GET,
+        ) );
+
         if ( ! current_user_can( 'manage_options' ) ) {
+            $this->log_callback_event( 'Permission denied', array() );
             wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
         }
 
@@ -678,17 +683,29 @@ class SocialSync_Admin {
         $error = sanitize_text_field( wp_unslash( $_GET['error'] ?? '' ) );
 
         if ( ! empty( $error ) ) {
+            $this->log_callback_event( 'OAuth error returned', array( 'error' => $error ) );
             wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( $error ) ) );
             exit;
         }
 
         if ( empty( $code ) || empty( $state ) ) {
-            wp_die( esc_html__( 'Invalid OAuth callback parameters.', 'social-sync' ) );
+            $this->log_callback_event( 'Missing code or state', array(
+                'code'  => $code,
+                'state' => $state,
+            ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Invalid OAuth callback parameters.' ) ) );
+            exit;
         }
 
         $expected_state = get_transient( 'socialsync_' . $platform . '_oauth_state' );
+        $this->log_callback_event( 'State comparison', array(
+            'expected' => $expected_state,
+            'received' => $state,
+            'match'    => $expected_state === $state,
+        ) );
         if ( $expected_state !== $state ) {
-            wp_die( esc_html__( 'Invalid OAuth state parameter.', 'social-sync' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Invalid OAuth state parameter.' ) ) );
+            exit;
         }
         delete_transient( 'socialsync_' . $platform . '_oauth_state' );
 
@@ -702,12 +719,35 @@ class SocialSync_Admin {
                 $this->exchange_facebook_token( $code, $redirect_uri );
                 break;
             default:
-                wp_die( esc_html__( 'Unknown platform.', 'social-sync' ) );
+                $this->log_callback_event( 'Unknown platform', array( 'platform' => $platform ) );
+                wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Unknown platform.' ) ) );
+                exit;
         }
 
+        $this->log_callback_event( 'Token exchange complete, connected', array( 'platform' => $platform ) );
         update_option( 'socialsync_' . $platform . '_connected', true );
         wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1' ) );
         exit;
+    }
+
+    /**
+     * Log an OAuth callback event to the global socialsync_logs.
+     */
+    private function log_callback_event( string $message, array $context = array() ): void {
+        $logs = get_option( 'socialsync_logs', array() );
+        $logs[] = array(
+            'id'       => uniqid(),
+            'post_id'  => 0,
+            'platform' => 'oauth',
+            'status'   => 'info',
+            'message'  => $message,
+            'context'  => json_encode( $context ),
+            'date'     => current_time( 'mysql' ),
+        );
+        if ( count( $logs ) > 100 ) {
+            $logs = array_slice( $logs, -50 );
+        }
+        update_option( 'socialsync_logs', $logs );
     }
 
     /**
@@ -719,6 +759,10 @@ class SocialSync_Admin {
     private function exchange_linkedin_token( string $code, string $redirect_uri ): void {
         $client_id     = get_option( 'socialsync_linkedin_client_id' );
         $client_secret = get_option( 'socialsync_linkedin_client_secret' );
+
+        $this->log_callback_event( 'Exchanging authorization code for LinkedIn token', array(
+            'redirect_uri' => $redirect_uri,
+        ) );
 
         $response = wp_remote_post( 'https://www.linkedin.com/oauth/v2/accessToken', array(
             'headers' => array(
@@ -734,14 +778,26 @@ class SocialSync_Admin {
         ) );
 
         if ( is_wp_error( $response ) ) {
-            wp_die( esc_html( $response->get_error_message() ) );
+            $this->log_callback_event( 'LinkedIn token exchange wp_error', array(
+                'error' => $response->get_error_message(),
+            ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Token exchange failed: ' . $response->get_error_message() ) ) );
+            exit;
         }
 
         $body = json_decode( wp_remote_retrieve_body( $response ), true );
 
         if ( ! isset( $body['access_token'] ) ) {
-            wp_die( esc_html__( 'Failed to obtain LinkedIn access token.', 'social-sync' ) );
+            $this->log_callback_event( 'LinkedIn token exchange failed - no access_token in response', array(
+                'response_body' => $body,
+            ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Failed to obtain LinkedIn access token.' ) ) );
+            exit;
         }
+
+        $this->log_callback_event( 'LinkedIn token exchange succeeded', array(
+            'expires_in' => $body['expires_in'] ?? 'unknown',
+        ) );
 
         update_option( 'socialsync_linkedin_token', array(
             'access_token'  => sanitize_text_field( $body['access_token'] ),
