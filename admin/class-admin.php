@@ -209,7 +209,12 @@ class SocialSync_Admin {
 
         $selected_platforms = get_post_meta( $current_id, '_socialsync_platforms', true );
         if ( ! is_array( $selected_platforms ) ) {
-            $selected_platforms = array();
+            $selected_platforms = array(
+                'x'        => true,
+                'linkedin' => true,
+                'facebook' => true,
+                'bluesky'  => true,
+            );
         }
 
         foreach ( $platform_data as $key => $platform ) {
