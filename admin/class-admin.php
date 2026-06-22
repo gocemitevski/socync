@@ -849,7 +849,15 @@ class SocialSync_Admin {
         $provider = new SocialSync_LinkedIn_Provider();
         $orgs     = $provider->get_organizations();
         if ( ! is_wp_error( $orgs ) ) {
+            $this->log_callback_event( 'LinkedIn orgs response', array(
+                'count' => count( $orgs ),
+                'orgs'  => $orgs,
+            ) );
             update_option( 'socialsync_linkedin_orgs_cache', $orgs );
+        } else {
+            $this->log_callback_event( 'LinkedIn get_organizations error', array(
+                'error' => $orgs->get_error_message(),
+            ) );
         }
     }
 
