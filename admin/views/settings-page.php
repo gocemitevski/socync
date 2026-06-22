@@ -36,21 +36,30 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
         <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Organization selection saved.', 'social-sync' ); ?></p></div>
     <?php endif; ?>
 
+    <?php
+    $tab_from_get = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : '';
+    if ( ! in_array( $tab_from_get, array( 'x', 'linkedin', 'facebook', 'bluesky' ), true ) ) {
+        $tab_from_get = 'x';
+    }
+    ?>
+    <?php if ( ! empty( $_GET['tab'] ) && in_array( $tab_from_get, array( 'x', 'linkedin', 'facebook', 'bluesky' ), true ) ) : ?>
+        <script>location.hash = '<?php echo esc_js( $tab_from_get ); ?>';</script>
+    <?php endif; ?>
     <div class="socialsync-admin-wrapper">
         <div class="socialsync-tabs" role="tablist">
-            <div class="socialsync-tab active" data-tab="x" role="tab" aria-selected="true" aria-controls="x" tabindex="0">X (Twitter)</div>
-            <div class="socialsync-tab" data-tab="linkedin" role="tab" aria-selected="false" aria-controls="linkedin" tabindex="-1">LinkedIn</div>
-            <div class="socialsync-tab" data-tab="facebook" role="tab" aria-selected="false" aria-controls="facebook" tabindex="-1">Facebook</div>
-            <div class="socialsync-tab" data-tab="bluesky" role="tab" aria-selected="false" aria-controls="bluesky" tabindex="-1">Bluesky</div>
+            <div class="socialsync-tab<?php echo 'x' === $tab_from_get ? ' active' : ''; ?>" data-tab="x" role="tab"<?php echo 'x' === $tab_from_get ? ' aria-selected="true" tabindex="0"' : ' aria-selected="false" tabindex="-1"'; ?> aria-controls="x">X (Twitter)</div>
+            <div class="socialsync-tab<?php echo 'linkedin' === $tab_from_get ? ' active' : ''; ?>" data-tab="linkedin" role="tab"<?php echo 'linkedin' === $tab_from_get ? ' aria-selected="true" tabindex="0"' : ' aria-selected="false" tabindex="-1"'; ?> aria-controls="linkedin">LinkedIn</div>
+            <div class="socialsync-tab<?php echo 'facebook' === $tab_from_get ? ' active' : ''; ?>" data-tab="facebook" role="tab"<?php echo 'facebook' === $tab_from_get ? ' aria-selected="true" tabindex="0"' : ' aria-selected="false" tabindex="-1"'; ?> aria-controls="facebook">Facebook</div>
+            <div class="socialsync-tab<?php echo 'bluesky' === $tab_from_get ? ' active' : ''; ?>" data-tab="bluesky" role="tab"<?php echo 'bluesky' === $tab_from_get ? ' aria-selected="true" tabindex="0"' : ' aria-selected="false" tabindex="-1"'; ?> aria-controls="bluesky">Bluesky</div>
         </div>
 
-        <div id="x" class="socialsync-tab-content active">
+        <div id="x" class="socialsync-tab-content<?php echo 'x' === $tab_from_get ? ' active' : ''; ?>">
             <?php if ( $x_connected && $x_api_key_exists ) : ?>
                 <div class="socialsync-connected-row">
                     <div class="notice notice-success inline">
                         <span class="dashicons dashicons-yes"></span> <?php esc_html_e( 'Connected', 'social-sync' ); ?>
                     </div>
-                    <a href="<?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_disconnect_x&_wpnonce=' . wp_create_nonce( 'socialsync_disconnect_x' ) ) ); ?>" class="button button-disconnect"><?php esc_html_e( 'Disconnect', 'social-sync' ); ?></a>
+                    <a href="<?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_disconnect_x&_wpnonce=' . wp_create_nonce( 'socialsync_disconnect_x' ) ) ); ?>#x" class="button button-disconnect"><?php esc_html_e( 'Disconnect', 'social-sync' ); ?></a>
                 </div>
             <?php endif; ?>
 
@@ -58,6 +67,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <?php wp_nonce_field( 'socialsync_save_platform_settings', 'socialsync-platform-settings-nonce' ); ?>
                 <input type="hidden" name="action" value="socialsync_save_platform_settings">
                 <input type="hidden" name="platform" value="x">
+                <input type="hidden" name="tab" value="x">
                 <table class="form-table" role="presentation">
                     <tr>
                         <th scope="row"><label for="x_prefix_text"><?php esc_html_e( 'Prefix Text', 'social-sync' ); ?></label></th>
@@ -84,6 +94,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_x', 'socialsync-connect-x-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_x">
+                    <input type="hidden" name="tab" value="x">
                     <table class="form-table" role="presentation">
                         <tr>
                             <th scope="row"><label for="x_api_key"><?php esc_html_e( 'API Key', 'social-sync' ); ?></label></th>
@@ -107,13 +118,13 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php endif; ?>
         </div>
 
-        <div id="linkedin" class="socialsync-tab-content">
+        <div id="linkedin" class="socialsync-tab-content<?php echo 'linkedin' === $tab_from_get ? ' active' : ''; ?>">
             <?php if ( $linkedin_connected && $linkedin_token ) : ?>
                 <div class="socialsync-connected-row">
                     <div class="notice notice-success inline">
                         <span class="dashicons dashicons-yes"></span> <?php esc_html_e( 'Connected', 'social-sync' ); ?>
                     </div>
-                    <a href="<?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_disconnect_linkedin&_wpnonce=' . wp_create_nonce( 'socialsync_disconnect_linkedin' ) ) ); ?>" class="button button-disconnect"><?php esc_html_e( 'Disconnect', 'social-sync' ); ?></a>
+                    <a href="<?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_disconnect_linkedin&_wpnonce=' . wp_create_nonce( 'socialsync_disconnect_linkedin' ) ) ); ?>#linkedin" class="button button-disconnect"><?php esc_html_e( 'Disconnect', 'social-sync' ); ?></a>
                 </div>
             <?php endif; ?>
 
@@ -121,6 +132,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <?php wp_nonce_field( 'socialsync_save_platform_settings', 'socialsync-platform-settings-nonce' ); ?>
                 <input type="hidden" name="action" value="socialsync_save_platform_settings">
                 <input type="hidden" name="platform" value="linkedin">
+                <input type="hidden" name="tab" value="linkedin">
                 <table class="form-table" role="presentation">
                     <tr>
                         <th scope="row"><label for="linkedin_prefix_text"><?php esc_html_e( 'Prefix Text', 'social-sync' ); ?></label></th>
@@ -146,6 +158,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_linkedin', 'socialsync-connect-linkedin-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_linkedin">
+                    <input type="hidden" name="tab" value="linkedin">
                     <table class="form-table" role="presentation">
                         <tr>
                             <th scope="row"><label for="linkedin_client_id"><?php esc_html_e( 'Client ID', 'social-sync' ); ?></label></th>
@@ -174,6 +187,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_select_linkedin_org', 'socialsync-select-linkedin-org-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_select_linkedin_org">
+                    <input type="hidden" name="tab" value="linkedin">
                     <table class="form-table" role="presentation">
                         <tr>
                             <th scope="row"><label for="linkedin_org_id"><?php esc_html_e( 'LinkedIn Page ID', 'social-sync' ); ?></label></th>
@@ -188,7 +202,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php endif; ?>
         </div>
 
-        <div id="facebook" class="socialsync-tab-content">
+        <div id="facebook" class="socialsync-tab-content<?php echo 'facebook' === $tab_from_get ? ' active' : ''; ?>">
             <?php if ( $facebook_connected && $facebook_token ) : ?>
                 <div class="socialsync-connected-row">
                     <div class="notice notice-success inline">
@@ -202,6 +216,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <?php wp_nonce_field( 'socialsync_save_platform_settings', 'socialsync-platform-settings-nonce' ); ?>
                 <input type="hidden" name="action" value="socialsync_save_platform_settings">
                 <input type="hidden" name="platform" value="facebook">
+                <input type="hidden" name="tab" value="facebook">
                 <table class="form-table" role="presentation">
                     <tr>
                         <th scope="row"><label for="facebook_prefix_text"><?php esc_html_e( 'Prefix Text', 'social-sync' ); ?></label></th>
@@ -227,6 +242,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_facebook', 'socialsync-connect-facebook-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_facebook">
+                    <input type="hidden" name="tab" value="facebook">
                     <table class="form-table" role="presentation">
                         <tr>
                             <th scope="row"><label for="facebook_client_id"><?php esc_html_e( 'Client ID', 'social-sync' ); ?></label></th>
@@ -251,6 +267,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_select_facebook_page', 'socialsync-select-facebook-page-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_select_facebook_page">
+                    <input type="hidden" name="tab" value="facebook">
                     <table class="form-table" role="presentation">
                         <tr>
                             <th scope="row"><label for="facebook_page_id"><?php esc_html_e( 'Post to Page', 'social-sync' ); ?></label></th>
@@ -271,7 +288,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php endif; ?>
         </div>
 
-        <div id="bluesky" class="socialsync-tab-content">
+        <div id="bluesky" class="socialsync-tab-content<?php echo 'bluesky' === $tab_from_get ? ' active' : ''; ?>">
             <?php if ( $bluesky_connected && $bluesky_token ) : ?>
                 <div class="socialsync-connected-row">
                     <div class="notice notice-success inline">
@@ -285,6 +302,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <?php wp_nonce_field( 'socialsync_save_platform_settings', 'socialsync-platform-settings-nonce' ); ?>
                 <input type="hidden" name="action" value="socialsync_save_platform_settings">
                 <input type="hidden" name="platform" value="bluesky">
+                <input type="hidden" name="tab" value="bluesky">
                 <table class="form-table" role="presentation">
                     <tr>
                         <th scope="row"><label for="bluesky_prefix_text"><?php esc_html_e( 'Prefix Text', 'social-sync' ); ?></label></th>
@@ -311,6 +329,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_bluesky', 'socialsync-connect-bluesky-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_bluesky">
+                    <input type="hidden" name="tab" value="bluesky">
                     <table class="form-table" role="presentation">
                         <tr>
                             <th scope="row"><label for="bluesky_identifier"><?php esc_html_e( 'Identifier', 'social-sync' ); ?></label></th>

@@ -405,7 +405,7 @@ class SocialSync_Admin {
         update_option( 'socialsync_x_access_token_secret', $access_token_secret );
         update_option( 'socialsync_x_connected', true );
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1&tab=x' ) );
         exit;
     }
 
@@ -421,7 +421,7 @@ class SocialSync_Admin {
         $provider = new SocialSync_X_Provider();
         $provider->disconnect();
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&disconnected=1' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&disconnected=1&tab=x' ) );
         exit;
     }
 
@@ -480,7 +480,7 @@ class SocialSync_Admin {
         $provider = new SocialSync_LinkedIn_Provider();
         $provider->disconnect();
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&disconnected=1' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&disconnected=1&tab=linkedin' ) );
         exit;
     }
 
@@ -533,7 +533,7 @@ class SocialSync_Admin {
         $provider = new SocialSync_Facebook_Provider();
         $provider->disconnect();
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&disconnected=1' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&disconnected=1&tab=facebook' ) );
         exit;
     }
 
@@ -567,7 +567,7 @@ class SocialSync_Admin {
                 }
             }
 
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1&tab=bluesky' ) );
             exit;
         } catch ( \Throwable $e ) {
             error_log( 'SocialSync Bluesky fatal error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
@@ -587,7 +587,7 @@ class SocialSync_Admin {
         $provider = new SocialSync_Bluesky_Provider();
         $provider->disconnect();
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&disconnected=1' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&disconnected=1&tab=bluesky' ) );
         exit;
     }
 
@@ -612,7 +612,8 @@ class SocialSync_Admin {
         $settings[ $platform . '_hashtags' ]    = $hashtags;
         update_option( 'socialsync_settings', $settings );
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&updated=1' ) );
+        $tab = isset( $_POST['tab'] ) ? sanitize_text_field( wp_unslash( $_POST['tab'] ) ) : '';
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&updated=1' ) . ( in_array( $tab, array( 'x', 'linkedin', 'facebook', 'bluesky' ), true ) ? '&tab=' . $tab : '' ) );
         exit;
     }
 
@@ -646,7 +647,8 @@ class SocialSync_Admin {
             update_option( 'socialsync_facebook_page_token', $page_token );
         }
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&page_selected=1' ) );
+        $tab = isset( $_POST['tab'] ) ? sanitize_text_field( wp_unslash( $_POST['tab'] ) ) : '';
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&page_selected=1' ) . ( in_array( $tab, array( 'x', 'linkedin', 'facebook', 'bluesky' ), true ) ? '&tab=' . $tab : '' ) );
         exit;
     }
 
@@ -667,7 +669,8 @@ class SocialSync_Admin {
             update_option( 'socialsync_linkedin_org_id', $org_id );
         }
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&org_selected=1' ) );
+        $tab = isset( $_POST['tab'] ) ? sanitize_text_field( wp_unslash( $_POST['tab'] ) ) : '';
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&org_selected=1' ) . ( in_array( $tab, array( 'x', 'linkedin', 'facebook', 'bluesky' ), true ) ? '&tab=' . $tab : '' ) );
         exit;
     }
 
@@ -702,9 +705,11 @@ class SocialSync_Admin {
         $state = sanitize_text_field( wp_unslash( $_GET['state'] ?? '' ) );
         $error = sanitize_text_field( wp_unslash( $_GET['error'] ?? '' ) );
 
+        $tab_param = in_array( $platform, array( 'x', 'linkedin', 'facebook', 'bluesky' ), true ) ? '&tab=' . $platform : '';
+
         if ( ! empty( $error ) ) {
             $this->log_callback_event( 'OAuth error returned: ' . $error, array() );
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( $error ) ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( $error ) . $tab_param ) );
             exit;
         }
 
@@ -713,7 +718,7 @@ class SocialSync_Admin {
                 'code'  => $code,
                 'state' => $state,
             ) );
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Invalid OAuth callback parameters.' ) ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Invalid OAuth callback parameters.' ) . $tab_param ) );
             exit;
         }
 
@@ -724,7 +729,7 @@ class SocialSync_Admin {
             'match'    => $expected_state === $state,
         ) );
         if ( $expected_state !== $state ) {
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Invalid OAuth state parameter.' ) ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Invalid OAuth state parameter.' ) . $tab_param ) );
             exit;
         }
         delete_transient( 'socialsync_' . $platform . '_oauth_state' );
@@ -746,7 +751,7 @@ class SocialSync_Admin {
 
         $this->log_callback_event( 'Token exchange complete, connected', array( 'platform' => $platform ) );
         update_option( 'socialsync_' . $platform . '_connected', true );
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1' . $tab_param ) );
         exit;
     }
 
@@ -804,7 +809,7 @@ class SocialSync_Admin {
             $this->log_callback_event( 'LinkedIn token exchange wp_error', array(
                 'error' => $response->get_error_message(),
             ) );
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Token exchange failed: ' . $response->get_error_message() ) ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Token exchange failed: ' . $response->get_error_message() ) . '&tab=linkedin' ) );
             exit;
         }
 
@@ -814,7 +819,7 @@ class SocialSync_Admin {
             $this->log_callback_event( 'LinkedIn token exchange failed - no access_token in response', array(
                 'response_body' => $body,
             ) );
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Failed to obtain LinkedIn access token.' ) ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Failed to obtain LinkedIn access token.' ) . '&tab=linkedin' ) );
             exit;
         }
 
