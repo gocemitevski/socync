@@ -160,6 +160,9 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 </form>
             <?php endif; ?>
 
+            <?php
+            $linkedin_org_id = get_option( 'socialsync_linkedin_org_id', '' );
+            ?>
             <?php if ( $linkedin_connected && $linkedin_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Organization Settings', 'social-sync' ); ?></h3>
