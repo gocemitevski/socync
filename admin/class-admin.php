@@ -445,12 +445,12 @@ class SocialSync_Admin {
             . 'response_type=' . rawurlencode( 'code' )
             . '&client_id=' . rawurlencode( $client_id )
             . '&redirect_uri=' . rawurlencode( $redirect_uri )
-            . '&scope=' . str_replace( ' ', '%20', $scope )
+            . '&scope=' . urlencode( $scope )
             . '&state=' . rawurlencode( $state );
 
-        $this->log_callback_event( 'LinkedIn auth URL scope check', array(
-            'scope_raw'     => $scope,
-            'scope_encoded' => str_replace( ' ', '%20', $scope ),
+        $this->log_callback_event( 'LinkedIn auth URL', array(
+            'scope_encoded' => urlencode( $scope ),
+            'auth_url'      => $auth_url,
         ) );
 
         wp_redirect( $auth_url );
