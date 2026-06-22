@@ -230,6 +230,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         delete_option('socialsync_linkedin_token');
         delete_option('socialsync_linkedin_org_id');
         delete_option('socialsync_linkedin_orgs_cache');
+        delete_option('socialsync_linkedin_org_name');
         delete_option('socialsync_linkedin_person_id');
         delete_option('socialsync_linkedin_connected');
         delete_option('socialsync_linkedin_client_id');

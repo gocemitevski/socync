@@ -32,6 +32,9 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
     <?php if ( isset( $_GET['disconnected'] ) ) : ?>
         <div class="notice notice-warning is-dismissible"><p><?php esc_html_e( 'Disconnected.', 'social-sync' ); ?></p></div>
     <?php endif; ?>
+    <?php if ( isset( $_GET['org_selected'] ) ) : ?>
+        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Organization selection saved.', 'social-sync' ); ?></p></div>
+    <?php endif; ?>
 
     <div class="socialsync-admin-wrapper">
         <div class="socialsync-tabs" role="tablist">
