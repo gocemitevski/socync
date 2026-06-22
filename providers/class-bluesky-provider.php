@@ -29,7 +29,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     protected function refresh_token(): bool {
-        if ( $this->is_token_valid() ) {
+        if ( ! empty( $this->access_token ) && $this->is_token_valid() ) {
             return true;
         }
 
@@ -46,7 +46,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         ) );
 
         if ( is_wp_error( $response ) ) {
-            return false;
+            return $this->create_session();
         }
 
         $status_code = wp_remote_retrieve_response_code( $response );
