@@ -42,9 +42,6 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
         $tab_from_get = 'x';
     }
     ?>
-    <?php if ( ! empty( $_GET['tab'] ) && in_array( $tab_from_get, array( 'x', 'linkedin', 'facebook', 'bluesky' ), true ) ) : ?>
-        <script>location.hash = '<?php echo esc_js( $tab_from_get ); ?>';</script>
-    <?php endif; ?>
     <div class="socialsync-admin-wrapper">
         <div class="socialsync-tabs" role="tablist">
             <div class="socialsync-tab<?php echo 'x' === $tab_from_get ? ' active' : ''; ?>" data-tab="x" role="tab"<?php echo 'x' === $tab_from_get ? ' aria-selected="true" tabindex="0"' : ' aria-selected="false" tabindex="-1"'; ?> aria-controls="x">X (Twitter)</div>
@@ -72,7 +69,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                     <tr>
                         <th scope="row"><label for="x_prefix_text"><?php esc_html_e( 'Prefix Text', 'social-sync' ); ?></label></th>
                         <td>
-                            <input type="text" id="x_prefix_text" name="prefix_text" value="<?php echo esc_attr( $settings['x_prefix_text'] ?? '' ); ?>" placeholder="e.g. New post:" class="large-text">
+                            <input type="text" id="x_prefix_text" name="prefix_text" value="<?php echo esc_attr( $settings['x_prefix_text'] ?? '' ); ?>" placeholder="e.g. New post" class="large-text">
                             <p class="description"><?php esc_html_e( 'Optional text prepended to every post sent to this platform.', 'social-sync' ); ?></p>
                         </td>
                     </tr>
@@ -137,7 +134,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                     <tr>
                         <th scope="row"><label for="linkedin_prefix_text"><?php esc_html_e( 'Prefix Text', 'social-sync' ); ?></label></th>
                         <td>
-                            <input type="text" id="linkedin_prefix_text" name="prefix_text" value="<?php echo esc_attr( $settings['linkedin_prefix_text'] ?? '' ); ?>" placeholder="e.g. New post:" class="large-text">
+                            <input type="text" id="linkedin_prefix_text" name="prefix_text" value="<?php echo esc_attr( $settings['linkedin_prefix_text'] ?? '' ); ?>" placeholder="e.g. New post" class="large-text">
                             <p class="description"><?php esc_html_e( 'Optional text prepended to every post sent to this platform.', 'social-sync' ); ?></p>
                         </td>
                     </tr>
@@ -221,7 +218,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                     <tr>
                         <th scope="row"><label for="facebook_prefix_text"><?php esc_html_e( 'Prefix Text', 'social-sync' ); ?></label></th>
                         <td>
-                            <input type="text" id="facebook_prefix_text" name="prefix_text" value="<?php echo esc_attr( $settings['facebook_prefix_text'] ?? '' ); ?>" placeholder="e.g. New post:" class="large-text">
+                            <input type="text" id="facebook_prefix_text" name="prefix_text" value="<?php echo esc_attr( $settings['facebook_prefix_text'] ?? '' ); ?>" placeholder="e.g. New post" class="large-text">
                             <p class="description"><?php esc_html_e( 'Optional text prepended to every post sent to this platform.', 'social-sync' ); ?></p>
                         </td>
                     </tr>
@@ -307,7 +304,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                     <tr>
                         <th scope="row"><label for="bluesky_prefix_text"><?php esc_html_e( 'Prefix Text', 'social-sync' ); ?></label></th>
                         <td>
-                            <input type="text" id="bluesky_prefix_text" name="prefix_text" value="<?php echo esc_attr( $settings['bluesky_prefix_text'] ?? '' ); ?>" placeholder="e.g. New post:" class="large-text">
+                            <input type="text" id="bluesky_prefix_text" name="prefix_text" value="<?php echo esc_attr( $settings['bluesky_prefix_text'] ?? '' ); ?>" placeholder="e.g. New post" class="large-text">
                             <p class="description"><?php esc_html_e( 'Optional text prepended to every post sent to this platform.', 'social-sync' ); ?></p>
                         </td>
                     </tr>
