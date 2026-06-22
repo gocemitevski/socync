@@ -28,7 +28,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         return ! empty( $this->access_token ) && ! empty( get_option( 'socialsync_bluesky_did', '' ) );
     }
 
-    protected function refresh_token(): bool {
+    public function refresh_token(): bool {
         if ( ! empty( $this->access_token ) && $this->is_token_valid() ) {
             return true;
         }
