@@ -1,0 +1,119 @@
+:root {
+    --socialsync-border: #c3c4c7;
+    --socialsync-bg-muted: #f0f0f1;
+    --socialsync-bg: #fff;
+    --socialsync-danger: #b32d2e;
+    --socialsync-radius: 4px;
+    --socialsync-gap: 12px;
+}
+
+.socialsync-meta-box hr {
+    margin: 16px 0;
+}
+
+.socialsync-platform-preview {
+    margin-bottom: var(--socialsync-gap);
+}
+
+.socialsync-platform-preview strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.socialsync-preview-image {
+    display: none;
+    max-width: 100%;
+    margin-bottom: 6px;
+    border-radius: var(--socialsync-radius);
+}
+
+.socialsync-preview-image[src]:not([src=""]) {
+    display: block;
+}
+
+.socialsync-preview-text {
+    margin: 0;
+    padding: 8px 10px;
+    background: var(--socialsync-bg-muted);
+    border: 1px solid var(--socialsync-border);
+    border-radius: var(--socialsync-radius);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.socialsync-admin-wrapper {
+    margin-top: 20px;
+}
+
+.socialsync-tabs {
+    margin-bottom: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--socialsync-border);
+}
+
+.socialsync-tab {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 0 0 -1px 0;
+    background: var(--socialsync-bg-muted);
+    border: 1px solid var(--socialsync-border);
+    border-bottom: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.socialsync-tab.active {
+    background: var(--socialsync-bg);
+    border-bottom: 1px solid var(--socialsync-bg);
+}
+
+.socialsync-tab-content {
+    display: none;
+    padding: 20px;
+    border: 1px solid var(--socialsync-border);
+    border-top: none;
+    background: var(--socialsync-bg);
+}
+
+.socialsync-tab-content.active {
+    display: block;
+}
+
+.notice.notice-success.inline {
+    margin: 0;
+    padding: 7px 12px;
+}
+
+.socialsync-connected-row {
+    display: flex;
+    align-items: center;
+    gap: var(--socialsync-gap);
+}
+
+.socialsync-connected-row .notice {
+    flex: 1;
+    margin: 0;
+}
+
+.socialsync-connected-row .button {
+    flex-shrink: 0;
+}
+
+.button.button-disconnect {
+    color: var(--socialsync-danger);
+    border-color: var(--socialsync-danger);
+}
+
+.button.button-disconnect:hover,
+.button.button-disconnect:focus,
+.button.button-disconnect:active {
+    color: var(--socialsync-bg);
+    background: var(--socialsync-danger);
+    border-color: var(--socialsync-danger);
+}
