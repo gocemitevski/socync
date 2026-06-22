@@ -327,17 +327,6 @@ class SocialSync_Scheduler {
         }
         $content = apply_filters( 'socialsync_post_content', $content, $post['post_id'], $platform_slug );
 
-        // Prepend per-platform prefix text and append hashtags if set.
-        $settings = get_option( 'socialsync_settings', array() );
-        $prefix_key = $platform_slug . '_prefix_text';
-        if ( ! empty( $settings[ $prefix_key ] ) ) {
-            $content = $settings[ $prefix_key ] . ' ' . $content;
-        }
-        $hashtags_key = $platform_slug . '_hashtags';
-        if ( ! empty( $settings[ $hashtags_key ] ) ) {
-            $content .= "\n\n" . $settings[ $hashtags_key ];
-        }
-
         if ( empty($content) ) {
             return array(
                 'success' => false,
