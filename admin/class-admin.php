@@ -642,8 +642,18 @@ class SocialSync_Admin {
         }
         check_admin_referer( 'socialsync_select_linkedin_org', 'socialsync-select-linkedin-org-nonce' );
 
-        $org_id   = sanitize_text_field( wp_unslash( $_POST['linkedin_org_id'] ?? '' ) );
-        $org_name = sanitize_text_field( wp_unslash( $_POST['linkedin_org_name'] ?? '' ) );
+        $org_id = sanitize_text_field( wp_unslash( $_POST['linkedin_org_id'] ?? '' ) );
+        $org_name = '';
+
+        if ( ! empty( $org_id ) ) {
+            $orgs_cache = get_option( 'socialsync_linkedin_orgs_cache', array() );
+            foreach ( $orgs_cache as $org ) {
+                if ( isset( $org['id'] ) && $org['id'] === $org_id ) {
+                    $org_name = isset( $org['name'] ) ? $org['name'] : '';
+                    break;
+                }
+            }
+        }
 
         if ( empty( $org_id ) ) {
             delete_option( 'socialsync_linkedin_org_id' );
@@ -827,6 +837,20 @@ class SocialSync_Admin {
             if ( isset( $me_body['id'] ) ) {
                 update_option( 'socialsync_linkedin_person_id', sanitize_text_field( $me_body['id'] ) );
             }
+        }
+
+        // Fetch and cache LinkedIn organizations for page posting.
+        $this->update_linkedin_orgs_cache();
+    }
+
+    /**
+     * Fetch LinkedIn organizations and update the cache.
+     */
+    private function update_linkedin_orgs_cache(): void {
+        $provider = new SocialSync_LinkedIn_Provider();
+        $orgs     = $provider->get_organizations();
+        if ( ! is_wp_error( $orgs ) ) {
+            update_option( 'socialsync_linkedin_orgs_cache', $orgs );
         }
     }
 
