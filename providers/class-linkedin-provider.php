@@ -43,6 +43,13 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             return $response;
         }
 
+        $this->log_error( 'LinkedIn get_organizations raw response', array(
+            'keys'           => array_keys( $response ),
+            'has_elements'   => isset( $response['elements'] ),
+            'elements_type'  => isset( $response['elements'] ) ? gettype( $response['elements'] ) : 'N/A',
+            'elements_count' => isset( $response['elements'] ) && is_array( $response['elements'] ) ? count( $response['elements'] ) : -1,
+        ) );
+
         if ( ! isset( $response['elements'] ) || ! is_array( $response['elements'] ) ) {
             $this->log_error( 'LinkedIn get_organizations: no elements in response', array(
                 'response_keys' => array_keys( $response ),
@@ -51,7 +58,12 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         }
 
         $orgs = array();
-        foreach ( $response['elements'] as $element ) {
+        foreach ( $response['elements'] as $index => $element ) {
+            if ( $index === 0 ) {
+                $this->log_error( 'LinkedIn get_organizations sample element keys', array(
+                    'keys' => array_keys( $element ),
+                ) );
+            }
             if ( isset( $element['organizationalTarget~'] ) ) {
                 $orgs[] = array(
                     'id'          => $element['organizationalTarget~']['id'],
