@@ -439,12 +439,19 @@ class SocialSync_Admin {
 
         $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' );
 
+        $scope = 'w_member_social w_organization_social r_organization_social r_liteprofile r_emailaddress';
+
         $auth_url = 'https://www.linkedin.com/oauth/v2/authorization?'
             . 'response_type=' . rawurlencode( 'code' )
             . '&client_id=' . rawurlencode( $client_id )
             . '&redirect_uri=' . rawurlencode( $redirect_uri )
-            . '&scope=' . rawurlencode( 'w_member_social w_organization_social r_organization_social r_liteprofile r_emailaddress' )
+            . '&scope=' . str_replace( ' ', '%20', $scope )
             . '&state=' . rawurlencode( $state );
+
+        $this->log_callback_event( 'LinkedIn auth URL scope check', array(
+            'scope_raw'     => $scope,
+            'scope_encoded' => str_replace( ' ', '%20', $scope ),
+        ) );
 
         wp_redirect( $auth_url );
         exit;
