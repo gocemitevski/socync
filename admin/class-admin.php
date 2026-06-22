@@ -232,7 +232,7 @@ class SocialSync_Admin {
 
         echo '<hr class="wp-editor-separator">';
         echo '<h3>' . esc_html__( 'Custom Content', 'social-sync' ) . '</h3>';
-        echo '<p class="description">' . esc_html__( 'Leave blank to use the default format (Title + Excerpt + Permalink).', 'social-sync' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Leave blank to use the default format (Title + Permalink).', 'social-sync' ) . '</p>';
 
         $custom_platforms = array(
             'x'        => __( 'X (Twitter)', 'social-sync' ),

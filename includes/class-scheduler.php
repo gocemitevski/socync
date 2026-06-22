@@ -317,11 +317,7 @@ class SocialSync_Scheduler {
                 $content = $custom_content;
             } else {
                 $content = get_the_title( $post['post_id'] );
-                $excerpt = get_the_excerpt( $post['post_id'] );
                 $permalink = get_permalink( $post['post_id'] );
-                if ( ! empty( $excerpt ) ) {
-                    $content .= "\n\n" . $excerpt;
-                }
                 $content .= "\n\n" . $permalink;
             }
         }
