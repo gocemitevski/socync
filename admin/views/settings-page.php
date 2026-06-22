@@ -23,6 +23,16 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
 <div class="wrap">
     <h1><?php esc_html_e( 'Connections', 'social-sync' ); ?></h1>
 
+    <?php if ( isset( $_GET['oauth_success'] ) ) : ?>
+        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Connected successfully.', 'social-sync' ); ?></p></div>
+    <?php endif; ?>
+    <?php if ( isset( $_GET['oauth_error'] ) ) : ?>
+        <div class="notice notice-error is-dismissible"><p><?php echo esc_html( sprintf( __( 'Connection failed: %s', 'social-sync' ), sanitize_text_field( wp_unslash( $_GET['oauth_error'] ) ) ) ); ?></p></div>
+    <?php endif; ?>
+    <?php if ( isset( $_GET['disconnected'] ) ) : ?>
+        <div class="notice notice-warning is-dismissible"><p><?php esc_html_e( 'Disconnected.', 'social-sync' ); ?></p></div>
+    <?php endif; ?>
+
     <div class="socialsync-admin-wrapper">
         <div class="socialsync-tabs" role="tablist">
             <div class="socialsync-tab active" data-tab="x" role="tab" aria-selected="true" aria-controls="x" tabindex="0">X (Twitter)</div>
