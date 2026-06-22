@@ -302,8 +302,9 @@ class SocialSync_Admin {
             printf(
                 '<div class="socialsync-platform-preview" data-platform="%s" data-prefix="%s" data-hashtags="%s">
                     <strong>%s</strong>
-                    <img class="socialsync-preview-image" src="" alt="" />
-                    <pre class="socialsync-preview-text"></pre>
+                    <div class="socialsync-preview-text">
+                        <img class="socialsync-preview-image" src="" alt="" />
+                    </div>
                 </div>',
                 esc_attr( $key ),
                 esc_attr( $prefix ),
