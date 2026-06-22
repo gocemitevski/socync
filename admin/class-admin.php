@@ -54,7 +54,8 @@ class SocialSync_Admin {
         add_action( 'admin_post_socialsync_disconnect_facebook', array( $this, 'handle_disconnect_facebook' ) );
         add_action( 'admin_post_socialsync_connect_bluesky', array( $this, 'handle_connect_bluesky' ) );
         add_action( 'admin_post_socialsync_disconnect_bluesky', array( $this, 'handle_disconnect_bluesky' ) );
-        add_action( 'admin_post_socialsync_oauth_callback', array( $this, 'handle_oauth_callback' ) );
+        add_action( 'admin_post_socialsync_oauth_callback_linkedin', array( $this, 'handle_oauth_callback_linkedin' ) );
+        add_action( 'admin_post_socialsync_oauth_callback_facebook', array( $this, 'handle_oauth_callback_facebook' ) );
         add_action( 'admin_post_socialsync_delete_log', array( $this, 'handle_delete_log' ) );
         add_action( 'admin_post_socialsync_select_facebook_page', array( $this, 'handle_select_facebook_page' ) );
         add_action( 'admin_post_socialsync_select_linkedin_org', array( $this, 'handle_select_linkedin_org' ) );
@@ -436,7 +437,7 @@ class SocialSync_Admin {
         $state     = 'linkedin_' . $raw_state;
         set_transient( 'socialsync_linkedin_oauth_state', $state, 300 );
 
-        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback' );
+        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' );
 
         $auth_url = 'https://www.linkedin.com/oauth/v2/authorization?' . http_build_query( array(
             'response_type' => 'code',
@@ -489,7 +490,7 @@ class SocialSync_Admin {
         $state     = 'facebook_' . $raw_state;
         set_transient( 'socialsync_facebook_oauth_state', $state, 300 );
 
-        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback' );
+        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' );
 
         $auth_url = 'https://www.facebook.com/v18.0/dialog/oauth?' . http_build_query( array(
             'response_type' => 'code',
@@ -651,9 +652,23 @@ class SocialSync_Admin {
     }
 
     /**
-     * Handle OAuth callback from all providers.
+     * Handle OAuth callback from LinkedIn.
      */
-    public function handle_oauth_callback(): void {
+    public function handle_oauth_callback_linkedin(): void {
+        $this->process_oauth_callback( 'linkedin' );
+    }
+
+    /**
+     * Handle OAuth callback from Facebook.
+     */
+    public function handle_oauth_callback_facebook(): void {
+        $this->process_oauth_callback( 'facebook' );
+    }
+
+    /**
+     * Process an OAuth callback for a given platform.
+     */
+    private function process_oauth_callback( string $platform ): void {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
         }
@@ -671,20 +686,13 @@ class SocialSync_Admin {
             wp_die( esc_html__( 'Invalid OAuth callback parameters.', 'social-sync' ) );
         }
 
-        // Extract platform from the state parameter (prefixed with platform_).
-        $parts   = explode( '_', $state, 2 );
-        $platform = $parts[0] ?? '';
-        if ( ! in_array( $platform, array( 'linkedin', 'facebook' ), true ) ) {
-            wp_die( esc_html__( 'Invalid OAuth callback parameters.', 'social-sync' ) );
-        }
-
         $expected_state = get_transient( 'socialsync_' . $platform . '_oauth_state' );
         if ( $expected_state !== $state ) {
             wp_die( esc_html__( 'Invalid OAuth state parameter.', 'social-sync' ) );
         }
         delete_transient( 'socialsync_' . $platform . '_oauth_state' );
 
-        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback' );
+        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback_' . $platform );
 
         switch ( $platform ) {
             case 'linkedin':
