@@ -17,6 +17,19 @@
     gap: var(--socialsync-gap);
 }
 
+.socialsync-custom-content {
+    display: flex;
+    flex-direction: row;
+    gap: var(--socialsync-gap);
+}
+
+.socialsync-custom-item {
+    flex: 1;
+    min-width: 0;
+}
+
+
+
 .socialsync-platform-preview {
     flex: 1;
     min-width: 0;
