@@ -32,20 +32,35 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             return new WP_Error('not_connected', 'LinkedIn not connected.');
         }
 
-        $response = $this->get_api(
-            self::BASE_URL . '/organizationalEntityAcls?q=roleAssignee&role=ADMINISTRATOR&projection=(elements*(organizationalTarget~(id,localizedName,vanityName)))'
+        $response = wp_remote_get(
+            self::BASE_URL . '/organizationalEntityAcls?q=roleAssignee&role=ADMINISTRATOR&projection=(elements*(organizationalTarget~(id,localizedName,vanityName)))',
+            array(
+                'headers' => array(
+                    'Authorization'      => 'Bearer ' . $this->access_token,
+                    'LinkedIn-Version'   => '202401',
+                    'X-Restli-Protocol-Version' => '2.0.0',
+                ),
+                'timeout' => self::DEFAULT_TIMEOUT,
+            )
         );
 
         if ( is_wp_error( $response ) ) {
             return $response;
         }
 
-        if ( ! isset( $response['elements'] ) || ! is_array( $response['elements'] ) ) {
+        $body = json_decode( wp_remote_retrieve_body( $response ), true );
+        $status = wp_remote_retrieve_response_code( $response );
+
+        if ( ! is_numeric( $status ) || intval( $status ) < 200 || intval( $status ) >= 300 ) {
+            return new WP_Error( 'linkedin_api_error', isset( $body['message'] ) ? $body['message'] : 'Unknown error' );
+        }
+
+        if ( ! isset( $body['elements'] ) || ! is_array( $body['elements'] ) ) {
             return array();
         }
 
         $orgs = array();
-        foreach ( $response['elements'] as $element ) {
+        foreach ( $body['elements'] as $element ) {
             if ( isset( $element['organizationalTarget~'] ) ) {
                 $orgs[] = array(
                     'id'          => $element['organizationalTarget~']['id'],
