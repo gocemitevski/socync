@@ -443,7 +443,7 @@ class SocialSync_Admin {
             'response_type' => 'code',
             'client_id'     => $client_id,
             'redirect_uri'  => $redirect_uri,
-            'scope'         => 'w_member_social w_organization_social r_organization_social r_liteprofile r_emailaddress r_refresh_token',
+            'scope'         => 'w_member_social w_organization_social r_organization_social r_liteprofile r_emailaddress',
             'state'         => $state,
         ), '', '&', PHP_QUERY_RFC3986 );
 
