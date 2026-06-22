@@ -41,7 +41,9 @@ jQuery(document).ready(function($) {
     var $customX = $('textarea[name="_socialsync_x_content"]');
     var $customLinkedin = $('textarea[name="_socialsync_linkedin_content"]');
     var $customFacebook = $('textarea[name="_socialsync_facebook_content"]');
+    var $customBluesky = $('textarea[name="_socialsync_bluesky_content"]');
     var $previewArea = $('#socialsync-preview-area');
+    var previewSettings = SocialSyncAdmin.prefix_hashtags || {};
 
     function getPermalink() {
         var $slug = $('#sample-permalink');
@@ -72,9 +74,8 @@ jQuery(document).ready(function($) {
 
     function composeDefault() {
         var title = $titleInput.val() || '(no title)';
-        var excerpt = $excerptInput.val() || '';
         var url = getPermalink();
-        return title + '\n\n' + excerpt + '\n\n' + url;
+        return title + '\n\n' + url;
     }
 
     function updatePreviews() {
@@ -93,8 +94,15 @@ jQuery(document).ready(function($) {
             if (platform === 'x') custom = $customX.val();
             else if (platform === 'linkedin') custom = $customLinkedin.val();
             else if (platform === 'facebook') custom = $customFacebook.val();
+            else if (platform === 'bluesky') custom = $customBluesky.val();
 
-            $pre.text(custom || defaultText);
+            var text = custom || defaultText;
+            var ph = previewSettings[platform];
+            if (ph) {
+                if (ph.prefix) text = ph.prefix + ' ' + text;
+                if (ph.hashtags) text = text + '\n\n' + ph.hashtags;
+            }
+            $pre.text(text);
 
             if (imageUrl) {
                 $img.attr('src', imageUrl);
@@ -109,6 +117,7 @@ jQuery(document).ready(function($) {
     $customX.on('input', updatePreviews);
     $customLinkedin.on('input', updatePreviews);
     $customFacebook.on('input', updatePreviews);
+    $customBluesky.on('input', updatePreviews);
 
     // Watch for featured image changes using MutationObserver
     var $postImageDiv = document.getElementById('postimagediv');
