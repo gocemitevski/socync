@@ -68,8 +68,6 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $identifier   = $this->get_identifier();
         $app_password = $this->get_app_password();
 
-        error_log( 'SocialSync Bluesky create_session: identifier=' . $identifier . ' password_len=' . strlen( $app_password ) );
-
         if ( empty( $identifier ) || empty( $app_password ) ) {
             $this->log_error( 'Bluesky create_session called with empty identifier or password', array() );
             return false;
@@ -87,7 +85,6 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         ) );
 
         if ( is_wp_error( $response ) ) {
-            error_log( 'SocialSync Bluesky create_session wp_error: ' . $response->get_error_message() );
             $this->log_error( 'Bluesky create_session wp_error: ' . $response->get_error_message(), array() );
             return false;
         }
@@ -95,8 +92,6 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $status_code = wp_remote_retrieve_response_code( $response );
         $body_str    = wp_remote_retrieve_body( $response );
         $body        = json_decode( $body_str, true );
-
-        error_log( 'SocialSync Bluesky create_session status=' . $status_code . ' body=' . $body_str );
 
         if ( ! is_numeric( $status_code ) || intval( $status_code ) < 200 || intval( $status_code ) >= 300 ) {
             $error_msg = 'Bluesky API error';
@@ -147,11 +142,17 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
 
         $did = get_option( 'socialsync_bluesky_did', '' );
 
+        $facets = $this->build_facets( $content );
+
         $record = array(
             '$type'     => 'app.bsky.feed.post',
             'text'      => $content,
             'createdAt' => gmdate( 'Y-m-d\TH:i:s.000\Z' ),
         );
+
+        if ( ! empty( $facets ) ) {
+            $record['facets'] = $facets;
+        }
 
         $response = wp_remote_post( self::RECORD_ENDPOINT, array(
             'headers' => array(
@@ -199,6 +200,84 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         delete_option( 'socialsync_bluesky_app_password' );
         delete_option( 'socialsync_bluesky_connected' );
         return true;
+    }
+
+    private function build_facets( string $text ): array {
+        $facets = array();
+
+        // Match hashtags: #word
+        preg_match_all( '/(?<=^|\s)#([\p{L}\p{N}_]+)/u', $text, $hashtag_matches, PREG_OFFSET_CAPTURE );
+        foreach ( $hashtag_matches[0] as $match ) {
+            $tag_text  = $match[0];
+            $byte_start = intval( $match[1] );
+            $byte_end   = $byte_start + strlen( $tag_text );
+
+            // Skip if # is preceded by a word character (avoid matching mid-word)
+            // The lookbehind in regex already handles this, but double-check
+            if ( $byte_start > 0 && preg_match( '/[\p{L}\p{N}]/u', substr( $text, $byte_start - 1, 1 ) ) ) {
+                continue;
+            }
+
+            $facets[] = array(
+                'index'    => array(
+                    'byteStart' => $byte_start,
+                    'byteEnd'   => $byte_end,
+                ),
+                'features' => array(
+                    array(
+                        '$type' => 'app.bsky.richtext.facet#tag',
+                        'tag'   => substr( $tag_text, 1 ),
+                    ),
+                ),
+            );
+        }
+
+        // Match mentions: @handle or @handle.domain
+        preg_match_all( '/(?<=^|\s)@([\p{L}\p{N}._-]+(\.[\p{L}\p{N}._-]+)+|[\p{L}\p{N}._-]+)/u', $text, $mention_matches, PREG_OFFSET_CAPTURE );
+        foreach ( $mention_matches[0] as $match ) {
+            $mention_text = $match[0];
+            $byte_start   = intval( $match[1] );
+            $byte_end     = $byte_start + strlen( $mention_text );
+
+            $handle = ltrim( $mention_text, '@' );
+            $did    = $this->resolve_handle( $handle );
+
+            if ( $did ) {
+                $facets[] = array(
+                    'index'    => array(
+                        'byteStart' => $byte_start,
+                        'byteEnd'   => $byte_end,
+                    ),
+                    'features' => array(
+                        array(
+                            '$type' => 'app.bsky.richtext.facet#mention',
+                            'did'   => $did,
+                        ),
+                    ),
+                );
+            }
+        }
+
+        return $facets;
+    }
+
+    private function resolve_handle( string $handle ): ?string {
+        $response = wp_remote_get(
+            'https://bsky.social/xrpc/com.atproto.identity.resolveHandle?handle=' . urlencode( $handle ),
+            array( 'timeout' => self::DEFAULT_TIMEOUT )
+        );
+
+        if ( is_wp_error( $response ) ) {
+            return null;
+        }
+
+        $status = wp_remote_retrieve_response_code( $response );
+        if ( ! is_numeric( $status ) || intval( $status ) !== 200 ) {
+            return null;
+        }
+
+        $body = json_decode( wp_remote_retrieve_body( $response ), true );
+        return isset( $body['did'] ) ? sanitize_text_field( $body['did'] ) : null;
     }
 
     protected function log_error( string $message, array $context = array() ): void {

@@ -542,9 +542,7 @@ class SocialSync_Admin {
 
             $provider = new SocialSync_Bluesky_Provider();
             if ( ! $provider->is_connected() ) {
-                error_log( 'SocialSync Bluesky: calling refresh_token (create_session)' );
                 $result = $provider->refresh_token();
-                error_log( 'SocialSync Bluesky: refresh_token returned ' . ( $result ? 'true' : 'false' ) );
                 if ( ! $result ) {
                     delete_option( 'socialsync_bluesky_identifier' );
                     delete_option( 'socialsync_bluesky_app_password' );
