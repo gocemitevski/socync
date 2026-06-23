@@ -153,6 +153,9 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      * @return array|WP_Error Response from Facebook Graph API or error object.
      */
     public function publish( string $content ): array|WP_Error {
+        if ( ! $this->refresh_token() ) {
+            return new WP_Error( 'token_expired', 'Facebook access token expired and could not be refreshed. Please reconnect.' );
+        }
         if ( ! $this->is_connected() ) {
             return new WP_Error('not_connected', 'Facebook Page not connected or access token has expired.');
         }

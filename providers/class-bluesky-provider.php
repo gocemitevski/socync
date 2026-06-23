@@ -29,7 +29,10 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     public function refresh_token(): bool {
-        if ( ! empty( $this->access_token ) && $this->is_token_valid() ) {
+        $stored_token = get_option( 'socialsync_bluesky_token', array() );
+        $has_proper_expiry = ! empty( $stored_token['expires_in'] );
+
+        if ( ! empty( $this->access_token ) && $this->is_token_valid() && $has_proper_expiry ) {
             return true;
         }
 
@@ -124,6 +127,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
 
         update_option( 'socialsync_bluesky_token', array(
             'access_token'  => $access_jwt,
+            'expires_in'    => 7200,
             'created_at'    => time(),
         ) );
         update_option( 'socialsync_bluesky_refresh_jwt', $refresh_jwt );
