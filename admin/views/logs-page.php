@@ -32,10 +32,11 @@ $entries = array();
 
 foreach ( $wp_logs as $entry ) {
     $post_id    = isset( $entry['post_id'] ) ? intval( $entry['post_id'] ) : 0;
-    $post_title = $post_id ? get_the_title( $post_id ) : __( '(deleted)', 'social-sync' );
+    $log_type   = isset( $entry['type'] ) ? $entry['type'] : 'wp_post';
+    $post_title = 'wp_post' === $log_type && $post_id ? get_the_title( $post_id ) : '';
     $raw_status = isset( $entry['status'] ) ? $entry['status'] : '';
     $entries[]  = array(
-        'type'      => 'wp_post',
+        'type'      => $log_type,
         'post_id'   => $post_id,
         'title'     => $post_title ?: __( '(untitled)', 'social-sync' ),
         'platform'  => isset( $entry['platform'] ) ? $entry['platform'] : '',
@@ -133,7 +134,9 @@ if ( $status_filter ) {
                     <tr>
                         <td class="column-source"><?php echo 'oauth' === $entry['platform'] ? esc_html__( 'SocialSync', 'social-sync' ) : ( 'wp_post' === $entry['type'] ? esc_html__( 'WP Post', 'social-sync' ) : esc_html__( 'Scheduled', 'social-sync' ) ); ?></td>
                         <td class="column-content column-primary" data-colname="<?php esc_attr_e( 'Content', 'social-sync' ); ?>">
-                            <?php if ( 'wp_post' === $entry['type'] && $entry['post_id'] ) : ?>
+                            <?php if ( 'oauth' === $entry['type'] ) : ?>
+                                <strong><em><?php echo esc_html( $entry['message'] ?: $entry['title'] ); ?></em></strong>
+                            <?php elseif ( 'wp_post' === $entry['type'] && $entry['post_id'] ) : ?>
                                 <strong><a href="<?php echo esc_url( get_edit_post_link( $entry['post_id'] ) ); ?>"><?php echo esc_html( $entry['title'] ); ?></a></strong>
                             <?php else : ?>
                                 <strong><em><?php echo esc_html( $entry['title'] ); ?></em></strong>

@@ -153,7 +153,8 @@ class SocialSync_Scheduler {
                         $post['id'],
                         $platform_slug,
                         'failed',
-                        isset( $result['message'] ) ? $result['message'] : ''
+                        isset( $result['message'] ) ? $result['message'] : '',
+                        $post['source'] ?? 'wp_post'
                     );
                 }
             }
@@ -297,7 +298,8 @@ class SocialSync_Scheduler {
                     isset( $post['id'] ) ? intval( wp_unslash( $post['id'] ) ) : 0,
                     sanitize_text_field( $platform_slug ),
                     'failed',
-                    __( 'Unknown or unsupported social media platform.', 'social-sync' )
+                    __( 'Unknown or unsupported social media platform.', 'social-sync' ),
+                    $post['source'] ?? 'wp_post'
                 );
 
                 return array(
@@ -360,7 +362,8 @@ class SocialSync_Scheduler {
                         /* translators: %s: Platform post ID */
                         __( 'Posted successfully. Post ID: %s', 'social-sync' ),
                         esc_html( wp_unslash( $result['data']['id'] ) )
-                    ) : ''
+                    ) : '',
+                    $post['source'] ?? 'wp_post'
                 );
 
                 // Clear the platform-specific queue data after successful publish
@@ -377,7 +380,8 @@ class SocialSync_Scheduler {
                             /* translators: %s: Platform slug */
                             __( 'Failed to post. API returned an error.', 'social-sync' ),
                             sanitize_text_field( wp_unslash( $platform_slug ) )
-                        )
+                        ),
+                    $post['source'] ?? 'wp_post'
                 );
             }
         }
@@ -395,7 +399,7 @@ class SocialSync_Scheduler {
      * @param string $message Error message if failed.
      * @return void Logs action to wp_options table.
      */
-    private function log_action( int $post_id = 0, string $platform = '', string $status = 'success', string $message = '' ): void {
+    private function log_action( int $post_id = 0, string $platform = '', string $status = 'success', string $message = '', string $type = 'wp_post' ): void {
 
         // Retrieve existing logs from wp_options table
         $logs = get_option( 'socialsync_logs', array() );
@@ -410,6 +414,7 @@ class SocialSync_Scheduler {
                 'status'  => sanitize_text_field($status),
                 'message' => sanitize_textarea_field(wp_unslash($message)),
                 'date'    => current_time('mysql'),
+                'type'    => in_array( $type, array( 'wp_post', 'standalone' ), true ) ? $type : 'wp_post',
             )
         );
 
