@@ -65,7 +65,11 @@ class SocialSync_Admin {
         add_action( 'admin_post_socialsync_save_platform_settings', array( $this, 'handle_save_platform_settings' ) );
         add_action( 'admin_post_socialsync_clear_log', array( $this, 'handle_clear_log' ) );
         add_action( 'admin_post_socialsync_save_log_settings', array( $this, 'handle_save_log_settings' ) );
+        add_action( 'admin_post_socialsync_save_dev_settings', array( $this, 'handle_save_dev_settings' ) );
+        add_action( 'admin_post_socialsync_clear_dev_log', array( $this, 'handle_clear_dev_log' ) );
         add_action( 'socialsync_purge_old_logs', array( $this, 'handle_purge_old_logs' ) );
+        add_action( 'admin_notices', array( $this, 'admin_dry_run_notice' ) );
+        add_filter( 'set-screen-option', array( $this, 'save_log_screen_option' ), 10, 3 );
     }
 
     /**
@@ -105,13 +109,23 @@ class SocialSync_Admin {
             array( $this, 'render_scheduled_posts_page' )
         );
 
-        add_submenu_page(
+        $log_hook = add_submenu_page(
             $page_slug,
             __( 'Log', 'social-sync' ),
             __( 'Log', 'social-sync' ),
             'manage_options',
             'social-sync-log',
             array( $this, 'render_logs_page' )
+        );
+        add_action( "load-{$log_hook}", array( $this, 'add_log_screen_options' ) );
+
+        add_submenu_page(
+            $page_slug,
+            __( 'Settings', 'social-sync' ),
+            __( 'Settings', 'social-sync' ),
+            'manage_options',
+            'social-sync-dev',
+            array( $this, 'render_dev_page' )
         );
     }
 
@@ -129,7 +143,7 @@ class SocialSync_Admin {
         // Get and sanitize social connection settings from wp_options table
         $settings = get_option( 'socialsync_settings', array() );
 
-        include_once dirname( __FILE__ ) . '/views/settings-page.php';
+        include_once dirname( __FILE__ ) . '/views/connections-page.php';
     }
 
     /**
@@ -160,7 +174,39 @@ class SocialSync_Admin {
             wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
         }
 
-        include_once dirname( __FILE__ ) . '/views/logs-page.php';
+        include_once dirname( __FILE__ ) . '/views/log-page.php';
+    }
+
+    /**
+     * Register screen options for the Log page.
+     */
+    public function add_log_screen_options(): void {
+        add_screen_option( 'per_page', array(
+            'label'   => __( 'Log entries per page', 'social-sync' ),
+            'default' => 20,
+            'option'  => 'socialsync_log_per_page',
+        ) );
+    }
+
+    /**
+     * Save screen option value for log per page.
+     *
+     * @param mixed  $status Status value (false to bypass, true to save default).
+     * @param string $option The option name.
+     * @param mixed  $value  The submitted value.
+     * @return mixed
+     */
+    public function save_log_screen_option( $status, string $option, $value ) {
+        if ( 'socialsync_log_per_page' === $option ) {
+            $value = intval( $value );
+            if ( $value < 1 ) {
+                $value = 20;
+            } elseif ( $value > 200 ) {
+                $value = 200;
+            }
+            return $value;
+        }
+        return $status;
     }
 
     /**
@@ -942,6 +988,10 @@ class SocialSync_Admin {
             SocialSync_Scheduled_Post::clear_all();
         }
 
+        if ( class_exists( 'SocialSync_Dev_Logger' ) ) {
+            SocialSync_Dev_Logger::clear();
+        }
+
         wp_safe_redirect( admin_url( 'admin.php?page=social-sync-log&log_cleared=1' ) );
         exit;
     }
@@ -1003,7 +1053,7 @@ class SocialSync_Admin {
         $table = $wpdb->prefix . 'socialsync_scheduled_posts';
         $wpdb->query(
             $wpdb->prepare(
-                "DELETE FROM {$table} WHERE status IN ('published', 'failed', 'cancelled') AND scheduled_date < %s",
+                "DELETE FROM {$table} WHERE status IN ('published', 'failed', 'cancelled', 'dry_run') AND scheduled_date < %s",
                 gmdate( 'Y-m-d H:i:s', $cutoff )
             )
         );
@@ -1104,6 +1154,25 @@ class SocialSync_Admin {
                 if ( preg_match( '/https?:\/\/[^\s<>"\'()]+/', $content, $matches ) ) {
                     $post_url = rtrim( $matches[0], '.,;:!?)\'"]' );
                 }
+
+                SocialSync_Dev_Logger::log( 'post_built', array(
+                    'platform' => $platform_slug,
+                    'content'  => $content,
+                    'url'      => $post_url,
+                    'summary'  => 'Post Now content ready for ' . $platform_slug,
+                ) );
+
+                if ( SocialSync_Dev_Logger::is_dry_run() ) {
+                    SocialSync_Dev_Logger::log( 'dry_run_skip', array(
+                        'platform' => $platform_slug,
+                        'content'  => $content,
+                        'url'      => $post_url,
+                        'summary'  => 'DRY RUN - Would publish to ' . $platform_slug,
+                    ) );
+                    $platform_ok[] = $platform_slug;
+                    continue;
+                }
+
                 $result = $provider->publish( $content, $post_url );
 
                 if ( is_wp_error( $result ) ) {
@@ -1116,16 +1185,21 @@ class SocialSync_Admin {
                 }
             }
 
-            $all_success = empty( $platform_errors );
+            $all_success   = empty( $platform_errors );
+            $all_dry_run   = SocialSync_Dev_Logger::is_dry_run() && empty( $platform_errors );
             SocialSync_Scheduled_Post::update( $insert_id, array(
-                'status'         => $all_success ? 'published' : 'failed',
+                'status'         => $all_dry_run ? 'dry_run' : ( $all_success ? 'published' : 'failed' ),
                 'error_message'  => $all_success ? '' : wp_json_encode( $platform_errors ),
             ) );
 
             $redirect_url = admin_url( 'admin.php?page=social-sync-scheduled' );
             $query_args   = array();
-            foreach ( $platform_ok as $slug ) {
-                $query_args[ 'success_' . $slug ] = 1;
+            if ( $all_dry_run ) {
+                $query_args['dry_run'] = 1;
+            } else {
+                foreach ( $platform_ok as $slug ) {
+                    $query_args[ 'success_' . $slug ] = 1;
+                }
             }
             foreach ( $platform_errors as $slug => $msg ) {
                 $query_args[ 'error_' . $slug ] = rawurlencode( $msg );
@@ -1179,5 +1253,66 @@ class SocialSync_Admin {
             : admin_url( 'admin.php?page=social-sync-scheduled&cancelled=1' );
         wp_safe_redirect( $redirect );
         exit;
+    }
+
+    /**
+     * Render the developer debug page.
+     */
+    public function render_dev_page(): void {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+        }
+
+        include_once dirname( __FILE__ ) . '/views/settings-page.php';
+    }
+
+    /**
+     * Save developer mode settings.
+     */
+    public function handle_save_dev_settings(): void {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+        }
+        check_admin_referer( 'socialsync_save_dev_settings', 'socialsync-dev-settings-nonce' );
+
+        update_option( 'socialsync_dev_mode', isset( $_POST['dev_mode'] ) ? 1 : 0 );
+
+        if ( isset( $_POST['dev_mode'] ) ) {
+            update_option( 'socialsync_dry_run', isset( $_POST['dry_run'] ) ? 1 : 0 );
+        } else {
+            update_option( 'socialsync_dry_run', 0 );
+        }
+
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-dev&saved=1' ) );
+        exit;
+    }
+
+    /**
+     * Clear the developer event log.
+     */
+    public function handle_clear_dev_log(): void {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+        }
+        check_admin_referer( 'socialsync_clear_dev_log' );
+
+        SocialSync_Dev_Logger::clear();
+
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-dev&cleared=1' ) );
+        exit;
+    }
+
+    /**
+     * Show a global admin notice when Dry Run mode is active.
+     */
+    public function admin_dry_run_notice(): void {
+        if ( ! current_user_can( 'manage_options' ) || ! SocialSync_Dev_Logger::is_dry_run() ) {
+            return;
+        }
+        ?>
+        <div class="notice notice-warning is-dismissible">
+            <p><?php esc_html_e( 'SocialSync Dry Run mode is active. API calls will be logged but not sent.', 'social-sync' ); ?></p>
+        </div>
+        <?php
     }
 }

@@ -31,6 +31,7 @@ require_once dirname( __FILE__ ) . '/includes/class-deactivator.php';
 require_once dirname( __FILE__ ) . '/includes/class-api-handler.php';
 require_once dirname( __FILE__ ) . '/includes/class-scheduled-post.php';
 require_once dirname( __FILE__ ) . '/includes/class-scheduler.php';
+require_once dirname( __FILE__ ) . '/includes/class-dev-logger.php';
 require_once dirname( __FILE__ ) . '/admin/class-admin.php';
 
 // Load provider classes

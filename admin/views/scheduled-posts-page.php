@@ -40,6 +40,9 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
             <div class="notice notice-error is-dismissible"><p><?php echo esc_html( sprintf( __( '%s: %s', 'social-sync' ), $label, wp_unslash( $_GET[ 'error_' . $slug ] ) ) ); ?></p></div>
         <?php endif; ?>
     <?php endforeach; ?>
+    <?php if ( isset( $_GET['dry_run'] ) ) : ?>
+        <div class="notice notice-warning is-dismissible"><p><?php esc_html_e( 'Dry run: No actual posts were published. Check the Developer page for details.', 'social-sync' ); ?></p></div>
+    <?php endif; ?>
     <?php if ( isset( $_GET['deleted'] ) ) : ?>
         <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Scheduled post deleted.', 'social-sync' ); ?></p></div>
     <?php endif; ?>

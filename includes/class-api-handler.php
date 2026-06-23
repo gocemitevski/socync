@@ -162,16 +162,39 @@ abstract class SocialSync_API_Handler {
             $args
         );
 
+        SocialSync_Dev_Logger::log( 'api_request', array(
+            'platform'      => $this->platform,
+            'endpoint'      => $endpoint,
+            'request_body'  => $args['body'],
+            'summary'       => 'POST ' . $endpoint,
+        ) );
+
         // Check for HTTP errors in response headers or body
         if ( is_wp_error( $response ) ) {
+            SocialSync_Dev_Logger::log( 'api_response', array(
+                'platform'       => $this->platform,
+                'endpoint'       => $endpoint,
+                'response_body'  => $response->get_error_message(),
+                'status_code'    => 0,
+                'summary'        => 'WP_Error: ' . $response->get_error_message(),
+            ) );
             return $response;
         }
 
         $status_code = wp_remote_retrieve_response_code( $response );
 
+        $body = wp_remote_retrieve_body( $response );
+
+        SocialSync_Dev_Logger::log( 'api_response', array(
+            'platform'       => $this->platform,
+            'endpoint'       => $endpoint,
+            'response_body'  => $body,
+            'status_code'    => $status_code,
+            'summary'        => $status_code . ' ' . $endpoint,
+        ) );
+
         // Handle non-2xx responses from the API
         if ( ! is_numeric( $status_code ) || intval( $status_code ) < 200 || intval( $status_code ) >= 300 ) {
-            $body = wp_remote_retrieve_body( $response );
             $error_data = json_decode( $body, true );
 
             // Return structured error with message if available
@@ -183,7 +206,7 @@ abstract class SocialSync_API_Handler {
         }
 
         // Return successful response body as decoded JSON
-        return json_decode( wp_remote_retrieve_body( $response ), true );
+        return json_decode( $body, true );
     }
 
     /**
@@ -215,16 +238,37 @@ abstract class SocialSync_API_Handler {
             $args
         );
 
+        SocialSync_Dev_Logger::log( 'api_request', array(
+            'platform'      => $this->platform,
+            'endpoint'      => $endpoint,
+            'summary'       => 'GET ' . $endpoint,
+        ) );
+
         // Check for HTTP errors in response headers or body
         if ( is_wp_error( $response ) ) {
+            SocialSync_Dev_Logger::log( 'api_response', array(
+                'platform'       => $this->platform,
+                'endpoint'       => $endpoint,
+                'response_body'  => $response->get_error_message(),
+                'status_code'    => 0,
+                'summary'        => 'WP_Error: ' . $response->get_error_message(),
+            ) );
             return $response;
         }
 
         $status_code = wp_remote_retrieve_response_code( $response );
+        $body        = wp_remote_retrieve_body( $response );
+
+        SocialSync_Dev_Logger::log( 'api_response', array(
+            'platform'       => $this->platform,
+            'endpoint'       => $endpoint,
+            'response_body'  => $body,
+            'status_code'    => $status_code,
+            'summary'        => $status_code . ' ' . $endpoint,
+        ) );
 
         // Handle non-2xx responses from the API
         if ( ! is_numeric( $status_code ) || intval( $status_code ) < 200 || intval( $status_code ) >= 300 ) {
-            $body = wp_remote_retrieve_body( $response );
             $decoded = json_decode( $body, true );
             $message = is_array( $decoded ) && isset( $decoded['error']['message'] )
                 ? sanitize_text_field( $decoded['error']['message'] )
@@ -237,6 +281,6 @@ abstract class SocialSync_API_Handler {
         }
 
         // Return successful response body as decoded JSON
-        return json_decode( wp_remote_retrieve_body( $response ), true );
+        return json_decode( $body, true );
     }
 }
