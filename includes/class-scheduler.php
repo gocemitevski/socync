@@ -158,11 +158,13 @@ class SocialSync_Scheduler {
                 }
             }
 
-            // Mark standalone scheduled post as published or failed
+            // Mark post as published or failed to prevent re-processing
             if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
                 SocialSync_Scheduled_Post::update( $post['row_id'], array(
                     'status' => $all_success ? 'published' : 'failed',
                 ) );
+            } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
+                update_post_meta( $post['post_id'], '_socialsync_status', $all_success ? 'published' : 'failed' );
             }
 
         }
