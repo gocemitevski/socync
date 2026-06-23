@@ -41,7 +41,7 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
         return $this->is_connected();
     }
 
-    public function publish( string $content ): array|WP_Error {
+    public function publish( string $content, string $url = '' ): array|WP_Error {
         if ( ! $this->is_connected() ) {
             return new WP_Error( 'not_connected', 'X account not connected. Please add your API credentials.' );
         }
