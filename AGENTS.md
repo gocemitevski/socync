@@ -47,6 +47,15 @@ All classes follow `SocialSync_{Name}` naming convention.
 - Metabox appears only on `post` post type (Classic Editor)
 - Assets enqueued only on `social-sync*` or `post.php`/`post-new.php` hooks
 
+## Encryption (M-3)
+
+Credentials are encrypted at rest via AES-256-CBC using option filters (`pre_update_option_` / `option_`) registered on `init`.
+
+- **Encryption key**: Derived from `AUTH_KEY` (or `wp_salt('auth')` as fallback). If `AUTH_KEY` changes (server migration, security rotation), stored credentials become unreadable and the admin must re-enter them.
+- **Coverage**: 11 sensitive options (`*_secret`, `*_token`, `*_app_password`, `*_refresh_jwt`, plus token arrays where `access_token`/`refresh_token` fields are encrypted).
+- **Not encrypted**: Client/app IDs (`x_api_key`, `linkedin_client_id`, `facebook_app_id`), identifiers (`bluesky_identifier`), DIDs, page/org/person IDs — these are not secrets.
+- **Backward compat**: `socialsync_decrypt()` returns the original value on failure, so unencrypted legacy data passes through unchanged. On the next `update_option` call, the value is encrypted.
+
 ## Commands (none exist yet)
 
 No commands, test runners, linters, or CI are configured. To run manually in a WordPress context:

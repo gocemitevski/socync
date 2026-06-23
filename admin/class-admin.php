@@ -461,11 +461,11 @@ class SocialSync_Admin {
             . 'response_type=' . rawurlencode( 'code' )
             . '&client_id=' . rawurlencode( $client_id )
             . '&redirect_uri=' . rawurlencode( $redirect_uri )
-            . '&scope=' . urlencode( $scope )
+            . '&scope=' . rawurlencode( $scope )
             . '&state=' . rawurlencode( $state );
 
         $this->log_callback_event( 'LinkedIn auth URL', array(
-            'scope_encoded' => urlencode( $scope ),
+            'scope_encoded' => rawurlencode( $scope ),
             'auth_url'      => $auth_url,
         ) );
 
@@ -553,7 +553,7 @@ class SocialSync_Admin {
             check_admin_referer( 'socialsync_connect_bluesky', 'socialsync-connect-bluesky-nonce' );
 
             $identifier   = sanitize_text_field( wp_unslash( $_POST['bluesky_identifier'] ?? '' ) );
-            $app_password = wp_unslash( $_POST['bluesky_app_password'] ?? '' );
+            $app_password = sanitize_text_field( wp_unslash( $_POST['bluesky_app_password'] ?? '' ) );
 
             if ( empty( $identifier ) || empty( $app_password ) ) {
                 wp_die( esc_html__( 'Identifier and App Password are required.', 'social-sync' ) );
@@ -697,8 +697,10 @@ class SocialSync_Admin {
      * Process an OAuth callback for a given platform.
      */
     private function process_oauth_callback( string $platform ): void {
+        $safe_get = $_GET;
+        unset( $safe_get['code'], $safe_get['state'] );
         $this->log_callback_event( 'OAuth callback received for ' . $platform, array(
-            'get_params' => $_GET,
+            'get_params' => $safe_get,
         ) );
 
         if ( ! current_user_can( 'manage_options' ) ) {

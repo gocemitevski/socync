@@ -126,48 +126,66 @@ class SocialSync_Scheduler {
      * @return void Processes each queued item and logs results.
      */
     public function run_delayed_posts(): void {
-        // Retrieve all posts from queue table/meta that are ready to be published
-        $posts = $this->get_ready_posts();
+        if ( ! defined( 'DOING_CRON' ) && ! defined( 'WP_CLI' ) ) {
+            return;
+        }
 
-        // Process each post in the queue with rate limiting delay
-        foreach ( $posts as $post ) {
-            // Skip if this post is still scheduled for a future date
-            if ( $this->is_post_scheduled_for_future( $post ) ) {
-                continue;
+        $lock_key = 'socialsync_cron_lock';
+        $lock_value = time();
+        if ( ! add_option( $lock_key, $lock_value, '', 'no' ) ) {
+            $existing = get_option( $lock_key );
+            if ( $existing && $existing > ( time() - 5 * MINUTE_IN_SECONDS ) ) {
+                return;
             }
+            update_option( $lock_key, $lock_value );
+        }
 
-            $all_success = true;
+        try {
+            // Retrieve all posts from queue table/meta that are ready to be published
+            $posts = $this->get_ready_posts();
 
-            // Process each connected platform for the queued post
-            $active_platforms = array_keys( array_filter( $post['platforms'] ) );
-            foreach ( $active_platforms as $platform_slug ) {
-                // Attempt to publish to this platform with timeout protection
-                $result = $this->publish_to_platform( $post, $platform_slug );
-
-                if ( is_wp_error( $result ) ) {
-                    $all_success = false;
-                } elseif ( isset( $result['success'] ) && false === $result['success'] ) {
-                    $all_success = false;
-                    // Log the failed action for debugging and user visibility
-                    $this->log_action(
-                        $post['id'],
-                        $platform_slug,
-                        'failed',
-                        isset( $result['message'] ) ? $result['message'] : '',
-                        $post['source'] ?? 'wp_post'
-                    );
+            // Process each post in the queue with rate limiting delay
+            foreach ( $posts as $post ) {
+                // Skip if this post is still scheduled for a future date
+                if ( $this->is_post_scheduled_for_future( $post ) ) {
+                    continue;
                 }
-            }
 
-            // Mark post as published or failed to prevent re-processing
-            if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
-                SocialSync_Scheduled_Post::update( $post['row_id'], array(
-                    'status' => $all_success ? 'published' : 'failed',
-                ) );
-            } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
-                update_post_meta( $post['post_id'], '_socialsync_status', $all_success ? 'published' : 'failed' );
-            }
+                $all_success = true;
 
+                // Process each connected platform for the queued post
+                $active_platforms = array_keys( array_filter( $post['platforms'] ) );
+                foreach ( $active_platforms as $platform_slug ) {
+                    // Attempt to publish to this platform with timeout protection
+                    $result = $this->publish_to_platform( $post, $platform_slug );
+
+                    if ( is_wp_error( $result ) ) {
+                        $all_success = false;
+                    } elseif ( isset( $result['success'] ) && false === $result['success'] ) {
+                        $all_success = false;
+                        // Log the failed action for debugging and user visibility
+                        $this->log_action(
+                            $post['id'],
+                            $platform_slug,
+                            'failed',
+                            isset( $result['message'] ) ? $result['message'] : '',
+                            $post['source'] ?? 'wp_post'
+                        );
+                    }
+                }
+
+                // Mark post as published or failed to prevent re-processing
+                if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
+                    SocialSync_Scheduled_Post::update( $post['row_id'], array(
+                        'status' => $all_success ? 'published' : 'failed',
+                    ) );
+                } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
+                    update_post_meta( $post['post_id'], '_socialsync_status', $all_success ? 'published' : 'failed' );
+                }
+
+            }
+        } finally {
+            delete_option( $lock_key );
         }
     }
 
