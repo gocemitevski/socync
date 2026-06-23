@@ -323,10 +323,6 @@ class SocialSync_Scheduler {
                 $content = get_the_title( $post['post_id'] );
                 $permalink = get_permalink( $post['post_id'] );
                 $content .= "\n\n" . $permalink;
-                $thumbnail = get_the_post_thumbnail_url( $post['post_id'], 'full' );
-                if ( $thumbnail ) {
-                    $content .= "\n\n" . $thumbnail;
-                }
             }
         }
         $content = apply_filters( 'socialsync_post_content', $content, $post['post_id'], $platform_slug );
