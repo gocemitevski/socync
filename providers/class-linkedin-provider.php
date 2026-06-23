@@ -178,16 +178,24 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             return new WP_Error( 'no_author', 'No LinkedIn profile or organization selected. Go to SocialSync settings.' );
         }
 
+        $share_content = array(
+            'shareCommentary' => array(
+                'text' => is_string($content) ? $content : '',
+            ),
+            'shareMediaCategory' => ! empty( $url ) ? 'ARTICLE' : 'NONE',
+        );
+
+        if ( ! empty( $url ) ) {
+            $share_content['article'] = array(
+                'originalUrl' => $url,
+            );
+        }
+
         $post_data = array(
             'author' => $author,
             'lifecycleState' => 'PUBLISHED',
             'specificContent' => array(
-                'com.linkedin.ugc.ShareContent' => array(
-                    'shareCommentary' => array(
-                        'text' => is_string($content) ? $content : '',
-                    ),
-                    'shareMediaCategory' => 'NONE',
-                ),
+                'com.linkedin.ugc.ShareContent' => $share_content,
             ),
             'visibility' => array(
                 'com.linkedin.ugc.MemberNetworkVisibility' => 'PUBLIC',
