@@ -776,6 +776,7 @@ class SocialSync_Admin {
             'status'   => 'info',
             'message'  => $full_message,
             'date'     => current_time( 'mysql' ),
+            'type'     => 'oauth',
         );
         if ( count( $logs ) > 100 ) {
             $logs = array_slice( $logs, -50 );
