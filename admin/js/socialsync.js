@@ -94,11 +94,13 @@ jQuery(document).ready(function($) {
             else if (platform === 'bluesky') custom = $customBluesky.val();
 
             var text = custom || defaultText;
-            var prefix = $(this).data('prefix');
-            var hashtags = $(this).data('hashtags');
+            var prefix = $(this).attr('data-prefix');
+            var hashtags = $(this).attr('data-hashtags');
             if (prefix) text = prefix + ': ' + text;
             if (hashtags) text = text + '\n\n' + hashtags;
-            $container.html('<img class="socialsync-preview-image" src="' + (imageUrl || '') + '" alt="" />\n' + text);
+            $container.empty().append(
+                $('<img class="socialsync-preview-image" src="" alt="" />').attr('src', imageUrl || '')
+            ).append(document.createTextNode('\n' + text));
         });
     }
 
