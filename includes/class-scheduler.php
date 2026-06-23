@@ -130,11 +130,18 @@ class SocialSync_Scheduler {
             return;
         }
 
+        SocialSync_Dev_Logger::log( 'cron_run', array(
+            'summary' => 'Cron run started',
+        ) );
+
         $lock_key = 'socialsync_cron_lock';
         $lock_value = time();
         if ( ! add_option( $lock_key, $lock_value, '', 'no' ) ) {
             $existing = get_option( $lock_key );
             if ( $existing && $existing > ( time() - 5 * MINUTE_IN_SECONDS ) ) {
+                SocialSync_Dev_Logger::log( 'cron_run', array(
+                    'summary' => 'Cron skipped - lock held',
+                ) );
                 return;
             }
             update_option( $lock_key, $lock_value );
@@ -144,6 +151,10 @@ class SocialSync_Scheduler {
             // Retrieve all posts from queue table/meta that are ready to be published
             $posts = $this->get_ready_posts();
 
+            SocialSync_Dev_Logger::log( 'cron_run', array(
+                'summary' => 'Found ' . count( $posts ) . ' posts to process',
+            ) );
+
             // Process each post in the queue with rate limiting delay
             foreach ( $posts as $post ) {
                 // Skip if this post is still scheduled for a future date
@@ -151,13 +162,27 @@ class SocialSync_Scheduler {
                     continue;
                 }
 
+                SocialSync_Dev_Logger::log( 'publish_event', array(
+                    'post_id'  => $post['id'] ?? 0,
+                    'platform' => implode( ',', array_keys( array_filter( $post['platforms'] ) ) ),
+                    'summary'  => 'Processing post #' . ( $post['id'] ?? 0 ) . ' (' . ( $post['source'] ?? 'wp_post' ) . ')',
+                ) );
+
                 $all_success = true;
+                $has_dry_run = false;
+                $has_real    = false;
 
                 // Process each connected platform for the queued post
                 $active_platforms = array_keys( array_filter( $post['platforms'] ) );
                 foreach ( $active_platforms as $platform_slug ) {
                     // Attempt to publish to this platform with timeout protection
                     $result = $this->publish_to_platform( $post, $platform_slug );
+
+                    if ( isset( $result['dry_run'] ) && $result['dry_run'] ) {
+                        $has_dry_run = true;
+                        continue;
+                    }
+                    $has_real = true;
 
                     if ( is_wp_error( $result ) ) {
                         $all_success = false;
@@ -175,12 +200,17 @@ class SocialSync_Scheduler {
                 }
 
                 // Mark post as published or failed to prevent re-processing
+                if ( empty( $active_platforms ) ) {
+                    $new_status = 'failed';
+                } else {
+                    $new_status = $has_real ? ( $all_success ? 'published' : 'failed' ) : ( $has_dry_run ? 'dry_run' : 'scheduled' );
+                }
                 if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
                     SocialSync_Scheduled_Post::update( $post['row_id'], array(
-                        'status' => $all_success ? 'published' : 'failed',
+                        'status' => $new_status,
                     ) );
                 } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
-                    update_post_meta( $post['post_id'], '_socialsync_status', $all_success ? 'published' : 'failed' );
+                    update_post_meta( $post['post_id'], '_socialsync_status', $new_status );
                 }
 
             }
@@ -373,6 +403,30 @@ class SocialSync_Scheduler {
             return array(
                 'success' => false,
                 'message' => __( 'Post title is required but missing.', 'social-sync' ),
+            );
+        }
+
+        SocialSync_Dev_Logger::log( 'post_built', array(
+            'platform'      => $platform_slug,
+            'content'       => $content,
+            'url'           => $post_url,
+            'post_id'       => $post['id'] ?? 0,
+            'summary'       => 'Post content ready for ' . $platform_slug,
+        ) );
+
+        if ( SocialSync_Dev_Logger::is_dry_run() ) {
+            SocialSync_Dev_Logger::log( 'dry_run_skip', array(
+                'platform'      => $platform_slug,
+                'content'       => $content,
+                'url'           => $post_url,
+                'endpoint'      => get_class( $provider ),
+                'post_id'       => $post['id'] ?? 0,
+                'summary'       => 'DRY RUN - Would publish to ' . $platform_slug,
+            ) );
+            return array(
+                'success' => true,
+                'message' => 'DRY RUN - skipped',
+                'dry_run' => true,
             );
         }
 
