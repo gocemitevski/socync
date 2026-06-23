@@ -135,7 +135,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         update_option( 'socialsync_bluesky_connected', true );
     }
 
-    public function publish( string $content ): array|WP_Error {
+    public function publish( string $content, string $url = '' ): array|WP_Error {
         if ( ! $this->refresh_token() ) {
             return new WP_Error( 'not_connected', 'Bluesky account not connected. Please reconnect.' );
         }

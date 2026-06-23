@@ -312,6 +312,12 @@ class SocialSync_Scheduler {
                 );
         }
 
+        // Compute the post URL for explicit link attachment.
+        $post_url = '';
+        if ( isset( $post['post_id'] ) && $post['post_id'] ) {
+            $post_url = get_permalink( $post['post_id'] );
+        }
+
         // Get the post content based on source
         if ( isset( $post['source'] ) && 'standalone' === $post['source'] ) {
             $content = $post['content'];
@@ -321,8 +327,7 @@ class SocialSync_Scheduler {
                 $content = $custom_content;
             } else {
                 $content = get_the_title( $post['post_id'] );
-                $permalink = get_permalink( $post['post_id'] );
-                $content .= "\n\n" . $permalink;
+                $content .= "\n\n" . $post_url;
             }
         }
         $content = apply_filters( 'socialsync_post_content', $content, $post['post_id'], $platform_slug );
@@ -348,7 +353,7 @@ class SocialSync_Scheduler {
         }
 
         // Attempt to publish content using the provider's publish method
-        $result = $provider->publish( $content );
+        $result = $provider->publish( $content, $post_url );
 
         // Log success or failure for debugging and user visibility
         if ( isset($result['success']) ) {
