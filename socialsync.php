@@ -39,6 +39,8 @@ require_once dirname( __FILE__ ) . '/providers/class-linkedin-provider.php';
 require_once dirname( __FILE__ ) . '/providers/class-facebook-provider.php';
 require_once dirname( __FILE__ ) . '/providers/class-bluesky-provider.php';
 
+const SOCIALSYNC_ENC_PREFIX = 'SSENC:';
+
 /**
  * Get the encryption key for credential storage.
  *
@@ -53,7 +55,7 @@ function socialsync_encryption_key(): string {
  * Encrypt a value for secure credential storage.
  *
  * @param  string $value Plaintext value.
- * @return string Encrypted value (base64-encoded IV + ciphertext), or original value on failure.
+ * @return string Encrypted value (marker + base64-encoded IV + ciphertext), or original value on failure.
  */
 function socialsync_encrypt( string $value ): string {
     if ( '' === $value ) {
@@ -71,13 +73,13 @@ function socialsync_encrypt( string $value ): string {
         return $value;
     }
 
-    return base64_encode( $iv . $encrypted );
+    return SOCIALSYNC_ENC_PREFIX . base64_encode( $iv . $encrypted );
 }
 
 /**
  * Decrypt a value retrieved from credential storage.
  *
- * @param  string $value Encrypted value (base64-encoded IV + ciphertext).
+ * @param  string $value Encrypted value (marker + base64-encoded IV + ciphertext).
  * @return string Decrypted plaintext, or original value if not encrypted.
  */
 function socialsync_decrypt( string $value ): string {
@@ -85,7 +87,13 @@ function socialsync_decrypt( string $value ): string {
         return $value;
     }
 
-    $decoded = base64_decode( $value, true );
+    if ( 0 !== strpos( $value, SOCIALSYNC_ENC_PREFIX ) ) {
+        return $value;
+    }
+
+    $raw     = substr( $value, strlen( SOCIALSYNC_ENC_PREFIX ) );
+    $decoded = base64_decode( $raw, true );
+
     if ( false === $decoded ) {
         return $value;
     }
