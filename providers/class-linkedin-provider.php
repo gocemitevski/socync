@@ -52,7 +52,8 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         $status = wp_remote_retrieve_response_code( $response );
 
         if ( ! is_numeric( $status ) || intval( $status ) < 200 || intval( $status ) >= 300 ) {
-            return new WP_Error( 'linkedin_api_error', isset( $body['message'] ) ? $body['message'] : 'Unknown error' );
+            $err_msg = isset( $body['message'] ) ? $body['message'] : '';
+            return new WP_Error( 'linkedin_api_error', '' !== $err_msg ? sanitize_text_field( $err_msg ) : 'Unknown error' );
         }
 
         if ( ! isset( $body['elements'] ) || ! is_array( $body['elements'] ) ) {
