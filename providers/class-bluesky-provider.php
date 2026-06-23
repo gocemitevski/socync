@@ -262,6 +262,27 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             }
         }
 
+        // Match URLs: http:// or https:// links
+        preg_match_all( '/https?:\/\/[^\s<>"\'(){}|\\^`[\]]+/u', $text, $url_matches, PREG_OFFSET_CAPTURE );
+        foreach ( $url_matches[0] as $match ) {
+            $url_text   = $match[0];
+            $byte_start = intval( $match[1] );
+            $byte_end   = $byte_start + strlen( $url_text );
+
+            $facets[] = array(
+                'index'    => array(
+                    'byteStart' => $byte_start,
+                    'byteEnd'   => $byte_end,
+                ),
+                'features' => array(
+                    array(
+                        '$type' => 'app.bsky.richtext.facet#link',
+                        'uri'   => $url_text,
+                    ),
+                ),
+            );
+        }
+
         return $facets;
     }
 
