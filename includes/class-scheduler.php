@@ -363,6 +363,12 @@ class SocialSync_Scheduler {
             }
         }
 
+        if ( empty( $post_url ) ) {
+            if ( preg_match( '/https?:\/\/[^\s<>"\'()]+/', $content, $matches ) ) {
+                $post_url = rtrim( $matches[0], '.,;:!?)\'"]' );
+            }
+        }
+
         if ( empty($content) ) {
             return array(
                 'success' => false,

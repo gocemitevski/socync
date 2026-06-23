@@ -1100,7 +1100,11 @@ class SocialSync_Admin {
                         continue 2;
                 }
 
-                $result = $provider->publish( $content );
+                $post_url = '';
+                if ( preg_match( '/https?:\/\/[^\s<>"\'()]+/', $content, $matches ) ) {
+                    $post_url = rtrim( $matches[0], '.,;:!?)\'"]' );
+                }
+                $result = $provider->publish( $content, $post_url );
 
                 if ( is_wp_error( $result ) ) {
                     $platform_errors[ $platform_slug ] = $result->get_error_message();
