@@ -372,8 +372,8 @@ $entries     = array_slice( $entries, $offset, $per_page );
                 <span class="paging-input">
                     <span class="tablenav-paging-text"><?php
                         printf(
-                            esc_html__( '%1$s of %2$s', 'social-sync' ),
-                            '<span class="current-page">' . esc_html( $paged ) . '</span>',
+                            esc_html_x( '%1$s of %2$s', 'paging', 'social-sync' ),
+                            esc_html( $paged ),
                             '<span class="total-pages">' . esc_html( $total_pages ) . '</span>'
                         );
                     ?></span>
