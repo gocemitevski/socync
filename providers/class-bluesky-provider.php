@@ -148,6 +148,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
 
         $facets = $this->build_facets( $content );
 
+        $embed = $this->build_link_embed( $url );
         $record = array(
             '$type'     => 'app.bsky.feed.post',
             'text'      => $content,
@@ -156,6 +157,10 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
 
         if ( ! empty( $facets ) ) {
             $record['facets'] = $facets;
+        }
+
+        if ( ! empty( $embed ) ) {
+            $record['embed'] = $embed;
         }
 
         $response = wp_remote_post( self::RECORD_ENDPOINT, array(
@@ -194,6 +199,114 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             'data'    => array( 'id' => $post_id ),
             'message' => sprintf( __( 'Posted to Bluesky (URI: %s)', 'social-sync' ), $post_id ),
         );
+    }
+
+    private function build_link_embed( string $url ): ?array {
+        if ( empty( $url ) ) {
+            return null;
+        }
+
+        $title       = '';
+        $description = '';
+        $thumb_blob  = null;
+
+        $response = wp_remote_get( $url, array(
+            'timeout'   => 10,
+            'sslverify' => true,
+        ) );
+
+        if ( ! is_wp_error( $response ) ) {
+            $status = wp_remote_retrieve_response_code( $response );
+            if ( is_numeric( $status ) && intval( $status ) >= 200 && intval( $status ) < 300 ) {
+                $body = wp_remote_retrieve_body( $response );
+                $title       = $this->extract_og_tag( $body, 'og:title' );
+                $description = $this->extract_og_tag( $body, 'og:description' );
+                $og_image    = $this->extract_og_tag( $body, 'og:image' );
+
+                if ( ! empty( $og_image ) ) {
+                    $thumb_blob = $this->upload_image_blob( $og_image );
+                }
+            }
+        }
+
+        if ( empty( $title ) ) {
+            $title = wp_parse_url( $url, PHP_URL_HOST ) ?: $url;
+        }
+
+        $embed = array(
+            '$type'    => 'app.bsky.embed.external',
+            'external' => array(
+                'uri'         => $url,
+                'title'       => mb_substr( $title, 0, 300 ),
+                'description' => mb_substr( $description, 0, 300 ),
+            ),
+        );
+
+        if ( ! empty( $thumb_blob ) ) {
+            $embed['external']['thumb'] = $thumb_blob;
+        }
+
+        return $embed;
+    }
+
+    private function extract_og_tag( string $html, string $property ): string {
+        if ( preg_match( '/<meta[^>]+property=["\']' . preg_quote( $property, '/' ) . '["\'][^>]+content=["\']([^"\']*)["\'][^>]*\/?>/i', $html, $m ) ) {
+            return sanitize_text_field( $m[1] );
+        }
+        return '';
+    }
+
+    private function upload_image_blob( string $image_url ): ?array {
+        $image_response = wp_remote_get( $image_url, array(
+            'timeout'   => 15,
+            'sslverify' => true,
+        ) );
+
+        if ( is_wp_error( $image_response ) ) {
+            return null;
+        }
+
+        $status = wp_remote_retrieve_response_code( $image_response );
+        if ( ! is_numeric( $status ) || intval( $status ) < 200 || intval( $status ) >= 300 ) {
+            return null;
+        }
+
+        $image_data = wp_remote_retrieve_body( $image_response );
+        if ( empty( $image_data ) ) {
+            return null;
+        }
+
+        $mime_type = 'image/jpeg';
+        $content_type = wp_remote_retrieve_header( $image_response, 'content-type' );
+        if ( ! empty( $content_type ) && in_array( $content_type, array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ), true ) ) {
+            $mime_type = $content_type;
+        }
+
+        $blob_response = wp_remote_post( 'https://bsky.social/xrpc/com.atproto.repo.uploadBlob', array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $this->access_token,
+                'Content-Type'  => $mime_type,
+            ),
+            'body'    => $image_data,
+            'timeout' => 20,
+            'sslverify' => true,
+        ) );
+
+        if ( is_wp_error( $blob_response ) ) {
+            return null;
+        }
+
+        $blob_status = wp_remote_retrieve_response_code( $blob_response );
+        if ( ! is_numeric( $blob_status ) || intval( $blob_status ) < 200 || intval( $blob_status ) >= 300 ) {
+            return null;
+        }
+
+        $blob_body = json_decode( wp_remote_retrieve_body( $blob_response ), true );
+        if ( ! isset( $blob_body['data']['blob'] ) ) {
+            return null;
+        }
+
+        return $blob_body['data']['blob'];
     }
 
     public function disconnect(): bool {
