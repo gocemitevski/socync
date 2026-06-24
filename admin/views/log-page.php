@@ -187,18 +187,34 @@ $entries     = array_slice( $entries, $offset, $per_page );
     <div class="tablenav top">
         <div class="tablenav-pages">
             <span class="displaying-num"><?php echo esc_html( sprintf( __( '%d items', 'social-sync' ), $total_items ) ); ?></span>
-            <?php if ( $total_pages > 1 ) :
-                echo wp_kses_post( paginate_links( array(
-                    'base'      => add_query_arg( 'paged', '%#%' ),
-                    'format'    => '',
-                    'prev_text' => '&laquo;',
-                    'next_text' => '&raquo;',
-                    'total'     => $total_pages,
-                    'current'   => $paged,
-                    'mid_size'  => 2,
-                    'end_size'  => 1,
-                ) ) );
-            endif; ?>
+            <?php if ( $total_pages > 1 ) : ?>
+            <span class="pagination-links">
+                <?php if ( $paged > 1 ) : ?>
+                    <a class="first-page button" href="<?php echo esc_url( remove_query_arg( 'paged', $page_url ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'First page', 'social-sync' ); ?></span><span aria-hidden="true">&laquo;</span></a>
+                    <a class="prev-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged - 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Previous page', 'social-sync' ); ?></span><span aria-hidden="true">&lsaquo;</span></a>
+                <?php else : ?>
+                    <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&laquo;</span>
+                    <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&lsaquo;</span>
+                <?php endif; ?>
+                <span class="paging-input">
+                    <label for="socialsync-current-page-selector" class="screen-reader-text"><?php esc_html_e( 'Current Page', 'social-sync' ); ?></label>
+                    <input class="current-page" id="socialsync-current-page-selector" type="text" name="paged" value="<?php echo esc_attr( $paged ); ?>" size="2" aria-describedby="socialsync-table-paging">
+                    <span class="tablenav-paging-text" id="socialsync-table-paging"><?php
+                        printf(
+                            esc_html__( 'of %s', 'social-sync' ),
+                            '<span class="total-pages">' . esc_html( $total_pages ) . '</span>'
+                        );
+                    ?></span>
+                </span>
+                <?php if ( $paged < $total_pages ) : ?>
+                    <a class="next-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged + 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Next page', 'social-sync' ); ?></span><span aria-hidden="true">&rsaquo;</span></a>
+                    <a class="last-page button" href="<?php echo esc_url( add_query_arg( 'paged', $total_pages ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Last page', 'social-sync' ); ?></span><span aria-hidden="true">&raquo;</span></a>
+                <?php else : ?>
+                    <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&rsaquo;</span>
+                    <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span>
+                <?php endif; ?>
+            </span>
+            <?php endif; ?>
         </div>
         <br class="clear">
     </div>
@@ -323,16 +339,31 @@ $entries     = array_slice( $entries, $offset, $per_page );
     <div class="tablenav bottom">
         <div class="tablenav-pages">
             <span class="displaying-num"><?php echo esc_html( sprintf( __( '%d items', 'social-sync' ), $total_items ) ); ?></span>
-            <?php echo wp_kses_post( paginate_links( array(
-                'base'      => add_query_arg( 'paged', '%#%' ),
-                'format'    => '',
-                'prev_text' => '&laquo;',
-                'next_text' => '&raquo;',
-                'total'     => $total_pages,
-                'current'   => $paged,
-                'mid_size'  => 2,
-                'end_size'  => 1,
-            ) ) ); ?>
+            <span class="pagination-links">
+                <?php if ( $paged > 1 ) : ?>
+                    <a class="first-page button" href="<?php echo esc_url( remove_query_arg( 'paged', $page_url ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'First page', 'social-sync' ); ?></span><span aria-hidden="true">&laquo;</span></a>
+                    <a class="prev-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged - 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Previous page', 'social-sync' ); ?></span><span aria-hidden="true">&lsaquo;</span></a>
+                <?php else : ?>
+                    <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&laquo;</span>
+                    <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&lsaquo;</span>
+                <?php endif; ?>
+                <span class="paging-input">
+                    <span class="tablenav-paging-text"><?php
+                        printf(
+                            esc_html__( '%1$s of %2$s', 'social-sync' ),
+                            '<span class="current-page">' . esc_html( $paged ) . '</span>',
+                            '<span class="total-pages">' . esc_html( $total_pages ) . '</span>'
+                        );
+                    ?></span>
+                </span>
+                <?php if ( $paged < $total_pages ) : ?>
+                    <a class="next-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged + 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Next page', 'social-sync' ); ?></span><span aria-hidden="true">&rsaquo;</span></a>
+                    <a class="last-page button" href="<?php echo esc_url( add_query_arg( 'paged', $total_pages ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Last page', 'social-sync' ); ?></span><span aria-hidden="true">&raquo;</span></a>
+                <?php else : ?>
+                    <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&rsaquo;</span>
+                    <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span>
+                <?php endif; ?>
+            </span>
         </div>
         <br class="clear">
     </div>
@@ -340,6 +371,7 @@ $entries     = array_slice( $entries, $offset, $per_page );
 
     <script>
     (function() {
+        // Dev log detail toggle.
         document.querySelectorAll('.socialsync-dev-toggle').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -355,6 +387,20 @@ $entries     = array_slice( $entries, $offset, $per_page );
                 }
             });
         });
+
+        // Pagination page input: navigate on Enter.
+        var pageInput = document.getElementById('socialsync-current-page-selector');
+        if (pageInput) {
+            pageInput.addEventListener('keydown', function(e) {
+                if (13 === e.keyCode) {
+                    e.preventDefault();
+                    var page = parseInt(this.value, 10);
+                    if (page > 0 && page <= <?php echo esc_js( $total_pages ); ?>) {
+                        window.location.href = <?php echo wp_json_encode( esc_url_raw( add_query_arg( 'paged', '%PAGE%' ) ) ); ?>.replace('%PAGE%', page);
+                    }
+                }
+            });
+        }
     })();
     </script>
 
