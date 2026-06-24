@@ -131,6 +131,26 @@ abstract class SocialSync_API_Handler {
     abstract protected function refresh_token();
 
     /**
+     * Redact sensitive fields from a JSON body before logging.
+     *
+     * @param string $body Raw JSON string to redact.
+     * @return string Redacted JSON string.
+     */
+    private function redact_sensitive_body( string $body ): string {
+        $data = json_decode( $body, true );
+        if ( ! is_array( $data ) ) {
+            return $body;
+        }
+        $sensitive_keys = array( 'access_token', 'refresh_token', 'client_secret', 'app_password', 'password' );
+        array_walk_recursive( $data, function ( &$value, $key ) use ( $sensitive_keys ) {
+            if ( in_array( $key, $sensitive_keys, true ) && is_string( $value ) ) {
+                $value = substr( $value, 0, 6 ) . '***REDACTED***';
+            }
+        } );
+        return wp_json_encode( $data );
+    }
+
+    /**
      * Send a POST request to the social media API.
      *
      * @param string $endpoint API endpoint URL (e.g., '/2/tweets' for X)
@@ -165,7 +185,7 @@ abstract class SocialSync_API_Handler {
         SocialSync_Dev_Logger::log( 'api_request', array(
             'platform'      => $this->platform,
             'endpoint'      => $endpoint,
-            'request_body'  => $args['body'],
+            'request_body'  => $this->redact_sensitive_body( $args['body'] ),
             'summary'       => 'POST ' . $endpoint,
         ) );
 
@@ -188,7 +208,7 @@ abstract class SocialSync_API_Handler {
         SocialSync_Dev_Logger::log( 'api_response', array(
             'platform'       => $this->platform,
             'endpoint'       => $endpoint,
-            'response_body'  => $body,
+            'response_body'  => $this->redact_sensitive_body( $body ),
             'status_code'    => $status_code,
             'summary'        => $status_code . ' ' . $endpoint,
         ) );
@@ -262,7 +282,7 @@ abstract class SocialSync_API_Handler {
         SocialSync_Dev_Logger::log( 'api_response', array(
             'platform'       => $this->platform,
             'endpoint'       => $endpoint,
-            'response_body'  => $body,
+            'response_body'  => $this->redact_sensitive_body( $body ),
             'status_code'    => $status_code,
             'summary'        => $status_code . ' ' . $endpoint,
         ) );

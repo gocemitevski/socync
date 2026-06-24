@@ -634,8 +634,8 @@ class SocialSync_Admin {
             wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1&tab=bluesky' ) );
             exit;
         } catch ( \Throwable $e ) {
-            error_log( 'SocialSync Bluesky fatal error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
-            wp_die( esc_html__( 'Bluesky connection error: ', 'social-sync' ) . esc_html( $e->getMessage() ) );
+            error_log( 'SocialSync Bluesky fatal error: ' . sanitize_text_field( $e->getMessage() ) );
+            wp_die( esc_html__( 'Bluesky connection failed. Check the SocialSync log for details.', 'social-sync' ) );
         }
     }
 
@@ -775,7 +775,7 @@ class SocialSync_Admin {
 
         if ( ! empty( $error ) ) {
             $this->log_callback_event( 'OAuth error returned: ' . $error, array() );
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( $error ) . $tab_param ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( $error ) . $tab_param ) );
             exit;
         }
 
@@ -784,7 +784,7 @@ class SocialSync_Admin {
                 'code'  => $code,
                 'state' => $state,
             ) );
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Invalid OAuth callback parameters.' ) . $tab_param ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Invalid OAuth callback parameters.' ) . $tab_param ) );
             exit;
         }
 
@@ -795,7 +795,7 @@ class SocialSync_Admin {
             'match'    => $expected_state === $state,
         ) );
         if ( $expected_state !== $state ) {
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Invalid OAuth state parameter.' ) . $tab_param ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Invalid OAuth state parameter.' ) . $tab_param ) );
             exit;
         }
         delete_transient( 'socialsync_' . $platform . '_oauth_state' );
@@ -811,7 +811,7 @@ class SocialSync_Admin {
                 break;
             default:
                 $this->log_callback_event( 'Unknown platform', array( 'platform' => $platform ) );
-                wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Unknown platform.' ) ) );
+                wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Unknown platform.' ) ) );
                 exit;
         }
 
@@ -876,7 +876,7 @@ class SocialSync_Admin {
             $this->log_callback_event( 'LinkedIn token exchange wp_error', array(
                 'error' => $response->get_error_message(),
             ) );
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Token exchange failed: ' . $response->get_error_message() ) . '&tab=linkedin' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Token exchange failed: ' . $response->get_error_message() ) . '&tab=linkedin' ) );
             exit;
         }
 
@@ -884,9 +884,9 @@ class SocialSync_Admin {
 
         if ( ! isset( $body['access_token'] ) ) {
             $this->log_callback_event( 'LinkedIn token exchange failed - no access_token in response', array(
-                'response_body' => $body,
+                'error' => isset( $body['error'] ) ? sanitize_text_field( $body['error'] ) : 'unknown',
             ) );
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . urlencode( 'Failed to obtain LinkedIn access token.' ) . '&tab=linkedin' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Failed to obtain LinkedIn access token.' ) . '&tab=linkedin' ) );
             exit;
         }
 
