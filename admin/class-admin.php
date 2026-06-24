@@ -383,11 +383,12 @@ class SocialSync_Admin {
             return;
         }
 
+        $submitted_platforms = isset( $_POST['_socialsync_platforms'] ) ? (array) $_POST['_socialsync_platforms'] : array();
         update_post_meta( $post_id, '_socialsync_platforms', array(
-            'x' => isset( $_POST['_socialsync_platforms[x]'] ),
-            'linkedin' => isset( $_POST['_socialsync_platforms[linkedin]'] ),
-            'facebook' => isset( $_POST['_socialsync_platforms[facebook]'] ),
-            'bluesky' => isset( $_POST['_socialsync_platforms[bluesky]'] ),
+            'x'        => isset( $submitted_platforms['x'] ),
+            'linkedin' => isset( $submitted_platforms['linkedin'] ),
+            'facebook' => isset( $submitted_platforms['facebook'] ),
+            'bluesky'  => isset( $submitted_platforms['bluesky'] ),
         ));
 
         update_post_meta( $post_id, '_socialsync_schedule_type', sanitize_text_field( wp_unslash( $_POST['_socialsync_schedule_type'] ?? 'immediate' ) ) );
