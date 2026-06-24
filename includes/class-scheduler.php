@@ -479,7 +479,30 @@ class SocialSync_Scheduler {
         }
 
         // Attempt to publish content using the provider's publish method
-        $result = $provider->publish( $content, $post_url );
+        SocialSync_Dev_Logger::log( 'publish_attempt', array(
+            'platform'      => $platform_slug,
+            'content'       => substr( $content, 0, 200 ),
+            'url'           => $post_url,
+            'summary'       => 'Calling ' . get_class( $provider ) . '::publish() for ' . $platform_slug,
+        ) );
+
+        try {
+            $result = $provider->publish( $content, $post_url );
+            SocialSync_Dev_Logger::log( 'publish_result', array(
+                'platform'      => $platform_slug,
+                'result_type'   => is_wp_error( $result ) ? 'WP_Error' : ( is_array( $result ) ? 'array' : gettype( $result ) ),
+                'has_success'   => is_array( $result ) && isset( $result['success'] ) ? ( $result['success'] ? 'true' : 'false' ) : 'n/a',
+                'summary'       => is_wp_error( $result ) ? 'WP_Error: ' . $result->get_error_message() : 'publish() returned OK for ' . $platform_slug,
+            ) );
+        } catch ( \Throwable $e ) {
+            SocialSync_Dev_Logger::log( 'publish_error', array(
+                'platform'      => $platform_slug,
+                'error'         => $e->getMessage(),
+                'file'          => $e->getFile() . ':' . $e->getLine(),
+                'summary'       => 'Exception in ' . $platform_slug . ' publish(): ' . $e->getMessage(),
+            ) );
+            $result = new WP_Error( 'publish_exception', $e->getMessage() );
+        }
 
         // Log success or failure for debugging and user visibility
         if ( isset($result['success']) ) {
