@@ -426,6 +426,7 @@ class SocialSync_Scheduler {
                 $content .= "\n\n" . $post_url;
             }
         }
+        $content = html_entity_decode( $content, ENT_QUOTES, 'UTF-8' );
         $content = apply_filters( 'socialsync_post_content', $content, $post['post_id'], $platform_slug );
 
         // Prepend per-platform prefix text and append hashtags for WP posts only.
