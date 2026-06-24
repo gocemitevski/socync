@@ -426,8 +426,6 @@ $entries     = array_slice( $entries, $offset, $per_page );
     })();
     </script>
 
-    <hr>
-
     <h2><?php esc_html_e( 'Log Management', 'social-sync' ); ?></h2>
 
     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
