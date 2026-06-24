@@ -287,8 +287,14 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     private function extract_og_tag( string $html, string $property ): string {
-        if ( preg_match( '/<meta[^>]+property=["\']' . preg_quote( $property, '/' ) . '["\'][^>]+content=["\']([^"\']*)["\'][^>]*\/?>/i', $html, $m ) ) {
-            return sanitize_text_field( $m[1] );
+        $patterns = array(
+            '/<meta[^>]+property=["\']' . preg_quote( $property, '/' ) . '["\'][^>]+content=["\']([^"\']*)["\'][^>]*\/?>/i',
+            '/<meta[^>]+content=["\']([^"\']*)["\'][^>]+property=["\']' . preg_quote( $property, '/' ) . '["\'][^>]*\/?>/i',
+        );
+        foreach ( $patterns as $pattern ) {
+            if ( preg_match( $pattern, $html, $m ) ) {
+                return sanitize_text_field( $m[1] );
+            }
         }
         return '';
     }
@@ -299,9 +305,29 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             'summary'   => 'Downloading OG image: ' . $image_url,
         ) );
 
+        $max_size = 5 * 1024 * 1024; // 5MB limit
+
+        $head_response = wp_remote_head( $image_url, array(
+            'timeout'   => 10,
+            'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
+        ) );
+
+        if ( ! is_wp_error( $head_response ) ) {
+            $content_length = wp_remote_retrieve_header( $head_response, 'content-length' );
+            if ( ! empty( $content_length ) && intval( $content_length ) > $max_size ) {
+                SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+                    'size'    => intval( $content_length ),
+                    'summary' => 'OG image too large (' . size_format( intval( $content_length ) ) . '), skipping thumbnail',
+                ) );
+                return null;
+            }
+        }
+
         $image_response = wp_remote_get( $image_url, array(
             'timeout'   => 15,
             'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
         ) );
 
         if ( is_wp_error( $image_response ) ) {
@@ -325,6 +351,14 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         if ( empty( $image_data ) ) {
             SocialSync_Dev_Logger::log( 'bluesky_upload', array(
                 'summary' => 'Image download returned empty body',
+            ) );
+            return null;
+        }
+
+        if ( strlen( $image_data ) > $max_size ) {
+            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+                'size'    => strlen( $image_data ),
+                'summary' => 'Downloaded image exceeds 5MB, skipping thumbnail',
             ) );
             return null;
         }

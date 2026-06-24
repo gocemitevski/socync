@@ -16,7 +16,9 @@ require_once dirname(dirname(__FILE__)) . '/includes/class-api-handler.php';
  */
 class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
 
-    const BASE_URL = 'https://api.linkedin.com/v2';
+    const BASE_URL     = 'https://api.linkedin.com/v2';
+    const POSTS_URL    = 'https://api.linkedin.com/rest/posts';
+    const IMAGES_URL   = 'https://api.linkedin.com/rest/images?action=initializeUpload';
 
     public function __construct() {
         parent::__construct('linkedin');
@@ -155,9 +157,10 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
     }
 
     /**
-     * Publish a UGC post to LinkedIn as the selected organization or user.
+     * Publish a post to LinkedIn as the selected organization or user.
      *
      * @param string $content Post content.
+     * @param string $url     Optional URL to attach as article link.
      * @return array|WP_Error Response from LinkedIn API or error object.
      */
     public function publish( string $content, string $url = '' ): array|WP_Error {
@@ -181,16 +184,16 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             return new WP_Error('not_connected', 'LinkedIn account not connected or access token has expired.');
         }
 
-        $org_id = get_option( 'socialsync_linkedin_org_id', '' );
+        $org_id    = get_option( 'socialsync_linkedin_org_id', '' );
+        $person_id = get_option( 'socialsync_linkedin_person_id', '' );
+
         if ( ! empty( $org_id ) ) {
             $author = 'urn:li:organization:' . $org_id;
+        } elseif ( ! empty( $person_id ) ) {
+            $author = 'urn:li:person:' . $person_id;
         } else {
-            $author = 'urn:li:person:' . get_option( 'socialsync_linkedin_person_id', '' );
-        }
-
-        if ( empty( $author ) ) {
             SocialSync_Dev_Logger::log( 'linkedin_publish', array(
-                'summary' => 'LinkedIn publish: no author (org_id: ' . ( $org_id ?: 'empty' ) . ', person_id: ' . ( get_option( 'socialsync_linkedin_person_id', '' ) ?: 'empty' ) . ')',
+                'summary' => 'LinkedIn publish: no author (both org_id and person_id are empty)',
             ) );
             return new WP_Error( 'no_author', 'No LinkedIn profile or organization selected. Go to SocialSync settings.' );
         }
@@ -201,54 +204,62 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'summary' => 'About to call LinkedIn API for author: ' . $author,
         ) );
 
-        $share_content = array(
-            'shareCommentary' => array(
-                'text' => is_string($content) ? $content : '',
+        // Build post data for the new Posts API (/rest/posts)
+        $post_data = array(
+            'author'                     => $author,
+            'commentary'                 => is_string( $content ) ? $content : '',
+            'visibility'                 => 'PUBLIC',
+            'lifecycleState'             => 'PUBLISHED',
+            'isReshareDisabledByAuthor'  => false,
+            'distribution'               => array(
+                'feedDistribution'             => 'MAIN_FEED',
+                'targetEntities'               => array(),
+                'thirdPartyDistributionChannels' => array(),
             ),
-            'shareMediaCategory' => ! empty( $url ) ? 'ARTICLE' : 'NONE',
         );
 
+        // If URL provided, fetch OG metadata and add article content
         if ( ! empty( $url ) ) {
-            $share_content['media'] = array(
-                array(
-                    'status'      => 'READY',
-                    'originalUrl' => $url,
-                    'description' => array(
-                        'text' => mb_substr( wp_strip_all_tags( is_string($content) ? $content : '' ), 0, 256 ),
-                    ),
-                ),
+            $og = $this->fetch_og_metadata( $url );
+
+            $article = array(
+                'source'      => $url,
+                'title'       => mb_substr( $og['title'] ?: wp_parse_url( $url, PHP_URL_HOST ) ?: $url, 0, 300 ),
+                'description' => mb_substr( $og['description'], 0, 300 ),
+            );
+
+            // Upload OG image as thumbnail if available
+            if ( ! empty( $og['image_url'] ) ) {
+                $thumbnail_urn = $this->upload_thumbnail( $og['image_url'], $author );
+                if ( $thumbnail_urn ) {
+                    $article['thumbnail'] = $thumbnail_urn;
+                }
+            }
+
+            $post_data['content'] = array(
+                'article' => $article,
             );
         }
 
-        $post_data = array(
-            'author' => $author,
-            'lifecycleState' => 'PUBLISHED',
-            'specificContent' => array(
-                'com.linkedin.ugc.ShareContent' => $share_content,
-            ),
-            'visibility' => array(
-                'com.linkedin.ugc.MemberNetworkVisibility' => 'PUBLIC',
-            ),
-        );
-
         $headers = array(
-            'Authorization' => 'Bearer ' . $this->access_token,
-            'Content-Type'  => 'application/json',
-            'X-Restli-Format' => 'json',
+            'Authorization'              => 'Bearer ' . $this->access_token,
+            'Content-Type'               => 'application/json',
+            'X-Restli-Protocol-Version'  => '2.0.0',
+            'LinkedIn-Version'           => '202506',
         );
 
         SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
             'step'    => 'wp_remote_post_start',
-            'summary' => 'Sending POST to ' . self::BASE_URL . '/ugcPosts',
+            'summary' => 'Sending POST to ' . self::POSTS_URL,
         ) );
 
         $response = wp_remote_post(
-            self::BASE_URL . '/ugcPosts',
+            self::POSTS_URL,
             array(
                 'headers'   => $headers,
-                'body'      => json_encode($post_data),
+                'body'      => wp_json_encode( $post_data ),
                 'timeout'   => self::DEFAULT_TIMEOUT,
-                'sslverify'  => true,
+                'sslverify' => true,
             )
         );
 
@@ -258,11 +269,11 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'summary' => 'wp_remote_post completed for LinkedIn' . ( is_wp_error( $response ) ? ' (WP_Error: ' . $response->get_error_message() . ')' : '' ),
         ) );
 
-        if ( is_wp_error($response) ) {
+        if ( is_wp_error( $response ) ) {
             return $response;
         }
 
-        $status_code = wp_remote_retrieve_response_code($response);
+        $status_code = wp_remote_retrieve_response_code( $response );
 
         SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
             'step'        => 'response_handling',
@@ -270,11 +281,11 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'summary'     => 'LinkedIn API returned status ' . $status_code,
         ) );
 
-        if ( ! is_numeric($status_code) || intval($status_code) < 200 || intval($status_code) >= 300 ) {
-            $body = wp_remote_retrieve_body($response);
-            $error_data = json_decode($body, true);
+        if ( ! is_numeric( $status_code ) || intval( $status_code ) < 200 || intval( $status_code ) >= 300 ) {
+            $body       = wp_remote_retrieve_body( $response );
+            $error_data = json_decode( $body, true );
 
-            $message = isset($error_data['message']) ? sanitize_text_field($error_data['message']) : sanitize_text_field($body);
+            $message = isset( $error_data['message'] ) ? sanitize_text_field( $error_data['message'] ) : sanitize_text_field( $body );
 
             SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
                 'step'    => 'api_error',
@@ -285,15 +296,16 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             return new WP_Error(
                 'linkedin_post_error',
                 $message,
-                array('status' => intval($status_code))
+                array( 'status' => intval( $status_code ) )
             );
         }
 
-        $response_body = wp_remote_retrieve_body($response);
-        $decoded_response = json_decode($response_body, true);
-        $post_id = isset($decoded_response['id']) ? $decoded_response['id'] : '';
-
-        $preview = esc_html(substr($response_body, 0, 80)) . '...';
+        // Extract post ID from response header (x-restli-id) or body
+        $post_id = wp_remote_retrieve_header( $response, 'x-restli-id' );
+        if ( empty( $post_id ) ) {
+            $decoded = json_decode( wp_remote_retrieve_body( $response ), true );
+            $post_id = $decoded['id'] ?? '';
+        }
 
         SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
             'step'    => 'success',
@@ -304,10 +316,206 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         return array(
             'success' => true,
             'message' => sprintf(
-                __('Posted to LinkedIn (Post ID: %s)', 'social-sync'),
-                $post_id ? esc_html($post_id) : $preview
+                __( 'Posted to LinkedIn (Post ID: %s)', 'social-sync' ),
+                $post_id ? esc_html( $post_id ) : __( 'Success', 'social-sync' )
             ),
         );
+    }
+
+    private function fetch_og_metadata( string $url ): array {
+        $meta = array(
+            'title'       => '',
+            'description' => '',
+            'image_url'   => '',
+        );
+
+        $response = wp_remote_get( $url, array(
+            'timeout'   => 10,
+            'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
+        ) );
+
+        if ( is_wp_error( $response ) ) {
+            return $meta;
+        }
+
+        $status = wp_remote_retrieve_response_code( $response );
+        if ( ! is_numeric( $status ) || intval( $status ) < 200 || intval( $status ) >= 300 ) {
+            return $meta;
+        }
+
+        $body = wp_remote_retrieve_body( $response );
+
+        $meta['title']       = sanitize_text_field( $this->extract_og_property( $body, 'og:title' ) );
+        $meta['description'] = sanitize_text_field( $this->extract_og_property( $body, 'og:description' ) );
+        $meta['image_url']   = esc_url_raw( $this->extract_og_property( $body, 'og:image' ) );
+
+        return $meta;
+    }
+
+    private function extract_og_property( string $html, string $property ): string {
+        $patterns = array(
+            '/<meta[^>]+property=["\']' . preg_quote( $property, '/' ) . '["\'][^>]+content=["\']([^"\']*)["\'][^>]*\/?>/i',
+            '/<meta[^>]+content=["\']([^"\']*)["\'][^>]+property=["\']' . preg_quote( $property, '/' ) . '["\'][^>]*\/?>/i',
+        );
+        foreach ( $patterns as $pattern ) {
+            if ( preg_match( $pattern, $html, $m ) ) {
+                return $m[1];
+            }
+        }
+        return '';
+    }
+
+    private function upload_thumbnail( string $image_url, string $author ): ?string {
+        // Step 1: Register the image upload with LinkedIn
+        $register_response = wp_remote_post( self::IMAGES_URL, array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $this->access_token,
+                'Content-Type'  => 'application/json',
+                'X-Restli-Protocol-Version' => '2.0.0',
+                'LinkedIn-Version'          => '202506',
+            ),
+            'body' => wp_json_encode( array(
+                'initializeUploadRequest' => array(
+                    'owner' => $author,
+                ),
+            ) ),
+            'timeout'   => 15,
+            'sslverify' => true,
+        ) );
+
+        if ( is_wp_error( $register_response ) ) {
+            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                'step'    => 'register',
+                'error'   => $register_response->get_error_message(),
+                'summary' => 'Image register failed: ' . $register_response->get_error_message(),
+            ) );
+            return null;
+        }
+
+        $register_status = wp_remote_retrieve_response_code( $register_response );
+        $register_body   = json_decode( wp_remote_retrieve_body( $register_response ), true );
+
+        if ( ! is_numeric( $register_status ) || intval( $register_status ) < 200 || intval( $register_status ) >= 300 ) {
+            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                'step'    => 'register',
+                'status'  => $register_status,
+                'summary' => 'Image register returned status ' . $register_status,
+            ) );
+            return null;
+        }
+
+        $upload_url = $register_body['value']['uploadUrl'] ?? '';
+        $image_urn  = $register_body['value']['image'] ?? '';
+
+        if ( empty( $upload_url ) || empty( $image_urn ) ) {
+            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                'step'    => 'register',
+                'summary' => 'Image register response missing uploadUrl or image URN',
+            ) );
+            return null;
+        }
+
+        // Step 2: Download the image
+        $image_response = wp_remote_head( $image_url, array(
+            'timeout'   => 10,
+            'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
+        ) );
+
+        $max_size = 5 * 1024 * 1024; // 5MB limit
+
+        if ( ! is_wp_error( $image_response ) ) {
+            $content_length = wp_remote_retrieve_header( $image_response, 'content-length' );
+            if ( ! empty( $content_length ) && intval( $content_length ) > $max_size ) {
+                SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                    'step'    => 'download',
+                    'size'    => intval( $content_length ),
+                    'summary' => 'OG image too large (' . size_format( intval( $content_length ) ) . '), skipping thumbnail',
+                ) );
+                return null;
+            }
+        }
+
+        $image_response = wp_remote_get( $image_url, array(
+            'timeout'   => 15,
+            'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
+        ) );
+
+        if ( is_wp_error( $image_response ) ) {
+            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                'step'    => 'download',
+                'error'   => $image_response->get_error_message(),
+                'summary' => 'Image download failed: ' . $image_response->get_error_message(),
+            ) );
+            return null;
+        }
+
+        $dl_status = wp_remote_retrieve_response_code( $image_response );
+        $image_data = wp_remote_retrieve_body( $image_response );
+
+        if ( ! is_numeric( $dl_status ) || intval( $dl_status ) < 200 || intval( $dl_status ) >= 300 || empty( $image_data ) ) {
+            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                'step'    => 'download',
+                'status'  => $dl_status,
+                'summary' => 'Image download failed with status ' . $dl_status,
+            ) );
+            return null;
+        }
+
+        if ( strlen( $image_data ) > $max_size ) {
+            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                'step'    => 'download',
+                'size'    => strlen( $image_data ),
+                'summary' => 'Downloaded image exceeds 5MB, skipping thumbnail',
+            ) );
+            return null;
+        }
+
+        // Step 3: Upload the binary to LinkedIn
+        $mime_type = 'image/jpeg';
+        $content_type = wp_remote_retrieve_header( $image_response, 'content-type' );
+        if ( ! empty( $content_type ) && in_array( $content_type, array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ), true ) ) {
+            $mime_type = $content_type;
+        }
+
+        $upload_response = wp_remote_request( $upload_url, array(
+            'method'    => 'PUT',
+            'headers'   => array(
+                'Content-Type' => $mime_type,
+            ),
+            'body'      => $image_data,
+            'timeout'   => 20,
+            'sslverify' => true,
+        ) );
+
+        if ( is_wp_error( $upload_response ) ) {
+            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                'step'    => 'binary_upload',
+                'error'   => $upload_response->get_error_message(),
+                'summary' => 'Binary upload failed: ' . $upload_response->get_error_message(),
+            ) );
+            return null;
+        }
+
+        $upload_status = wp_remote_retrieve_response_code( $upload_response );
+        if ( ! is_numeric( $upload_status ) || intval( $upload_status ) < 200 || intval( $upload_status ) >= 300 ) {
+            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                'step'    => 'binary_upload',
+                'status'  => $upload_status,
+                'summary' => 'Binary upload returned status ' . $upload_status,
+            ) );
+            return null;
+        }
+
+        SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+            'step'      => 'complete',
+            'image_urn' => $image_urn,
+            'summary'   => 'Thumbnail uploaded: ' . $image_urn,
+        ) );
+
+        return $image_urn;
     }
 
     public function disconnect(): bool {
