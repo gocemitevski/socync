@@ -21,6 +21,7 @@ $platform_labels = array(
 );
 
 $dev_event_labels = array(
+    'enqueue_post'        => __( 'Enqueue Post', 'social-sync' ),
     'publish_event'       => __( 'Publish Event', 'social-sync' ),
     'cron_run'            => __( 'Cron Run', 'social-sync' ),
     'publish_to_platform' => __( 'Publish', 'social-sync' ),

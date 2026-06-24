@@ -104,8 +104,19 @@ class SocialSync_Scheduler {
      * @return void
      */
     public function enqueue_post( int $post_id, string $schedule_type = 'immediate', string $schedule_date = '' ): void {
+        SocialSync_Dev_Logger::log( 'enqueue_post', array(
+            'post_id'       => $post_id,
+            'schedule_type' => $schedule_type,
+            'schedule_date' => $schedule_date,
+            'summary'       => 'enqueue_post called for post #' . $post_id,
+        ) );
+
         $scheduled = wp_next_scheduled( self::CRON_EVENT, array( $post_id ) );
         if ( $scheduled ) {
+            SocialSync_Dev_Logger::log( 'enqueue_post', array(
+                'post_id'  => $post_id,
+                'summary'  => 'Unscheduling existing event for post #' . $post_id,
+            ) );
             wp_unschedule_event( $scheduled, self::CRON_EVENT, array( $post_id ) );
         }
 
@@ -115,6 +126,11 @@ class SocialSync_Scheduler {
                 update_post_meta( $post_id, '_socialsync_status', 'scheduled' );
                 delete_post_meta( $post_id, '_socialsync_delayed_until' );
                 wp_schedule_single_event( $timestamp, self::CRON_EVENT, array( $post_id ) );
+                SocialSync_Dev_Logger::log( 'enqueue_post', array(
+                    'post_id'   => $post_id,
+                    'timestamp' => $timestamp,
+                    'summary'   => 'Scheduled future post #' . $post_id . ' at ' . gmdate( 'Y-m-d H:i:s', $timestamp ),
+                ) );
                 return;
             }
         }
@@ -122,6 +138,11 @@ class SocialSync_Scheduler {
         update_post_meta( $post_id, '_socialsync_status', 'pending' );
         update_post_meta( $post_id, '_socialsync_delayed_until', time() + 5 * MINUTE_IN_SECONDS );
         wp_schedule_single_event( time() + 5 * MINUTE_IN_SECONDS, self::CRON_EVENT, array( $post_id ) );
+        SocialSync_Dev_Logger::log( 'enqueue_post', array(
+            'post_id'       => $post_id,
+            'delayed_until' => time() + 5 * MINUTE_IN_SECONDS,
+            'summary'       => 'Enqueued post #' . $post_id . ' with 5-minute delay',
+        ) );
     }
 
     /**
@@ -267,6 +288,11 @@ class SocialSync_Scheduler {
 
             $delayed_until = intval( get_post_meta( $post_id, '_socialsync_delayed_until', true ) );
             if ( $delayed_until > time() ) {
+                SocialSync_Dev_Logger::log( 'cron_run', array(
+                    'post_id'       => $post_id,
+                    'delayed_until' => $delayed_until,
+                    'summary'       => 'Post #' . $post_id . ' skipped - delay not expired (' . ( $delayed_until - time() ) . 's remaining)',
+                ) );
                 continue;
             }
 
