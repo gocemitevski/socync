@@ -1085,7 +1085,7 @@ class SocialSync_Admin {
         }
 
         // Enqueue admin CSS and JS with nonce verification for security
-        wp_enqueue_style('socialsync-admin', plugin_dir_url( __FILE__ ) . 'css/socialsync.css', array(), $this->version );
+        wp_enqueue_style('socialsync-admin', plugin_dir_url( __FILE__ ) . 'css/socialsync.css', array( 'list-tables' ), $this->version );
 
         // Use wp_enqueue_script to load admin JavaScript with nonce verification
         wp_enqueue_script('socialsync-admin-script', plugin_dir_url( __FILE__ ) . 'js/socialsync.js', array('jquery'), $this->version, true);
