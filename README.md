@@ -5,11 +5,14 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 ## Features
 
 - **Multi-Platform Support**: Automatically post to X (Twitter), LinkedIn, Facebook, and Bluesky
+- **Link Previews with Thumbnails**: LinkedIn and Bluesky posts include OG thumbnail images
 - **Immediate Posting**: Posts are published immediately when you publish a WordPress post
 - **Scheduled Posting**: Schedule posts to be published at a specific date and time
-- **Custom Content**: Override post content for each platform
-- **Clean Admin Interface**: Simple, tabbed settings page
-- **Comprehensive Logging**: Track all posting attempts and errors
+- **Custom Content**: Override post content, prefix, and hashtags for each platform
+- **Standalone Scheduled Posts**: Create posts directly from the Schedule page without a WP Post
+- **Dry Run Mode**: Preview what would be posted without actually publishing
+- **Clean Admin Interface**: Tabbed settings page with unified Log view
+- **Comprehensive Logging**: Track all posting attempts, errors, and developer-level API details
 - **Multiple Auth Methods**: OAuth 2.0 (LinkedIn, Facebook), OAuth 1.0a (X), App Password (Bluesky)
 
 ## Requirements
@@ -74,11 +77,12 @@ socialsync/
 │   ├── css/                # Admin styles
 │   ├── js/                 # JavaScript files
 │   ├── class-admin.php     # Admin functionality (menu, metabox, OAuth handlers)
-│   └── views/              # Settings page views (settings-page, scheduled-posts-page, logs-page)
+│   └── views/              # Settings page views (connections-page, settings-page, scheduled-posts-page, log-page)
 ├── includes/
 │   ├── class-activator.php     # Activation logic (table creation, cron setup)
 │   ├── class-deactivator.php   # Deactivation cleanup
 │   ├── class-api-handler.php   # Abstract base class for API requests
+│   ├── class-dev-logger.php    # Developer event logging (500-entry ring buffer)
 │   ├── class-scheduled-post.php # Custom table model (CRUD)
 │   └── class-scheduler.php     # WP-Cron queue management
 ├── providers/

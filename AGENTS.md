@@ -13,7 +13,7 @@ WordPress plugin that auto-publishes posts to X (Twitter), LinkedIn, Facebook, a
 
 ```
 socialsync.php          — main plugin file
-includes/               — core logic (activator, deactivator, scheduler, API base, scheduled post model)
+includes/               — core logic (activator, deactivator, scheduler, API base, dev logger, scheduled post model)
 admin/                  — admin UI (class-admin.php, views/, css/, js/)
 providers/              — one class per platform: X, LinkedIn, Facebook, Bluesky
 ```
@@ -28,16 +28,19 @@ All classes follow `SocialSync_{Name}` naming convention.
 
 ## Key Flows
 
-- **Scheduler**: WP-Cron fires `socialsync_run_delayed_posts` every minute. Processes both WP post meta and standalone scheduled posts.
+- **Scheduler**: WP-Cron fires `socialsync_run_delayed_posts` every minute. Content is passed through `html_entity_decode()` before being sent to providers. Each `$provider->publish()` call is wrapped in try/catch — exceptions are caught and returned as `WP_Error` so cron continues to the next platform.
 - **Posting trigger**: `publish_post` hook → `SocialSync_Admin::save_post_data()` → `SocialSync_Scheduler::enqueue_post()`
 - **OAuth**: LinkedIn and Facebook use OAuth 2.0 with state transients (5-min TTL). Callbacks go through `admin-post.php?action=socialsync_oauth_callback_{platform}`.
 - **X (Twitter)**: OAuth 1.0a with HMAC-SHA1 — no OAuth callback flow. Credentials entered directly on settings page.
 - **Bluesky**: App password auth via `com.atproto.server.createSession`. No OAuth2.
+- **Dev Logger**: Captures API request/response details, publish steps, and cron events to a 500-entry ring buffer in `socialsync_dev_logs`. Toggled via Dev Mode on Settings page. Sensitive fields (`access_token`, `refresh_token`, `client_secret`, `app_password`, `password`) are redacted before logging.
+- **Admin assets**: `socialsync-admin` stylesheet depends on WP core `list-tables` to ensure proper pagination and table styling.
 
 ## Auth Quirks
 
 - X uses **OAuth 1.0a User Context** (4 fields: API key, API secret, access token, access token secret). Must have OAuth 1.0a enabled in X Developer Portal with Read+Write permission.
 - Facebook requires selecting a Page after OAuth (stores `facebook_page_id` + `facebook_page_token` separately).
+- LinkedIn uses the **Posts API** (`/rest/posts`) with `LinkedIn-Version: 202506` — requires the "Posts API" product in the LinkedIn Developer App (not just "Share on LinkedIn"). Thumbnail uploads go through the Images API.
 - LinkedIn can post as a person or organization (selectable after OAuth).
 
 ## Admin
@@ -46,6 +49,8 @@ All classes follow `SocialSync_{Name}` naming convention.
 - All admin handlers check `manage_options` capability + nonce
 - Metabox appears only on `post` post type (Classic Editor)
 - Assets enqueued only on `social-sync*` or `post.php`/`post-new.php` hooks
+- Log page uses WP core list table pagination (`.pagination-links`, `.paging-input`, Screen Options for per-page)
+- Dev Mode toggle on Settings page enables the Developer source filter on the Log page
 
 ## Encryption (M-3)
 
