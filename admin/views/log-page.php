@@ -227,6 +227,28 @@ $entries     = array_slice( $entries, $offset, $per_page );
         .column-status .event-type.dry-run { color: #b32d2e; }
         .column-status .event-type.api-request { color: #2271b1; }
         .column-status .event-type.api-response { color: #2c8a2c; }
+
+        .tablenav-pages-navspan.button.disabled {
+            min-width: 28px;
+            text-align: center;
+            opacity: 0.5;
+            cursor: default;
+        }
+        .tablenav-pages .pagination-links .button,
+        .tablenav-pages .pagination-links .tablenav-pages-navspan {
+            min-width: 28px;
+            text-align: center;
+        }
+        .tablenav-pages .current-page {
+            width: auto;
+        }
+        .paging-input {
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+        .tablenav-paging-text {
+            margin-left: 2px;
+        }
     </style>
 
     <table class="wp-list-table widefat fixed striped table-view-list">
