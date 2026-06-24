@@ -104,17 +104,24 @@ class SocialSync_Scheduler {
      * @return void
      */
     public function enqueue_post( int $post_id, string $schedule_type = 'immediate', string $schedule_date = '' ): void {
+        $scheduled = wp_next_scheduled( self::CRON_EVENT, array( $post_id ) );
+        if ( $scheduled ) {
+            wp_unschedule_event( $scheduled, self::CRON_EVENT, array( $post_id ) );
+        }
+
         if ( 'scheduled' === $schedule_type && ! empty( $schedule_date ) ) {
             $timestamp = strtotime( $schedule_date );
             if ( $timestamp > time() ) {
                 update_post_meta( $post_id, '_socialsync_status', 'scheduled' );
+                delete_post_meta( $post_id, '_socialsync_delayed_until' );
                 wp_schedule_single_event( $timestamp, self::CRON_EVENT, array( $post_id ) );
                 return;
             }
         }
 
         update_post_meta( $post_id, '_socialsync_status', 'pending' );
-        wp_schedule_single_event( time(), self::CRON_EVENT, array( $post_id ) );
+        update_post_meta( $post_id, '_socialsync_delayed_until', time() + 5 * MINUTE_IN_SECONDS );
+        wp_schedule_single_event( time() + 5 * MINUTE_IN_SECONDS, self::CRON_EVENT, array( $post_id ) );
     }
 
     /**
@@ -211,6 +218,7 @@ class SocialSync_Scheduler {
                     ) );
                 } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
                     update_post_meta( $post['post_id'], '_socialsync_status', $new_status );
+                    delete_post_meta( $post['post_id'], '_socialsync_delayed_until' );
                 }
 
             }
@@ -254,6 +262,11 @@ class SocialSync_Scheduler {
             }
 
             if ( ! empty( $schedule ) && strtotime( $schedule ) > time() ) {
+                continue;
+            }
+
+            $delayed_until = intval( get_post_meta( $post_id, '_socialsync_delayed_until', true ) );
+            if ( $delayed_until > time() ) {
                 continue;
             }
 
