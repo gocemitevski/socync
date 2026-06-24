@@ -103,7 +103,7 @@ class SocialSync_Scheduler {
      * @param string $schedule_date Date/time string for scheduled posts.
      * @return void
      */
-    public function enqueue_post( int $post_id, string $schedule_type = 'immediate', string $schedule_date = '' ): void {
+    public function enqueue_post( int $post_id, string $schedule_type = 'immediate', string $schedule_date = '', bool $skip_delay = false ): void {
         SocialSync_Dev_Logger::log( 'enqueue_post', array(
             'post_id'       => $post_id,
             'schedule_type' => $schedule_type,
@@ -136,13 +136,22 @@ class SocialSync_Scheduler {
         }
 
         update_post_meta( $post_id, '_socialsync_status', 'pending' );
-        update_post_meta( $post_id, '_socialsync_delayed_until', time() + 5 * MINUTE_IN_SECONDS );
-        wp_schedule_single_event( time() + 5 * MINUTE_IN_SECONDS, self::CRON_EVENT, array( $post_id ) );
-        SocialSync_Dev_Logger::log( 'enqueue_post', array(
-            'post_id'       => $post_id,
-            'delayed_until' => time() + 5 * MINUTE_IN_SECONDS,
-            'summary'       => 'Enqueued post #' . $post_id . ' with 5-minute delay',
-        ) );
+        if ( $skip_delay ) {
+            delete_post_meta( $post_id, '_socialsync_delayed_until' );
+            wp_schedule_single_event( time(), self::CRON_EVENT, array( $post_id ) );
+            SocialSync_Dev_Logger::log( 'enqueue_post', array(
+                'post_id' => $post_id,
+                'summary' => 'Enqueued post #' . $post_id . ' immediately (skip_delay)',
+            ) );
+        } else {
+            update_post_meta( $post_id, '_socialsync_delayed_until', time() + 5 * MINUTE_IN_SECONDS );
+            wp_schedule_single_event( time() + 5 * MINUTE_IN_SECONDS, self::CRON_EVENT, array( $post_id ) );
+            SocialSync_Dev_Logger::log( 'enqueue_post', array(
+                'post_id'       => $post_id,
+                'delayed_until' => time() + 5 * MINUTE_IN_SECONDS,
+                'summary'       => 'Enqueued post #' . $post_id . ' with 5-minute delay',
+            ) );
+        }
     }
 
     /**

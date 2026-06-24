@@ -333,9 +333,6 @@ class SocialSync_Admin {
         echo '</p>';
 
         $publish_on_save = get_post_meta( $current_id, '_socialsync_publish_on_save', true );
-        if ( '' === $publish_on_save ) {
-            $publish_on_save = '1';
-        }
         printf(
             '<p><label><input type="checkbox" name="%s" value="1" %s /> %s</label></p>',
             esc_attr( '_socialsync_publish_on_save' ),
@@ -415,25 +412,32 @@ class SocialSync_Admin {
 
         // Trigger posting if platforms are selected and post is published
         if ( 'publish' === get_post_status( $post_id ) && 'post' === get_post_type( $post_id ) ) {
-            $publish_on_save = get_post_meta( $post_id, '_socialsync_publish_on_save', true );
-            if ( '1' !== $publish_on_save ) {
+            $platforms = get_post_meta( $post_id, '_socialsync_platforms', true );
+            if ( ! is_array( $platforms ) ) {
                 return;
             }
 
-            $platforms = get_post_meta( $post_id, '_socialsync_platforms', true );
-            if ( is_array( $platforms ) ) {
-                $has_platforms = false;
-                foreach ( $platforms as $key => $val ) {
-                    if ( $val ) {
-                        $has_platforms = true;
-                        break;
-                    }
+            $has_platforms = false;
+            foreach ( $platforms as $key => $val ) {
+                if ( $val ) {
+                    $has_platforms = true;
+                    break;
                 }
-                if ( $has_platforms ) {
-                    $schedule_type = get_post_meta( $post_id, '_socialsync_schedule_type', true );
-                    $schedule_date = get_post_meta( $post_id, '_socialsync_schedule_date', true );
-                    SocialSync_Scheduler::get_instance()->enqueue_post( $post_id, $schedule_type, $schedule_date );
-                }
+            }
+            if ( ! $has_platforms ) {
+                return;
+            }
+
+            $schedule_type = get_post_meta( $post_id, '_socialsync_schedule_type', true );
+            $schedule_date = get_post_meta( $post_id, '_socialsync_schedule_date', true );
+
+            // Initial publish: always enqueue with 5-minute delay.
+            // Re-save with checkbox checked: enqueue immediately (no delay).
+            $existing_status = get_post_meta( $post_id, '_socialsync_status', true );
+            if ( empty( $existing_status ) ) {
+                SocialSync_Scheduler::get_instance()->enqueue_post( $post_id, $schedule_type, $schedule_date, false );
+            } elseif ( isset( $_POST['_socialsync_publish_on_save'] ) ) {
+                SocialSync_Scheduler::get_instance()->enqueue_post( $post_id, $schedule_type, $schedule_date, true );
             }
         }
     }
