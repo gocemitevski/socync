@@ -205,8 +205,20 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'shareCommentary' => array(
                 'text' => is_string($content) ? $content : '',
             ),
-            'shareMediaCategory' => 'NONE',
+            'shareMediaCategory' => ! empty( $url ) ? 'ARTICLE' : 'NONE',
         );
+
+        if ( ! empty( $url ) ) {
+            $share_content['media'] = array(
+                array(
+                    'status'      => 'READY',
+                    'originalUrl' => $url,
+                    'description' => array(
+                        'text' => mb_substr( wp_strip_all_tags( is_string($content) ? $content : '' ), 0, 256 ),
+                    ),
+                ),
+            );
+        }
 
         $post_data = array(
             'author' => $author,
