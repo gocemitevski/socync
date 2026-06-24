@@ -333,6 +333,9 @@ class SocialSync_Admin {
         echo '</p>';
 
         $publish_on_save = get_post_meta( $current_id, '_socialsync_publish_on_save', true );
+        if ( '' === $publish_on_save ) {
+            $publish_on_save = '1';
+        }
         printf(
             '<p><label><input type="checkbox" name="%s" value="1" %s /> %s</label></p>',
             esc_attr( '_socialsync_publish_on_save' ),
