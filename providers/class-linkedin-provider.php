@@ -527,11 +527,12 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         delete_option('socialsync_linkedin_client_secret');
         delete_option('socialsync_linkedin_redirect_url');
         delete_option('socialsync_linkedin_code_verifier');
+        delete_option('socialsync_linkedin_logs');
         delete_transient('socialsync_linkedin_oauth_state');
 
         $this->log_success(
             'LinkedIn account disconnected',
-            'LinkedIn',
+            'linkedin',
             'success'
         );
 
@@ -539,42 +540,52 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
     }
 
     protected function log_error( string $error_message, array $context = array() ): void {
-        $logs = get_option('socialsync_linkedin_logs', array());
+        $logs = get_option( 'socialsync_logs', array() );
 
-        $log_entry = array(
-            'message'    => esc_html($error_message),
-            'platform'   => 'LinkedIn',
-            'status'     => 'failed',
-            'date'       => current_time('mysql'),
-            'context'    => is_array($context) ? json_encode($context) : '',
-        );
-
-        $logs[] = $log_entry;
-
-        if ( count($logs) > 100 ) {
-            array_shift($logs);
+        $full_message = $error_message;
+        if ( ! empty( $context ) ) {
+            $full_message .= ' | ' . wp_json_encode( $context );
         }
 
-        update_option('socialsync_linkedin_logs', $logs, false);
+        $logs[] = array(
+            'id'       => uniqid(),
+            'post_id'  => 0,
+            'platform' => 'linkedin',
+            'status'   => 'failed',
+            'message'  => $full_message,
+            'date'     => current_time( 'mysql' ),
+            'type'     => 'linkedin',
+        );
+
+        if ( count( $logs ) > 100 ) {
+            $logs = array_slice( $logs, -50 );
+        }
+
+        update_option( 'socialsync_logs', $logs, false );
     }
 
     protected function log_success( string $message, string $platform, string $status, array $context = array() ): void {
-        $logs = get_option('socialsync_linkedin_logs', array());
+        $logs = get_option( 'socialsync_logs', array() );
 
-        $log_entry = array(
-            'message'    => esc_html($message),
-            'platform'   => $platform,
-            'status'     => $status,
-            'date'       => current_time('mysql'),
-            'context'    => is_array($context) ? json_encode($context) : '',
-        );
-
-        $logs[] = $log_entry;
-
-        if ( count($logs) > 100 ) {
-            array_shift($logs);
+        $full_message = $message;
+        if ( ! empty( $context ) ) {
+            $full_message .= ' | ' . wp_json_encode( $context );
         }
 
-        update_option('socialsync_linkedin_logs', $logs, false);
+        $logs[] = array(
+            'id'       => uniqid(),
+            'post_id'  => 0,
+            'platform' => $platform,
+            'status'   => $status,
+            'message'  => $full_message,
+            'date'     => current_time( 'mysql' ),
+            'type'     => 'linkedin',
+        );
+
+        if ( count( $logs ) > 100 ) {
+            $logs = array_slice( $logs, -50 );
+        }
+
+        update_option( 'socialsync_logs', $logs, false );
     }
 }
