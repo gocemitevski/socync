@@ -210,12 +210,23 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $description = '';
         $thumb_blob  = null;
 
+        SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+            'url'     => $url,
+            'summary' => 'Fetching OG tags for Bluesky embed from: ' . $url,
+        ) );
+
         $response = wp_remote_get( $url, array(
             'timeout'   => 10,
             'sslverify' => true,
         ) );
 
-        if ( ! is_wp_error( $response ) ) {
+        if ( is_wp_error( $response ) ) {
+            SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+                'url'     => $url,
+                'error'   => $response->get_error_message(),
+                'summary' => 'Failed to fetch URL for OG tags: ' . $response->get_error_message(),
+            ) );
+        } else {
             $status = wp_remote_retrieve_response_code( $response );
             if ( is_numeric( $status ) && intval( $status ) >= 200 && intval( $status ) < 300 ) {
                 $body = wp_remote_retrieve_body( $response );
@@ -223,9 +234,28 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
                 $description = $this->extract_og_tag( $body, 'og:description' );
                 $og_image    = $this->extract_og_tag( $body, 'og:image' );
 
+                SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+                    'url'         => $url,
+                    'og_title'    => $title,
+                    'og_image'    => $og_image,
+                    'summary'     => 'Extracted OG tags - title: ' . ( $title ?: '(none)' ) . ', image: ' . ( $og_image ?: '(none)' ),
+                ) );
+
                 if ( ! empty( $og_image ) ) {
                     $thumb_blob = $this->upload_image_blob( $og_image );
+                    SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+                        'url'         => $url,
+                        'og_image'    => $og_image,
+                        'has_thumb'   => $thumb_blob ? 'yes' : 'no',
+                        'summary'     => 'Thumbnail upload ' . ( $thumb_blob ? 'succeeded' : 'failed (silent null)' ),
+                    ) );
                 }
+            } else {
+                SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+                    'url'    => $url,
+                    'status' => $status,
+                    'summary' => 'URL fetch returned non-200 status: ' . $status,
+                ) );
             }
         }
 
@@ -246,6 +276,13 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             $embed['external']['thumb'] = $thumb_blob;
         }
 
+        SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+            'url'         => $url,
+            'has_thumb'   => $thumb_blob ? 'yes' : 'no',
+            'title'       => $title,
+            'summary'     => 'Bluesky embed built for ' . $url . ( $thumb_blob ? ' (with thumbnail)' : ' (no thumbnail)' ),
+        ) );
+
         return $embed;
     }
 
@@ -257,22 +294,38 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     private function upload_image_blob( string $image_url ): ?array {
+        SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            'image_url' => $image_url,
+            'summary'   => 'Downloading OG image: ' . $image_url,
+        ) );
+
         $image_response = wp_remote_get( $image_url, array(
             'timeout'   => 15,
             'sslverify' => true,
         ) );
 
         if ( is_wp_error( $image_response ) ) {
+            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+                'error'   => $image_response->get_error_message(),
+                'summary' => 'Image download failed: ' . $image_response->get_error_message(),
+            ) );
             return null;
         }
 
         $status = wp_remote_retrieve_response_code( $image_response );
         if ( ! is_numeric( $status ) || intval( $status ) < 200 || intval( $status ) >= 300 ) {
+            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+                'status'  => $status,
+                'summary' => 'Image download returned status: ' . $status,
+            ) );
             return null;
         }
 
         $image_data = wp_remote_retrieve_body( $image_response );
         if ( empty( $image_data ) ) {
+            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+                'summary' => 'Image download returned empty body',
+            ) );
             return null;
         }
 
@@ -281,6 +334,12 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         if ( ! empty( $content_type ) && in_array( $content_type, array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ), true ) ) {
             $mime_type = $content_type;
         }
+
+        SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            'size'      => strlen( $image_data ),
+            'mime_type' => $mime_type,
+            'summary'   => 'Uploading ' . strlen( $image_data ) . ' bytes as ' . $mime_type . ' to Bluesky',
+        ) );
 
         $blob_response = wp_remote_post( 'https://bsky.social/xrpc/com.atproto.repo.uploadBlob', array(
             'headers' => array(
@@ -293,18 +352,38 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         ) );
 
         if ( is_wp_error( $blob_response ) ) {
+            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+                'error'   => $blob_response->get_error_message(),
+                'summary' => 'Blob upload wp_error: ' . $blob_response->get_error_message(),
+            ) );
             return null;
         }
 
         $blob_status = wp_remote_retrieve_response_code( $blob_response );
+        $blob_body_str = wp_remote_retrieve_body( $blob_response );
+        $blob_body = json_decode( $blob_body_str, true );
+
         if ( ! is_numeric( $blob_status ) || intval( $blob_status ) < 200 || intval( $blob_status ) >= 300 ) {
+            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+                'status'      => $blob_status,
+                'response'    => $blob_body_str,
+                'summary'     => 'Blob upload returned status ' . $blob_status . ': ' . ( $blob_body['message'] ?? $blob_body_str ),
+            ) );
             return null;
         }
 
-        $blob_body = json_decode( wp_remote_retrieve_body( $blob_response ), true );
         if ( ! isset( $blob_body['data']['blob'] ) ) {
+            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+                'response'  => $blob_body_str,
+                'summary'   => 'Blob upload response missing data.blob key',
+            ) );
             return null;
         }
+
+        SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            'blob_ref' => $blob_body['data']['blob']['ref']['$link'] ?? 'unknown',
+            'summary'  => 'Blob upload succeeded, CID: ' . ( $blob_body['data']['blob']['ref']['$link'] ?? 'unknown' ),
+        ) );
 
         return $blob_body['data']['blob'];
     }
