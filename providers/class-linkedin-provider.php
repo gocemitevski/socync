@@ -161,9 +161,22 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
      * @return array|WP_Error Response from LinkedIn API or error object.
      */
     public function publish( string $content, string $url = '' ): array|WP_Error {
+        // Dev log: entering LinkedIn publish
+        SocialSync_Dev_Logger::log( 'linkedin_publish', array(
+            'summary' => 'Entering LinkedIn publish()',
+        ) );
+
         if ( ! $this->refresh_token() ) {
+            SocialSync_Dev_Logger::log( 'linkedin_publish', array(
+                'summary' => 'LinkedIN publish: refresh_token() FAILED. Token valid: ' . ( $this->is_token_valid() ? 'yes' : 'no' ) . ', token_expiry: ' . ( $this->token_expiry ?? 'null' ) . ', time(): ' . time(),
+            ) );
             return new WP_Error( 'token_expired', 'LinkedIn access token expired and could not be refreshed. Please reconnect.' );
         }
+
+        SocialSync_Dev_Logger::log( 'linkedin_publish', array(
+            'summary' => 'LinkedIn publish: refresh_token() OK, is_connected: ' . ( $this->is_connected() ? 'yes' : 'no' ) . ', has_token: ' . ( ! empty( $this->access_token ) ? 'yes' : 'no' ),
+        ) );
+
         if ( ! $this->is_connected() ) {
             return new WP_Error('not_connected', 'LinkedIn account not connected or access token has expired.');
         }
@@ -176,8 +189,17 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         }
 
         if ( empty( $author ) ) {
+            SocialSync_Dev_Logger::log( 'linkedin_publish', array(
+                'summary' => 'LinkedIn publish: no author (org_id: ' . ( $org_id ?: 'empty' ) . ', person_id: ' . ( get_option( 'socialsync_linkedin_person_id', '' ) ?: 'empty' ) . ')',
+            ) );
             return new WP_Error( 'no_author', 'No LinkedIn profile or organization selected. Go to SocialSync settings.' );
         }
+
+        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+            'step'    => 'before_api_call',
+            'author'  => $author,
+            'summary' => 'About to call LinkedIn API for author: ' . $author,
+        ) );
 
         $share_content = array(
             'shareCommentary' => array(
@@ -209,6 +231,11 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'X-Restli-Format' => 'json',
         );
 
+        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+            'step'    => 'wp_remote_post_start',
+            'summary' => 'Sending POST to ' . self::BASE_URL . '/ugcPosts',
+        ) );
+
         $response = wp_remote_post(
             self::BASE_URL . '/ugcPosts',
             array(
@@ -219,17 +246,35 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             )
         );
 
+        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+            'step'    => 'wp_remote_post_end',
+            'is_wp_error' => is_wp_error( $response ) ? 'yes' : 'no',
+            'summary' => 'wp_remote_post completed for LinkedIn' . ( is_wp_error( $response ) ? ' (WP_Error: ' . $response->get_error_message() . ')' : '' ),
+        ) );
+
         if ( is_wp_error($response) ) {
             return $response;
         }
 
         $status_code = wp_remote_retrieve_response_code($response);
 
+        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+            'step'        => 'response_handling',
+            'status_code' => $status_code,
+            'summary'     => 'LinkedIn API returned status ' . $status_code,
+        ) );
+
         if ( ! is_numeric($status_code) || intval($status_code) < 200 || intval($status_code) >= 300 ) {
             $body = wp_remote_retrieve_body($response);
             $error_data = json_decode($body, true);
 
             $message = isset($error_data['message']) ? sanitize_text_field($error_data['message']) : sanitize_text_field($body);
+
+            SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+                'step'    => 'api_error',
+                'message' => $message,
+                'summary' => 'LinkedIn API error: ' . $message,
+            ) );
 
             return new WP_Error(
                 'linkedin_post_error',
@@ -243,6 +288,12 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         $post_id = isset($decoded_response['id']) ? $decoded_response['id'] : '';
 
         $preview = esc_html(substr($response_body, 0, 80)) . '...';
+
+        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+            'step'    => 'success',
+            'post_id' => $post_id,
+            'summary' => 'LinkedIn publish succeeded, post_id: ' . ( $post_id ?: 'unknown' ),
+        ) );
 
         return array(
             'success' => true,
