@@ -372,20 +372,20 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             return null;
         }
 
-        if ( ! isset( $blob_body['data']['blob'] ) ) {
+        if ( ! isset( $blob_body['blob'] ) ) {
             SocialSync_Dev_Logger::log( 'bluesky_upload', array(
                 'response'  => $blob_body_str,
-                'summary'   => 'Blob upload response missing data.blob key',
+                'summary'   => 'Blob upload response missing blob key',
             ) );
             return null;
         }
 
         SocialSync_Dev_Logger::log( 'bluesky_upload', array(
-            'blob_ref' => $blob_body['data']['blob']['ref']['$link'] ?? 'unknown',
-            'summary'  => 'Blob upload succeeded, CID: ' . ( $blob_body['data']['blob']['ref']['$link'] ?? 'unknown' ),
+            'blob_ref' => $blob_body['blob']['ref']['$link'] ?? 'unknown',
+            'summary'  => 'Blob upload succeeded, CID: ' . ( $blob_body['blob']['ref']['$link'] ?? 'unknown' ),
         ) );
 
-        return $blob_body['data']['blob'];
+        return $blob_body['blob'];
     }
 
     public function disconnect(): bool {
