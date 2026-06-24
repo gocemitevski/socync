@@ -412,6 +412,11 @@ class SocialSync_Admin {
 
         // Trigger posting if platforms are selected and post is published
         if ( 'publish' === get_post_status( $post_id ) && 'post' === get_post_type( $post_id ) ) {
+            $publish_on_save = get_post_meta( $post_id, '_socialsync_publish_on_save', true );
+            if ( '1' !== $publish_on_save ) {
+                return;
+            }
+
             $platforms = get_post_meta( $post_id, '_socialsync_platforms', true );
             if ( is_array( $platforms ) ) {
                 $has_platforms = false;
