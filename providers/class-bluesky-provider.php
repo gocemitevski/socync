@@ -218,6 +218,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $response = wp_remote_get( $url, array(
             'timeout'   => 10,
             'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
         ) );
 
         if ( is_wp_error( $response ) ) {
