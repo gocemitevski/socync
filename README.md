@@ -6,10 +6,9 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 - **Multi-Platform Support**: Automatically post to X (Twitter), LinkedIn, Facebook, and Bluesky
 - **Link Previews with Thumbnails**: LinkedIn and Bluesky posts include OG thumbnail images
-- **Immediate Posting**: Posts are published immediately when you publish a WordPress post
-- **Scheduled Posting**: Schedule posts to be published at a specific date and time
-- **Custom Content**: Override post content, prefix, and hashtags for each platform
-- **Standalone Scheduled Posts**: Create posts directly from the Schedule page without a WP Post
+- **Standalone Scheduled Posts**: Create posts directly from the Schedule page — no WP Post required
+- **Flexible Scheduling**: Schedule standalone posts at a specific date and time
+- **Custom Content**: Full control over post content for each platform
 - **Dry Run Mode**: Preview what would be posted without actually publishing
 - **Clean Admin Interface**: Tabbed settings page with unified Log view
 - **Comprehensive Logging**: Track all posting attempts, errors, and developer-level API details
@@ -55,14 +54,13 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 ## Usage
 
-### Posting to Social Media
+### Creating a Scheduled Post
 
-1. Create or edit a post in WordPress
-2. In the "SocialSync" meta box, check the platforms you want to post to
-3. Optionally customize the post content for each platform
-4. Choose "Immediate" or "Scheduled" for posting
-5. If scheduled, select the date and time
-6. Publish the post
+1. Go to SocialSync > Schedule
+2. Click "Add New Scheduled Post"
+3. Enter the post content and select the platforms to post to
+4. Set the desired date and time
+5. Save — the post will be published automatically when the time arrives
 
 ### Viewing Logs
 

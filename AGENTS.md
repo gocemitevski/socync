@@ -23,13 +23,12 @@ All classes follow `SocialSync_{Name}` naming convention.
 ## Storage
 
 - **`wp_options`**: tokens, API keys, settings, logs (`socialsync_*` prefixed)
-- **`wp_postmeta`**: per-post platform selections, custom content, schedule (`_socialsync_*` prefixed)
 - **Custom table**: `{$wpdb->prefix}socialsync_scheduled_posts` (created on activation via `SocialSync_Scheduled_Post::create_table()`)
+- **`wp_postmeta`** (legacy): `_socialsync_*` keys from the removed metabox — no longer actively used
 
 ## Key Flows
 
-- **Scheduler**: WP-Cron fires `socialsync_run_delayed_posts` every minute. Content is passed through `html_entity_decode()` before being sent to providers. Each `$provider->publish()` call is wrapped in try/catch — exceptions are caught and returned as `WP_Error` so cron continues to the next platform.
-- **Posting trigger**: `publish_post` hook → `SocialSync_Admin::save_post_data()` → `SocialSync_Scheduler::enqueue_post()`
+- **Scheduler**: WP-Cron fires `socialsync_run_delayed_posts` every minute to process standalone scheduled posts. Each per-post run is wrapped in try/catch so exceptions don't stall the queue. Content is passed through `html_entity_decode()` before being sent to providers. Each `$provider->publish()` call is wrapped in try/catch — exceptions are caught and returned as `WP_Error` so cron continues to the next platform.
 - **OAuth**: LinkedIn and Facebook use OAuth 2.0 with state transients (5-min TTL). Callbacks go through `admin-post.php?action=socialsync_oauth_callback_{platform}`.
 - **X (Twitter)**: OAuth 1.0a with HMAC-SHA1 — no OAuth callback flow. Credentials entered directly on settings page.
 - **Bluesky**: App password auth via `com.atproto.server.createSession`. No OAuth2.
@@ -47,8 +46,7 @@ All classes follow `SocialSync_{Name}` naming convention.
 
 - Menu: "SocialSync" top-level at position 92, subpages: Connections, Schedule, Log
 - All admin handlers check `manage_options` capability + nonce
-- Metabox appears only on `post` post type (Classic Editor)
-- Assets enqueued only on `social-sync*` or `post.php`/`post-new.php` hooks
+- Assets enqueued only on `social-sync*` hooks
 - Log page uses WP core list table pagination (`.pagination-links`, `.paging-input`, Screen Options for per-page)
 - Dev Mode toggle on Settings page enables the Developer source filter on the Log page
 
