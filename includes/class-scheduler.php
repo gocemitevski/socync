@@ -96,65 +96,6 @@ class SocialSync_Scheduler {
     }
 
     /**
-     * Enqueue a post for publishing.
-     *
-     * @param int    $post_id       Post ID.
-     * @param string $schedule_type 'immediate' or 'scheduled'.
-     * @param string $schedule_date Date/time string for scheduled posts.
-     * @return void
-     */
-    public function enqueue_post( int $post_id, string $schedule_type = 'immediate', string $schedule_date = '', bool $skip_delay = false ): void {
-        SocialSync_Dev_Logger::log( 'enqueue_post', array(
-            'post_id'       => $post_id,
-            'schedule_type' => $schedule_type,
-            'schedule_date' => $schedule_date,
-            'summary'       => 'enqueue_post called for post #' . $post_id,
-        ) );
-
-        $scheduled = wp_next_scheduled( self::CRON_EVENT, array( $post_id ) );
-        if ( $scheduled ) {
-            SocialSync_Dev_Logger::log( 'enqueue_post', array(
-                'post_id'  => $post_id,
-                'summary'  => 'Unscheduling existing event for post #' . $post_id,
-            ) );
-            wp_unschedule_event( $scheduled, self::CRON_EVENT, array( $post_id ) );
-        }
-
-        if ( 'scheduled' === $schedule_type && ! empty( $schedule_date ) ) {
-            $timestamp = strtotime( $schedule_date );
-            if ( $timestamp > time() ) {
-                update_post_meta( $post_id, '_socialsync_status', 'scheduled' );
-                delete_post_meta( $post_id, '_socialsync_delayed_until' );
-                wp_schedule_single_event( $timestamp, self::CRON_EVENT, array( $post_id ) );
-                SocialSync_Dev_Logger::log( 'enqueue_post', array(
-                    'post_id'   => $post_id,
-                    'timestamp' => $timestamp,
-                    'summary'   => 'Scheduled future post #' . $post_id . ' at ' . gmdate( 'Y-m-d H:i:s', $timestamp ),
-                ) );
-                return;
-            }
-        }
-
-        update_post_meta( $post_id, '_socialsync_status', 'pending' );
-        if ( $skip_delay ) {
-            delete_post_meta( $post_id, '_socialsync_delayed_until' );
-            wp_schedule_single_event( time(), self::CRON_EVENT, array( $post_id ) );
-            SocialSync_Dev_Logger::log( 'enqueue_post', array(
-                'post_id' => $post_id,
-                'summary' => 'Enqueued post #' . $post_id . ' immediately (skip_delay)',
-            ) );
-        } else {
-            update_post_meta( $post_id, '_socialsync_delayed_until', time() + 2 * MINUTE_IN_SECONDS );
-            wp_schedule_single_event( time() + 2 * MINUTE_IN_SECONDS, self::CRON_EVENT, array( $post_id ) );
-            SocialSync_Dev_Logger::log( 'enqueue_post', array(
-                'post_id'       => $post_id,
-                'delayed_until' => time() + 5 * MINUTE_IN_SECONDS,
-                'summary'       => 'Enqueued post #' . $post_id . ' with 5-minute delay',
-            ) );
-        }
-    }
-
-    /**
      * Process all delayed social media posts from the queue.
      *
      * This is called by WP-Cron at scheduled intervals to process items that have
@@ -203,7 +144,7 @@ class SocialSync_Scheduler {
                     SocialSync_Dev_Logger::log( 'publish_event', array(
                         'post_id'  => $post['id'] ?? 0,
                         'platform' => implode( ',', array_keys( array_filter( $post['platforms'] ) ) ),
-                        'summary'  => 'Processing post #' . ( $post['id'] ?? 0 ) . ' (' . ( $post['source'] ?? 'wp_post' ) . ')',
+                        'summary'  => 'Processing post #' . ( $post['id'] ?? 0 ) . ' (' . ( $post['source'] ?? 'standalone' ) . ')',
                     ) );
 
                     $all_success = true;
@@ -229,7 +170,7 @@ class SocialSync_Scheduler {
                                 $platform_slug,
                                 'failed',
                                 $result->get_error_message(),
-                                $post['source'] ?? 'wp_post'
+                                $post['source'] ?? 'standalone'
                             );
                         } elseif ( isset( $result['success'] ) && false === $result['success'] ) {
                             $all_success = false;
@@ -239,7 +180,7 @@ class SocialSync_Scheduler {
                                 $platform_slug,
                                 'failed',
                                 isset( $result['message'] ) ? $result['message'] : '',
-                                $post['source'] ?? 'wp_post'
+                                $post['source'] ?? 'standalone'
                             );
                         }
                     }
@@ -254,9 +195,6 @@ class SocialSync_Scheduler {
                         SocialSync_Scheduled_Post::update( $post['row_id'], array(
                             'status' => $new_status,
                         ) );
-                    } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
-                        update_post_meta( $post['post_id'], '_socialsync_status', $new_status );
-                        delete_post_meta( $post['post_id'], '_socialsync_delayed_until' );
                     }
                 } catch ( \Throwable $e ) {
                     SocialSync_Dev_Logger::log( 'publish_error', array(
@@ -266,16 +204,13 @@ class SocialSync_Scheduler {
                     ) );
                     if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
                         SocialSync_Scheduled_Post::update( $post['row_id'], array( 'status' => 'failed' ) );
-                    } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
-                        update_post_meta( $post['post_id'], '_socialsync_status', 'failed' );
-                        delete_post_meta( $post['post_id'], '_socialsync_delayed_until' );
                     }
                     $this->log_action(
                         $post['id'] ?? 0,
                         'system',
                         'failed',
                         $e->getMessage(),
-                        $post['source'] ?? 'wp_post'
+                        $post['source'] ?? 'standalone'
                     );
                 }
             }
@@ -291,59 +226,6 @@ class SocialSync_Scheduler {
      */
     private function get_ready_posts(): array {
         $ready_posts = array();
-
-        // Get WP posts with pending/scheduled status
-        $posts = get_posts(
-            array(
-                'post_type'      => 'any',
-                'post_status'    => 'publish',
-                'posts_per_page' => 5,
-                'meta_query'     => array(
-                    array(
-                        'key'     => '_socialsync_status',
-                        'value'   => array( 'pending', 'scheduled' ),
-                        'compare' => 'IN',
-                    ),
-                ),
-                'fields'         => 'ids',
-            )
-        );
-
-        foreach ( $posts as $post_id ) {
-            $status     = get_post_meta( $post_id, '_socialsync_status', true );
-            $platforms  = get_post_meta( $post_id, '_socialsync_platforms', true );
-            $schedule   = get_post_meta( $post_id, '_socialsync_schedule_date', true );
-
-            if ( empty( $platforms ) || ! is_array( $platforms ) ) {
-                continue;
-            }
-
-            if ( ! empty( $schedule ) && strtotime( $schedule ) > time() ) {
-                continue;
-            }
-
-            $delayed_until = intval( get_post_meta( $post_id, '_socialsync_delayed_until', true ) );
-            if ( $delayed_until > time() ) {
-                SocialSync_Dev_Logger::log( 'cron_run', array(
-                    'post_id'       => $post_id,
-                    'delayed_until' => $delayed_until,
-                    'summary'       => 'Post #' . $post_id . ' skipped - delay not expired (' . ( $delayed_until - time() ) . 's remaining)',
-                ) );
-                continue;
-            }
-
-            $ready_posts[] = apply_filters(
-                'socialsync_ready_post',
-                array(
-                    'id'        => $post_id,
-                    'post_id'   => $post_id,
-                    'platforms' => $platforms,
-                    'scheduled' => $schedule ?: '',
-                    'source'    => 'wp_post',
-                ),
-                $post_id
-            );
-        }
 
         // Get standalone scheduled posts from custom table
         $standalone_posts = SocialSync_Scheduled_Post::get_due();
@@ -422,7 +304,7 @@ class SocialSync_Scheduler {
                     sanitize_text_field( $platform_slug ),
                     'failed',
                     __( 'Unknown or unsupported social media platform.', 'social-sync' ),
-                    $post['source'] ?? 'wp_post'
+                    $post['source'] ?? 'standalone'
                 );
 
                 return array(
@@ -435,44 +317,15 @@ class SocialSync_Scheduler {
                 );
         }
 
-        // Compute the post URL for explicit link attachment.
-        $post_url = '';
-        if ( isset( $post['post_id'] ) && $post['post_id'] ) {
-            $post_url = get_permalink( $post['post_id'] );
-        }
-
-        // Get the post content based on source
-        if ( isset( $post['source'] ) && 'standalone' === $post['source'] ) {
-            $content = $post['content'];
-        } else {
-            $custom_content = get_post_meta( $post['post_id'], '_socialsync_' . $platform_slug . '_content', true );
-            if ( ! empty( $custom_content ) ) {
-                $content = $custom_content;
-            } else {
-                $content = get_the_title( $post['post_id'] );
-                $content .= "\n\n" . $post_url;
-            }
-        }
+        // Get the post content.
+        $content = $post['content'] ?? '';
         $content = html_entity_decode( $content, ENT_QUOTES, 'UTF-8' );
         $content = apply_filters( 'socialsync_post_content', $content, $post['post_id'], $platform_slug );
 
-        // Prepend per-platform prefix text and append hashtags for WP posts only.
-        if ( ! isset( $post['source'] ) || 'standalone' !== $post['source'] ) {
-            $settings = get_option( 'socialsync_settings', array() );
-            $prefix_key = $platform_slug . '_prefix_text';
-            if ( ! empty( $settings[ $prefix_key ] ) ) {
-                $content = $settings[ $prefix_key ] . ': ' . $content;
-            }
-            $hashtags_key = $platform_slug . '_hashtags';
-            if ( ! empty( $settings[ $hashtags_key ] ) ) {
-                $content .= "\n\n" . $settings[ $hashtags_key ];
-            }
-        }
-
-        if ( empty( $post_url ) ) {
-            if ( preg_match( '/https?:\/\/[^\s<>"\'()]+/', $content, $matches ) ) {
-                $post_url = rtrim( $matches[0], '.,;:!?)\'"]' );
-            }
+        // Extract URL from content for link attachment.
+        $post_url = '';
+        if ( preg_match( '/https?:\/\/[^\s<>"\'()]+/', $content, $matches ) ) {
+            $post_url = rtrim( $matches[0], '.,;:!?)\'"]' );
         }
 
         if ( empty($content) ) {
@@ -545,11 +398,8 @@ class SocialSync_Scheduler {
                         __( 'Posted successfully. Post ID: %s', 'social-sync' ),
                         esc_html( wp_unslash( $result['data']['id'] ) )
                     ) : '',
-                    $post['source'] ?? 'wp_post'
+                    $post['source'] ?? 'standalone'
                 );
-
-                // Clear the platform-specific queue data after successful publish
-                delete_option('socialsync_platform_' . sanitize_text_field($platform_slug) . '_' . intval( wp_unslash( $post['id'] ) ));
             } else {
                 // Log failed post with error message from API response or generic failure
                 $this->log_action(
@@ -563,7 +413,7 @@ class SocialSync_Scheduler {
                             __( 'Failed to post. API returned an error.', 'social-sync' ),
                             sanitize_text_field( wp_unslash( $platform_slug ) )
                         ),
-                    $post['source'] ?? 'wp_post'
+                    $post['source'] ?? 'standalone'
                 );
             }
         }
@@ -581,7 +431,7 @@ class SocialSync_Scheduler {
      * @param string $message Error message if failed.
      * @return void Logs action to wp_options table.
      */
-    private function log_action( int $post_id = 0, string $platform = '', string $status = 'success', string $message = '', string $type = 'wp_post' ): void {
+    private function log_action( int $post_id = 0, string $platform = '', string $status = 'success', string $message = '', string $type = 'standalone' ): void {
 
         // Retrieve existing logs from wp_options table
         $logs = get_option( 'socialsync_logs', array() );
@@ -596,7 +446,7 @@ class SocialSync_Scheduler {
                 'status'  => sanitize_text_field($status),
                 'message' => sanitize_textarea_field(wp_unslash($message)),
                 'date'    => current_time('mysql'),
-                'type'    => in_array( $type, array( 'wp_post', 'standalone' ), true ) ? $type : 'wp_post',
+                'type'    => 'standalone' === $type ? $type : 'standalone',
             )
         );
 
