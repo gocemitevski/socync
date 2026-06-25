@@ -12,8 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * SocialSync_Admin class that handles admin functionality including:
  * - Settings page with tabbed interface
- * - Post meta box integration
- * - Dashboard widget for quick stats
+ * - Schedule page for standalone scheduled posts
+ * - Connection management for social platforms
  *
  * @package SocialSync
  */
