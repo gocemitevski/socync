@@ -194,70 +194,90 @@ class SocialSync_Scheduler {
 
             // Process each post in the queue with rate limiting delay
             foreach ( $posts as $post ) {
-                // Skip if this post is still scheduled for a future date
-                if ( $this->is_post_scheduled_for_future( $post ) ) {
-                    continue;
-                }
-
-                SocialSync_Dev_Logger::log( 'publish_event', array(
-                    'post_id'  => $post['id'] ?? 0,
-                    'platform' => implode( ',', array_keys( array_filter( $post['platforms'] ) ) ),
-                    'summary'  => 'Processing post #' . ( $post['id'] ?? 0 ) . ' (' . ( $post['source'] ?? 'wp_post' ) . ')',
-                ) );
-
-                $all_success = true;
-                $has_dry_run = false;
-                $has_real    = false;
-
-                // Process each connected platform for the queued post
-                $active_platforms = array_keys( array_filter( $post['platforms'] ) );
-                foreach ( $active_platforms as $platform_slug ) {
-                    // Attempt to publish to this platform with timeout protection
-                    $result = $this->publish_to_platform( $post, $platform_slug );
-
-                    if ( isset( $result['dry_run'] ) && $result['dry_run'] ) {
-                        $has_dry_run = true;
+                try {
+                    // Skip if this post is still scheduled for a future date
+                    if ( $this->is_post_scheduled_for_future( $post ) ) {
                         continue;
                     }
-                    $has_real = true;
 
-                    if ( is_wp_error( $result ) ) {
-                        $all_success = false;
-                        $this->log_action(
-                            $post['id'],
-                            $platform_slug,
-                            'failed',
-                            $result->get_error_message(),
-                            $post['source'] ?? 'wp_post'
-                        );
-                    } elseif ( isset( $result['success'] ) && false === $result['success'] ) {
-                        $all_success = false;
-                        // Log the failed action for debugging and user visibility
-                        $this->log_action(
-                            $post['id'],
-                            $platform_slug,
-                            'failed',
-                            isset( $result['message'] ) ? $result['message'] : '',
-                            $post['source'] ?? 'wp_post'
-                        );
-                    }
-                }
-
-                // Mark post as published or failed to prevent re-processing
-                if ( empty( $active_platforms ) ) {
-                    $new_status = 'failed';
-                } else {
-                    $new_status = $has_real ? ( $all_success ? 'published' : 'failed' ) : ( $has_dry_run ? 'dry_run' : 'scheduled' );
-                }
-                if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
-                    SocialSync_Scheduled_Post::update( $post['row_id'], array(
-                        'status' => $new_status,
+                    SocialSync_Dev_Logger::log( 'publish_event', array(
+                        'post_id'  => $post['id'] ?? 0,
+                        'platform' => implode( ',', array_keys( array_filter( $post['platforms'] ) ) ),
+                        'summary'  => 'Processing post #' . ( $post['id'] ?? 0 ) . ' (' . ( $post['source'] ?? 'wp_post' ) . ')',
                     ) );
-                } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
-                    update_post_meta( $post['post_id'], '_socialsync_status', $new_status );
-                    delete_post_meta( $post['post_id'], '_socialsync_delayed_until' );
-                }
 
+                    $all_success = true;
+                    $has_dry_run = false;
+                    $has_real    = false;
+
+                    // Process each connected platform for the queued post
+                    $active_platforms = array_keys( array_filter( $post['platforms'] ) );
+                    foreach ( $active_platforms as $platform_slug ) {
+                        // Attempt to publish to this platform with timeout protection
+                        $result = $this->publish_to_platform( $post, $platform_slug );
+
+                        if ( isset( $result['dry_run'] ) && $result['dry_run'] ) {
+                            $has_dry_run = true;
+                            continue;
+                        }
+                        $has_real = true;
+
+                        if ( is_wp_error( $result ) ) {
+                            $all_success = false;
+                            $this->log_action(
+                                $post['id'],
+                                $platform_slug,
+                                'failed',
+                                $result->get_error_message(),
+                                $post['source'] ?? 'wp_post'
+                            );
+                        } elseif ( isset( $result['success'] ) && false === $result['success'] ) {
+                            $all_success = false;
+                            // Log the failed action for debugging and user visibility
+                            $this->log_action(
+                                $post['id'],
+                                $platform_slug,
+                                'failed',
+                                isset( $result['message'] ) ? $result['message'] : '',
+                                $post['source'] ?? 'wp_post'
+                            );
+                        }
+                    }
+
+                    // Mark post as published or failed to prevent re-processing
+                    if ( empty( $active_platforms ) ) {
+                        $new_status = 'failed';
+                    } else {
+                        $new_status = $has_real ? ( $all_success ? 'published' : 'failed' ) : ( $has_dry_run ? 'dry_run' : 'scheduled' );
+                    }
+                    if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
+                        SocialSync_Scheduled_Post::update( $post['row_id'], array(
+                            'status' => $new_status,
+                        ) );
+                    } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
+                        update_post_meta( $post['post_id'], '_socialsync_status', $new_status );
+                        delete_post_meta( $post['post_id'], '_socialsync_delayed_until' );
+                    }
+                } catch ( \Throwable $e ) {
+                    SocialSync_Dev_Logger::log( 'publish_error', array(
+                        'post_id'  => $post['id'] ?? 0,
+                        'error'    => $e->getMessage(),
+                        'summary'  => 'Unhandled exception in post #' . ( $post['id'] ?? 0 ) . ': ' . $e->getMessage(),
+                    ) );
+                    if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
+                        SocialSync_Scheduled_Post::update( $post['row_id'], array( 'status' => 'failed' ) );
+                    } elseif ( isset( $post['source'] ) && 'wp_post' === $post['source'] && ! empty( $post['post_id'] ) ) {
+                        update_post_meta( $post['post_id'], '_socialsync_status', 'failed' );
+                        delete_post_meta( $post['post_id'], '_socialsync_delayed_until' );
+                    }
+                    $this->log_action(
+                        $post['id'] ?? 0,
+                        'system',
+                        'failed',
+                        $e->getMessage(),
+                        $post['source'] ?? 'wp_post'
+                    );
+                }
             }
         } finally {
             delete_option( $lock_key );
