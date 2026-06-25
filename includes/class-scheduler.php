@@ -144,8 +144,8 @@ class SocialSync_Scheduler {
                 'summary' => 'Enqueued post #' . $post_id . ' immediately (skip_delay)',
             ) );
         } else {
-            update_post_meta( $post_id, '_socialsync_delayed_until', time() + 5 * MINUTE_IN_SECONDS );
-            wp_schedule_single_event( time() + 5 * MINUTE_IN_SECONDS, self::CRON_EVENT, array( $post_id ) );
+            update_post_meta( $post_id, '_socialsync_delayed_until', time() + 2 * MINUTE_IN_SECONDS );
+            wp_schedule_single_event( time() + 2 * MINUTE_IN_SECONDS, self::CRON_EVENT, array( $post_id ) );
             SocialSync_Dev_Logger::log( 'enqueue_post', array(
                 'post_id'       => $post_id,
                 'delayed_until' => time() + 5 * MINUTE_IN_SECONDS,
