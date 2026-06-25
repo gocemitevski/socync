@@ -223,6 +223,13 @@ class SocialSync_Scheduler {
 
                     if ( is_wp_error( $result ) ) {
                         $all_success = false;
+                        $this->log_action(
+                            $post['id'],
+                            $platform_slug,
+                            'failed',
+                            $result->get_error_message(),
+                            $post['source'] ?? 'wp_post'
+                        );
                     } elseif ( isset( $result['success'] ) && false === $result['success'] ) {
                         $all_success = false;
                         // Log the failed action for debugging and user visibility
