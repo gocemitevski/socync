@@ -43,7 +43,7 @@ abstract class SocialSync_API_Handler {
      *
      * @var int Timeout for wp_remote_request().
      */
-    const DEFAULT_TIMEOUT = 10; // 10 seconds per security best practices
+    const DEFAULT_TIMEOUT = 60;
 
     /**
      * Constructor for API handler.
