@@ -23,6 +23,7 @@ class SocialSync_Scheduled_Post {
 
         $sql = "CREATE TABLE IF NOT EXISTS $table (
             id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            post_id BIGINT UNSIGNED DEFAULT 0,
             title TEXT DEFAULT '',
             content TEXT NOT NULL,
             platforms TEXT NOT NULL,
@@ -32,7 +33,8 @@ class SocialSync_Scheduled_Post {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             KEY status (status),
-            KEY scheduled_date (scheduled_date)
+            KEY scheduled_date (scheduled_date),
+            KEY post_id (post_id)
         ) $charset;";
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -41,13 +43,29 @@ class SocialSync_Scheduled_Post {
 
     public static function insert( array $data ): int {
         global $wpdb;
-        $wpdb->insert( self::table_name(), $data, array( '%s', '%s', '%s', '%s', '%s' ) );
+        $insert_data = array(
+            'post_id'        => isset( $data['post_id'] ) ? intval( $data['post_id'] ) : 0,
+            'title'          => $data['title'] ?? '',
+            'content'        => $data['content'] ?? '',
+            'platforms'      => $data['platforms'] ?? '[]',
+            'scheduled_date' => $data['scheduled_date'] ?? current_time( 'mysql' ),
+            'status'         => $data['status'] ?? 'scheduled',
+        );
+        $wpdb->insert( self::table_name(), $insert_data, array( '%d', '%s', '%s', '%s', '%s', '%s' ) );
         return $wpdb->insert_id;
     }
 
     public static function update( int $id, array $data ) {
         global $wpdb;
-        return $wpdb->update( self::table_name(), $data, array( 'id' => intval( $id ) ), array( '%s', '%s', '%s', '%s', '%s' ), array( '%d' ) );
+        $formats = array();
+        foreach ( $data as $key => $value ) {
+            if ( 'post_id' === $key || 'id' === $key ) {
+                $formats[] = '%d';
+            } else {
+                $formats[] = '%s';
+            }
+        }
+        return $wpdb->update( self::table_name(), $data, array( 'id' => intval( $id ) ), $formats, array( '%d' ) );
     }
 
     public static function delete( int $id ) {

@@ -86,6 +86,10 @@ class SocialSync_Scheduler {
      * @return void Sets up initial cron event with one-time schedule.
      */
     private function init(): void {
+        if ( class_exists( 'SocialSync_Scheduled_Post' ) ) {
+            SocialSync_Scheduled_Post::create_table();
+        }
+
         if ( ! wp_next_scheduled( self::CRON_EVENT ) ) {
             wp_schedule_event(
                 time(),
@@ -93,6 +97,58 @@ class SocialSync_Scheduler {
                 self::CRON_EVENT
             );
         }
+    }
+
+    /**
+     * Enqueue a WordPress post for auto-publishing to connected platforms.
+     *
+     * Called when a post is published for the first time. Inserts a row into
+     * the scheduled posts table with a 2-minute delay, filtered by the
+     * autopost-enabled platforms setting.
+     *
+     * @param int $post_id The WordPress post ID.
+     * @return void
+     */
+    public function enqueue_post( int $post_id ): void {
+        if ( ! $post_id ) {
+            return;
+        }
+
+        $autopost_platforms = get_option( 'socialsync_autopost_platforms', array() );
+        if ( ! is_array( $autopost_platforms ) || empty( $autopost_platforms ) ) {
+            return;
+        }
+
+        // Only keep platforms that are actually connected.
+        $platforms = array();
+        foreach ( $autopost_platforms as $slug ) {
+            if ( get_option( 'socialsync_' . $slug . '_connected', false ) ) {
+                $platforms[] = $slug;
+            }
+        }
+
+        if ( empty( $platforms ) ) {
+            return;
+        }
+
+        $local_timestamp = time() + (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
+        $scheduled_date  = gmdate( 'Y-m-d H:i:s', $local_timestamp + 2 * MINUTE_IN_SECONDS );
+
+        SocialSync_Scheduled_Post::insert( array(
+            'post_id'        => $post_id,
+            'title'          => '',
+            'content'        => '',
+            'platforms'      => wp_json_encode( $platforms ),
+            'scheduled_date' => $scheduled_date,
+            'status'         => 'scheduled',
+        ) );
+
+        SocialSync_Dev_Logger::log( 'post_enqueued', array(
+            'post_id'       => $post_id,
+            'platforms'     => $platforms,
+            'scheduled_for' => $scheduled_date,
+            'summary'       => 'WP post #' . $post_id . ' enqueued for auto-posting',
+        ) );
     }
 
     /**
@@ -191,7 +247,7 @@ class SocialSync_Scheduler {
                     } else {
                         $new_status = $has_real ? ( $all_success ? 'published' : 'failed' ) : ( $has_dry_run ? 'dry_run' : 'scheduled' );
                     }
-                    if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
+                    if ( isset( $post['row_id'] ) && in_array( $post['source'] ?? '', array( 'standalone', 'wp_post' ), true ) ) {
                         SocialSync_Scheduled_Post::update( $post['row_id'], array(
                             'status' => $new_status,
                         ) );
@@ -202,7 +258,7 @@ class SocialSync_Scheduler {
                         'error'    => $e->getMessage(),
                         'summary'  => 'Unhandled exception in post #' . ( $post['id'] ?? 0 ) . ': ' . $e->getMessage(),
                     ) );
-                    if ( isset( $post['source'] ) && 'standalone' === $post['source'] && isset( $post['row_id'] ) ) {
+                    if ( isset( $post['row_id'] ) && in_array( $post['source'] ?? '', array( 'standalone', 'wp_post' ), true ) ) {
                         SocialSync_Scheduled_Post::update( $post['row_id'], array( 'status' => 'failed' ) );
                     }
                     $this->log_action(
@@ -235,14 +291,15 @@ class SocialSync_Scheduler {
                 continue;
             }
 
+            $post_id = isset( $item->post_id ) ? intval( $item->post_id ) : 0;
             $ready_posts[] = array(
                 'id'        => $item->id,
-                'post_id'   => 0,
+                'post_id'   => $post_id,
                 'title'     => $item->title,
                 'content'   => $item->content,
                 'platforms' => array_fill_keys( $platforms, true ),
                 'scheduled' => $item->scheduled_date,
-                'source'    => 'standalone',
+                'source'    => $post_id > 0 ? 'wp_post' : 'standalone',
                 'row_id'    => $item->id,
             );
         }
@@ -318,7 +375,29 @@ class SocialSync_Scheduler {
         }
 
         // Get the post content.
-        $content = $post['content'] ?? '';
+        if ( ! empty( $post['post_id'] ) ) {
+            $wp_post = get_post( $post['post_id'] );
+            if ( $wp_post ) {
+                $title     = $wp_post->post_title;
+                $permalink = get_permalink( $wp_post );
+                $settings  = get_option( 'socialsync_settings', array() );
+                $prefix    = $settings[ $platform_slug . '_prefix_text' ] ?? '';
+                $hashtags  = $settings[ $platform_slug . '_hashtags' ] ?? '';
+
+                $content  = '';
+                if ( ! empty( $prefix ) ) {
+                    $content .= $prefix . ': ';
+                }
+                $content .= $title . ' ' . $permalink;
+                if ( ! empty( $hashtags ) ) {
+                    $content .= ' ' . $hashtags;
+                }
+            } else {
+                $content = $post['content'] ?? '';
+            }
+        } else {
+            $content = $post['content'] ?? '';
+        }
         $content = html_entity_decode( $content, ENT_QUOTES, 'UTF-8' );
         $content = apply_filters( 'socialsync_post_content', $content, $post['post_id'], $platform_slug );
 
@@ -446,7 +525,7 @@ class SocialSync_Scheduler {
                 'status'  => sanitize_text_field($status),
                 'message' => sanitize_textarea_field(wp_unslash($message)),
                 'date'    => current_time('mysql'),
-                'type'    => 'standalone' === $type ? $type : 'standalone',
+                'type'    => in_array( $type, array( 'standalone', 'wp_post' ), true ) ? $type : 'standalone',
             )
         );
 

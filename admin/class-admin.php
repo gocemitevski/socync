@@ -60,9 +60,13 @@ class SocialSync_Admin {
         add_action( 'admin_post_socialsync_save_log_settings', array( $this, 'handle_save_log_settings' ) );
         add_action( 'admin_post_socialsync_save_dev_settings', array( $this, 'handle_save_dev_settings' ) );
         add_action( 'admin_post_socialsync_clear_dev_log', array( $this, 'handle_clear_dev_log' ) );
+        add_action( 'admin_post_socialsync_save_autopost_settings', array( $this, 'handle_save_autopost_settings' ) );
         add_action( 'socialsync_purge_old_logs', array( $this, 'handle_purge_old_logs' ) );
         add_action( 'admin_notices', array( $this, 'admin_dry_run_notice' ) );
         add_filter( 'set-screen-option', array( $this, 'save_log_screen_option' ), 10, 3 );
+
+        // Hook into WordPress post publishing for auto-posting.
+        add_action( 'transition_post_status', array( $this, 'on_post_status_transition' ), 10, 3 );
     }
 
     /**
@@ -835,6 +839,27 @@ class SocialSync_Admin {
     }
 
     /**
+     * Handle WordPress post status transitions for auto-posting.
+     *
+     * Fires when a post's status changes. On initial publish (not update/re-publish),
+     * enqueues the post for auto-publishing to connected platforms.
+     *
+     * @param string   $new_status New post status.
+     * @param string   $old_status Old post status.
+     * @param \WP_Post $post       The post object.
+     * @return void
+     */
+    public function on_post_status_transition( string $new_status, string $old_status, \WP_Post $post ): void {
+        if ( 'publish' !== $new_status || 'publish' === $old_status ) {
+            return;
+        }
+        if ( 'post' !== $post->post_type ) {
+            return;
+        }
+        SocialSync_Scheduler::get_instance()->enqueue_post( $post->ID );
+    }
+
+    /**
      * Enqueue admin scripts and styles for SocialSync settings page.
      *
      * @param string $hook Current admin page hook.
@@ -1074,6 +1099,24 @@ class SocialSync_Admin {
         SocialSync_Dev_Logger::clear();
 
         wp_safe_redirect( admin_url( 'admin.php?page=social-sync-dev&cleared=1' ) );
+        exit;
+    }
+
+    /**
+     * Handle saving autoposting platform preferences.
+     */
+    public function handle_save_autopost_settings(): void {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+        }
+        check_admin_referer( 'socialsync_save_autopost_settings', 'socialsync-autopost-settings-nonce' );
+
+        $platforms = isset( $_POST['autopost_platforms'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['autopost_platforms'] ) ) : array();
+        $allowed   = array( 'x', 'linkedin', 'facebook', 'bluesky' );
+        $platforms = array_intersect( $platforms, $allowed );
+        update_option( 'socialsync_autopost_platforms', array_values( $platforms ) );
+
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-dev&saved=1' ) );
         exit;
     }
 
