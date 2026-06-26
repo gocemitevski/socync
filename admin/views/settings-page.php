@@ -61,7 +61,7 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
     <?php endif; ?>
 
     <h2><?php esc_html_e( 'Autoposting', 'social-sync' ); ?></h2>
-    <p><?php esc_html_e( 'Select which connected platforms to auto-post to when a WordPress post is published.', 'social-sync' ); ?></p>
+    <p><?php esc_html_e( 'Select which platforms to auto-post to when a WordPress post is published.', 'social-sync' ); ?></p>
 
     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
         <?php wp_nonce_field( 'socialsync_save_autopost_settings', 'socialsync-autopost-settings-nonce' ); ?>
@@ -80,42 +80,36 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
                     'facebook' => __( 'Facebook', 'social-sync' ),
                     'bluesky'  => __( 'Bluesky', 'social-sync' ),
                 );
-                $has_connected = false;
                 foreach ( $platform_labels as $slug => $label ) :
                     $connected = get_option( 'socialsync_' . $slug . '_connected', false );
-                    if ( ! $connected ) {
-                        continue;
-                    }
-                    $has_connected = true;
+                    $disabled  = ! $connected ? 'disabled' : '';
                 ?>
                 <tr>
                     <th scope="row"><?php echo esc_html( $label ); ?></th>
                     <td>
                         <label>
-                            <input type="checkbox" name="autopost_platforms[]" value="<?php echo esc_attr( $slug ); ?>" <?php checked( in_array( $slug, $autopost_platforms, true ) ); ?>>
-                            <?php esc_html_e( 'Auto-post to', 'social-sync' ); ?>
-                            <?php echo esc_html( $label ); ?>
-                            <?php esc_html_e( ' when publishing a post.', 'social-sync' ); ?>
+                            <input type="checkbox" name="autopost_platforms[]" value="<?php echo esc_attr( $slug ); ?>" <?php checked( in_array( $slug, $autopost_platforms, true ) ); ?> <?php echo $disabled; ?>>
+                            <?php if ( $connected ) : ?>
+                                <?php esc_html_e( 'Auto-post to', 'social-sync' ); ?>
+                                <?php echo esc_html( $label ); ?>
+                                <?php esc_html_e( ' when publishing a post.', 'social-sync' ); ?>
+                            <?php else : ?>
+                                <?php esc_html_e( 'Not connected.', 'social-sync' ); ?>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=social-sync-settings&tab=' . $slug ) ); ?>">
+                                    <?php esc_html_e( 'Connect', 'social-sync' ); ?>
+                                </a>
+                            <?php endif; ?>
                         </label>
                     </td>
                 </tr>
                 <?php endforeach; ?>
-                <?php if ( ! $has_connected ) : ?>
-                <tr>
-                    <td colspan="2">
-                        <p class="description"><?php esc_html_e( 'No platforms connected. Connect platforms on the Connections page first.', 'social-sync' ); ?></p>
-                    </td>
-                </tr>
-                <?php endif; ?>
             </tbody>
         </table>
 
-        <?php if ( $has_connected ) : ?>
         <p class="submit">
             <button type="submit" name="save" class="button button-primary">
                 <?php esc_html_e( 'Save Autoposting Settings', 'social-sync' ); ?>
             </button>
         </p>
-        <?php endif; ?>
     </form>
 </div>
