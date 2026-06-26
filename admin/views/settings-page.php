@@ -45,27 +45,16 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
             </tbody>
         </table>
 
-        <p class="submit">
-            <button type="submit" name="save" class="button button-primary">
-                <?php esc_html_e( 'Save Settings', 'social-sync' ); ?>
-            </button>
-        </p>
-    </form>
+        <?php if ( ! $dev_mode ) : ?>
+            <div class="notice notice-info inline">
+                <p><?php esc_html_e( 'Enable Developer Mode above to start collecting detailed event logs.', 'social-sync' ); ?></p>
+            </div>
+        <?php endif; ?>
 
-    <hr>
+        <hr>
 
-    <?php if ( ! $dev_mode ) : ?>
-        <div class="notice notice-info inline">
-            <p><?php esc_html_e( 'Enable Developer Mode above to start collecting detailed event logs.', 'social-sync' ); ?></p>
-        </div>
-    <?php endif; ?>
-
-    <h2><?php esc_html_e( 'Autoposting', 'social-sync' ); ?></h2>
-    <p><?php esc_html_e( 'Select which platforms to auto-post to when a WordPress post is published.', 'social-sync' ); ?></p>
-
-    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-        <?php wp_nonce_field( 'socialsync_save_autopost_settings', 'socialsync-autopost-settings-nonce' ); ?>
-        <input type="hidden" name="action" value="socialsync_save_autopost_settings">
+        <h2><?php esc_html_e( 'Autoposting', 'social-sync' ); ?></h2>
+        <p><?php esc_html_e( 'Select which platforms to auto-post to when a WordPress post is published.', 'social-sync' ); ?></p>
 
         <table class="form-table" role="presentation">
             <tbody>
@@ -108,7 +97,7 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
 
         <p class="submit">
             <button type="submit" name="save" class="button button-primary">
-                <?php esc_html_e( 'Save Autoposting Settings', 'social-sync' ); ?>
+                <?php esc_html_e( 'Save Settings', 'social-sync' ); ?>
             </button>
         </p>
     </form>

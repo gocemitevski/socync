@@ -60,7 +60,6 @@ class SocialSync_Admin {
         add_action( 'admin_post_socialsync_save_log_settings', array( $this, 'handle_save_log_settings' ) );
         add_action( 'admin_post_socialsync_save_dev_settings', array( $this, 'handle_save_dev_settings' ) );
         add_action( 'admin_post_socialsync_clear_dev_log', array( $this, 'handle_clear_dev_log' ) );
-        add_action( 'admin_post_socialsync_save_autopost_settings', array( $this, 'handle_save_autopost_settings' ) );
         add_action( 'socialsync_purge_old_logs', array( $this, 'handle_purge_old_logs' ) );
         add_action( 'admin_notices', array( $this, 'admin_dry_run_notice' ) );
         add_filter( 'set-screen-option', array( $this, 'save_log_screen_option' ), 10, 3 );
@@ -1083,6 +1082,11 @@ class SocialSync_Admin {
             update_option( 'socialsync_dry_run', 0 );
         }
 
+        $platforms = isset( $_POST['autopost_platforms'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['autopost_platforms'] ) ) : array();
+        $allowed   = array( 'x', 'linkedin', 'facebook', 'bluesky' );
+        $platforms = array_intersect( $platforms, $allowed );
+        update_option( 'socialsync_autopost_platforms', array_values( $platforms ) );
+
         wp_safe_redirect( admin_url( 'admin.php?page=social-sync-dev&saved=1' ) );
         exit;
     }
@@ -1099,24 +1103,6 @@ class SocialSync_Admin {
         SocialSync_Dev_Logger::clear();
 
         wp_safe_redirect( admin_url( 'admin.php?page=social-sync-dev&cleared=1' ) );
-        exit;
-    }
-
-    /**
-     * Handle saving autoposting platform preferences.
-     */
-    public function handle_save_autopost_settings(): void {
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
-        }
-        check_admin_referer( 'socialsync_save_autopost_settings', 'socialsync-autopost-settings-nonce' );
-
-        $platforms = isset( $_POST['autopost_platforms'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['autopost_platforms'] ) ) : array();
-        $allowed   = array( 'x', 'linkedin', 'facebook', 'bluesky' );
-        $platforms = array_intersect( $platforms, $allowed );
-        update_option( 'socialsync_autopost_platforms', array_values( $platforms ) );
-
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-dev&saved=1' ) );
         exit;
     }
 
