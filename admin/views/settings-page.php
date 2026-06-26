@@ -41,7 +41,7 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
                     <td>
                         <label>
                             <input type="checkbox" name="dry_run" value="1" <?php checked( $dry_run ); ?> <?php disabled( ! $dev_mode ); ?>>
-                            <?php esc_html_e( 'Log everything but skip actual API calls.', 'social-sync' ); ?>
+                            <?php esc_html_e( 'Log everything but skip actual API calls. Requires Developer Mode to be enabled.', 'social-sync' ); ?>
                         </label>
                     </td>
                 </tr>
