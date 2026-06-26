@@ -1113,6 +1113,11 @@ class SocialSync_Admin {
         if ( ! current_user_can( 'manage_options' ) || ! SocialSync_Dev_Logger::is_dry_run() ) {
             return;
         }
+
+        $screen = get_current_screen();
+        if ( ! $screen || false === strpos( $screen->id, 'social-sync' ) ) {
+            return;
+        }
         ?>
         <div class="notice notice-warning is-dismissible">
             <p><?php esc_html_e( 'SocialSync Dry Run mode is active. API calls will be logged but not sent.', 'social-sync' ); ?></p>
