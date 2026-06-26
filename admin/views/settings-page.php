@@ -17,6 +17,9 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
     <?php if ( isset( $_GET['cleared'] ) ) : ?>
         <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Developer log cleared.', 'social-sync' ); ?></p></div>
     <?php endif; ?>
+    <?php if ( ! $dev_mode ) : ?>
+        <div class="notice notice-info is-dismissible"><p><?php esc_html_e( 'Enable Developer Mode to start collecting detailed event logs.', 'social-sync' ); ?></p></div>
+    <?php endif; ?>
 
     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
         <?php wp_nonce_field( 'socialsync_save_dev_settings', 'socialsync-dev-settings-nonce' ); ?>
@@ -44,12 +47,6 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
                 </tr>
             </tbody>
         </table>
-
-        <?php if ( ! $dev_mode ) : ?>
-            <div class="notice notice-info inline">
-                <p><?php esc_html_e( 'Enable Developer Mode above to start collecting detailed event logs.', 'social-sync' ); ?></p>
-            </div>
-        <?php endif; ?>
 
         <hr>
 
