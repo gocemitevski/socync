@@ -24,11 +24,13 @@ All classes follow `SocialSync_{Name}` naming convention.
 
 - **`wp_options`**: tokens, API keys, settings, logs (`socialsync_*` prefixed)
 - **Custom table**: `{$wpdb->prefix}socialsync_scheduled_posts` (created on activation via `SocialSync_Scheduled_Post::create_table()`)
+  - Columns: `id`, `post_id` (WP post ID for auto-posts, 0 for standalone), `title`, `content`, `platforms`, `scheduled_date`, `status`, `error_message`, `created_at`, `updated_at`
 - **`wp_postmeta`** (legacy): `_socialsync_*` keys from the removed metabox — no longer actively used
 
 ## Key Flows
 
-- **Scheduler**: WP-Cron fires `socialsync_run_delayed_posts` every minute to process standalone scheduled posts. Each per-post run is wrapped in try/catch so exceptions don't stall the queue. Content is passed through `html_entity_decode()` before being sent to providers. Each `$provider->publish()` call is wrapped in try/catch — exceptions are caught and returned as `WP_Error` so cron continues to the next platform.
+- **Auto-Post on Publish**: `transition_post_status` hook fires on initial publish (not re-publish). `enqueue_post()` checks `socialsync_autopost_platforms` setting, filters to currently-connected platforms, and inserts a row into `socialsync_scheduled_posts` with `post_id` set and `scheduled_date = now + 2 min` (local timezone). Content is built dynamically at cron time using per-platform prefix/hashtags from settings.
+- **Scheduler**: WP-Cron fires `socialsync_run_delayed_posts` every minute to process both standalone and WP-post-sourced scheduled posts. Each per-post run is wrapped in try/catch so exceptions don't stall the queue. Content is passed through `html_entity_decode()` before being sent to providers. Each `$provider->publish()` call is wrapped in try/catch — exceptions are caught and returned as `WP_Error` so cron continues to the next platform. For WP-post rows, `publish_to_platform()` builds content dynamically from the post title/permalink and per-platform prefix/hashtags.
 - **OAuth**: LinkedIn and Facebook use OAuth 2.0 with state transients (5-min TTL). Callbacks go through `admin-post.php?action=socialsync_oauth_callback_{platform}`.
 - **X (Twitter)**: OAuth 1.0a with HMAC-SHA1 — no OAuth callback flow. Credentials entered directly on settings page.
 - **Bluesky**: App password auth via `com.atproto.server.createSession`. No OAuth2.
@@ -49,6 +51,7 @@ All classes follow `SocialSync_{Name}` naming convention.
 - Assets enqueued only on `social-sync*` hooks
 - Log page uses WP core list table pagination (`.pagination-links`, `.paging-input`, Screen Options for per-page)
 - Dev Mode toggle on Settings page enables the Developer source filter on the Log page
+- Autoposting section on Settings page shows all 4 platforms; disconnected platforms show a disabled checkbox with a link to Connections
 
 ## Encryption (M-3)
 

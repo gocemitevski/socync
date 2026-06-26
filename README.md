@@ -4,11 +4,13 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 ## Features
 
-- **Multi-Platform Support**: Automatically post to X (Twitter), LinkedIn, Facebook, and Bluesky
+- **Auto-Post on Publish**: Automatically push new WordPress posts to all connected platforms 2 minutes after publishing
+- **Per-Platform Autoposting Toggle**: Choose which connected platforms receive auto-posts on the Settings page
+- **Multi-Platform Support**: Post to X (Twitter), LinkedIn, Facebook, and Bluesky
 - **Link Previews with Thumbnails**: LinkedIn and Bluesky posts include OG thumbnail images
 - **Standalone Scheduled Posts**: Create posts directly from the Schedule page — no WP Post required
 - **Flexible Scheduling**: Schedule standalone posts at a specific date and time
-- **Custom Content**: Full control over post content for each platform
+- **Custom Content**: Full control over post content for each platform (prefix, hashtags per platform)
 - **Dry Run Mode**: Preview what would be posted without actually publishing
 - **Clean Admin Interface**: Tabbed settings page with unified Log view
 - **Comprehensive Logging**: Track all posting attempts, errors, and developer-level API details
@@ -53,6 +55,14 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 4. Save credentials (no OAuth redirect)
 
 ## Usage
+
+### Auto-Posting on Publish
+
+When you publish a new WordPress post, SocialSync automatically enqueues it for delivery to all platforms enabled in **SocialSync > Settings > Autoposting**. The post is sent 2 minutes after publishing (to allow for edits).
+
+Content format: `{prefix}: {title} {permalink} {hashtags}` (all on one line).
+
+Configure per-platform prefix and hashtags on the Connections page. Toggle autoposting per platform on the Settings page.
 
 ### Creating a Scheduled Post
 
