@@ -39,6 +39,13 @@ class SocialSync_Scheduled_Post {
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql );
+
+        // Ensure post_id column exists on existing installations.
+        // dbDelta is unreliable for ALTER TABLE on pre-existing tables.
+        $column = $wpdb->get_row( $wpdb->prepare( "SHOW COLUMNS FROM {$table} LIKE %s", 'post_id' ) );
+        if ( ! $column ) {
+            $wpdb->query( "ALTER TABLE {$table} ADD COLUMN post_id BIGINT UNSIGNED DEFAULT 0 AFTER id, ADD KEY post_id (post_id)" );
+        }
     }
 
     public static function insert( array $data ): int {
