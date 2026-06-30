@@ -522,13 +522,14 @@ class SocialSync_Scheduler {
         $log_entry = apply_filters(
             'socialsync_log_entry',
             array(
-                'id'      => uniqid(),
-                'post_id' => intval( wp_unslash( $post_id ) ),
-                'platform'=> sanitize_text_field($platform),
-                'status'  => sanitize_text_field($status),
-                'message' => sanitize_textarea_field(wp_unslash($message)),
-                'date'    => current_time('mysql'),
-                'type'    => in_array( $type, array( 'standalone', 'wp_post' ), true ) ? $type : 'standalone',
+                'id'          => uniqid(),
+                'post_id'     => intval( wp_unslash( $post_id ) ),
+                'log_version' => 2,
+                'platform'    => sanitize_text_field($platform),
+                'status'      => sanitize_text_field($status),
+                'message'     => sanitize_textarea_field(wp_unslash($message)),
+                'date'        => current_time('mysql'),
+                'type'        => in_array( $type, array( 'standalone', 'wp_post' ), true ) ? $type : 'standalone',
             )
         );
 
