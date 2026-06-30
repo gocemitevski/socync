@@ -46,6 +46,16 @@ $entries = array();
 foreach ( $wp_logs as $entry ) {
     $post_id    = isset( $entry['post_id'] ) ? intval( $entry['post_id'] ) : 0;
     $log_type   = isset( $entry['type'] ) ? $entry['type'] : 'wp_post';
+
+    // Resolve the real WP post ID for wp_post entries.
+    // Old entries store the scheduled_post row ID; new entries store the WP post ID directly.
+    if ( 'wp_post' === $log_type && $post_id && ! get_post( $post_id ) ) {
+        $scheduled = SocialSync_Scheduled_Post::get( $post_id );
+        if ( $scheduled && $scheduled->post_id ) {
+            $post_id = (int) $scheduled->post_id;
+        }
+    }
+
     $post_title = 'wp_post' === $log_type && $post_id ? get_the_title( $post_id ) : '';
     $raw_status = isset( $entry['status'] ) ? $entry['status'] : '';
     $entries[]  = array(

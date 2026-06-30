@@ -192,6 +192,8 @@ class SocialSync_Scheduler {
             // Process each post in the queue with rate limiting delay
             foreach ( $posts as $post ) {
                 try {
+                    $log_post_id = 'wp_post' === ( $post['source'] ?? '' ) ? (int) ( $post['post_id'] ?? 0 ) : $post['id'];
+
                     // Skip if this post is still scheduled for a future date
                     if ( $this->is_post_scheduled_for_future( $post ) ) {
                         continue;
@@ -222,7 +224,7 @@ class SocialSync_Scheduler {
                         if ( is_wp_error( $result ) ) {
                             $all_success = false;
                             $this->log_action(
-                                $post['id'],
+                                $log_post_id,
                                 $platform_slug,
                                 'failed',
                                 $result->get_error_message(),
@@ -232,7 +234,7 @@ class SocialSync_Scheduler {
                             $all_success = false;
                             // Log the failed action for debugging and user visibility
                             $this->log_action(
-                                $post['id'],
+                                $log_post_id,
                                 $platform_slug,
                                 'failed',
                                 isset( $result['message'] ) ? $result['message'] : '',
@@ -262,7 +264,7 @@ class SocialSync_Scheduler {
                         SocialSync_Scheduled_Post::update( $post['row_id'], array( 'status' => 'failed' ) );
                     }
                     $this->log_action(
-                        $post['id'] ?? 0,
+                        $log_post_id ?? 0,
                         'system',
                         'failed',
                         $e->getMessage(),
@@ -336,6 +338,7 @@ class SocialSync_Scheduler {
      * @return array Associative array with 'success' => bool and optional 'data'.
      */
     private function publish_to_platform( array $post, string $platform_slug ): array {
+        $log_post_id = 'wp_post' === ( $post['source'] ?? '' ) ? (int) ( $post['post_id'] ?? 0 ) : $post['id'];
         // Instantiate the appropriate platform provider based on slug
         switch ( sanitize_text_field( $platform_slug ) ) {
             case 'x':
@@ -357,7 +360,7 @@ class SocialSync_Scheduler {
             default:
                 // Unknown platform - skip with error logging
                 $this->log_action(
-                    isset( $post['id'] ) ? intval( wp_unslash( $post['id'] ) ) : 0,
+                    $log_post_id,
                     sanitize_text_field( $platform_slug ),
                     'failed',
                     __( 'Unknown or unsupported social media platform.', 'social-sync' ),
@@ -469,7 +472,7 @@ class SocialSync_Scheduler {
             if ( true === $result['success'] ) {
                 // Log successful post with optional post ID from response data
                 $this->log_action(
-                    isset($post['id']) ? intval( wp_unslash( $post['id'] ) ) : 0,
+                    $log_post_id,
                     sanitize_text_field($platform_slug),
                     'success',
                     isset($result['data']['id']) ? sprintf(
@@ -482,7 +485,7 @@ class SocialSync_Scheduler {
             } else {
                 // Log failed post with error message from API response or generic failure
                 $this->log_action(
-                    isset($post['id']) ? intval( wp_unslash( $post['id'] ) ) : 0,
+                    $log_post_id,
                     sanitize_text_field($platform_slug),
                     'failed',
                     isset($result['message']) ? 
