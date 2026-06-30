@@ -64,7 +64,7 @@ foreach ( $wp_logs as $entry ) {
     $entries[]  = array(
         'type'      => $log_type,
         'post_id'   => $post_id,
-        'title'     => $post_title ?: __( '(untitled)', 'social-sync' ),
+        'title'     => $post_title ?: ( 'standalone' === $log_type ? '—' : __( '(untitled)', 'social-sync' ) ),
         'platform'  => isset( $entry['platform'] ) ? $entry['platform'] : '',
         'status'    => 'pending' === $raw_status ? 'scheduled' : $raw_status,
         'date'      => isset( $entry['date'] ) ? $entry['date'] : '',
