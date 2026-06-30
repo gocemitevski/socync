@@ -47,12 +47,15 @@ foreach ( $wp_logs as $entry ) {
     $post_id    = isset( $entry['post_id'] ) ? intval( $entry['post_id'] ) : 0;
     $log_type   = isset( $entry['type'] ) ? $entry['type'] : 'wp_post';
 
-    // Resolve the real WP post ID for wp_post entries.
-    // Old entries store the scheduled_post row ID; new entries store the WP post ID directly.
-    if ( 'wp_post' === $log_type && $post_id && ! get_post( $post_id ) ) {
-        $scheduled = SocialSync_Scheduled_Post::get( $post_id );
-        if ( $scheduled && $scheduled->post_id ) {
-            $post_id = (int) $scheduled->post_id;
+    // v1 entries stored the scheduled_post row ID instead of the WP post ID.
+    // v2+ entries (after the scheduler fix) have the correct WP post ID.
+    if ( 'wp_post' === $log_type && $post_id ) {
+        $log_version = isset( $entry['log_version'] ) ? (int) $entry['log_version'] : 0;
+        if ( $log_version < 2 ) {
+            $scheduled = SocialSync_Scheduled_Post::get( $post_id );
+            if ( $scheduled && $scheduled->post_id ) {
+                $post_id = (int) $scheduled->post_id;
+            }
         }
     }
 
