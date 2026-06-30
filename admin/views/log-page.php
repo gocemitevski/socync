@@ -288,10 +288,12 @@ $entries     = array_slice( $entries, $offset, $per_page );
                                 esc_html_e( 'Developer', 'social-sync' );
                             } elseif ( 'oauth' === $entry['platform'] ) {
                                 esc_html_e( 'SocialSync', 'social-sync' );
-                            } elseif ( in_array( $entry['type'], array( 'wp_post', 'standalone' ), true ) ) {
+                            } elseif ( 'wp_post' === $entry['type'] ) {
                                 esc_html_e( 'WP Post', 'social-sync' );
-                            } else {
+                            } elseif ( 'standalone' === $entry['type'] ) {
                                 esc_html_e( 'Scheduled', 'social-sync' );
+                            } else {
+                                esc_html_e( 'SocialSync', 'social-sync' );
                             }
                             ?>
                         </td>
