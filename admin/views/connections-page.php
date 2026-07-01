@@ -152,6 +152,10 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $linkedin_connected || ! $linkedin_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
+                <p class="description" style="margin-bottom:0">
+                    <?php esc_html_e( 'OAuth Redirect URL (enter this in your LinkedIn app settings):', 'social-sync' ); ?>
+                </p>
+                <code style="display:inline-block;padding:6px 10px;margin:6px 0 16px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:2px;user-select:all;font-size:13px"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' ) ); ?></code>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_linkedin', 'socialsync-connect-linkedin-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_linkedin">
@@ -236,6 +240,10 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $facebook_connected || ! $facebook_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
+                <p class="description" style="margin-bottom:0">
+                    <?php esc_html_e( 'OAuth Redirect URL (enter this in your Facebook app settings):', 'social-sync' ); ?>
+                </p>
+                <code style="display:inline-block;padding:6px 10px;margin:6px 0 16px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:2px;user-select:all;font-size:13px"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' ) ); ?></code>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_facebook', 'socialsync-connect-facebook-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_facebook">
