@@ -72,7 +72,11 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
                     <th scope="row"><?php esc_html_e( 'Platforms', 'social-sync' ); ?></th>
                     <td>
                         <?php
-                        $selected_platforms = $edit_item ? json_decode( $edit_item->platforms, true ) : array();
+                        if ( $edit_item ) {
+                            $selected_platforms = json_decode( $edit_item->platforms, true ) ?: array();
+                        } else {
+                            $selected_platforms = get_option( 'socialsync_autopost_platforms', array() );
+                        }
                         if ( ! is_array( $selected_platforms ) ) {
                             $selected_platforms = array();
                         }
