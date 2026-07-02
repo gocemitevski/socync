@@ -78,3 +78,30 @@
     background: var(--socialsync-danger);
     border-color: var(--socialsync-danger);
 }
+
+.socialsync-tab-content details {
+    margin: 1em 0;
+    padding: 10px 14px;
+    background: #f6f7f7;
+    border: 1px solid var(--socialsync-border);
+    border-radius: var(--socialsync-radius);
+}
+
+.socialsync-tab-content summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.socialsync-tab-content details[open] summary {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--socialsync-border);
+}
+
+.socialsync-tab-content details ol {
+    margin: 0 0 0 1.5em;
+}
+
+.socialsync-tab-content details ol li {
+    margin-bottom: 6px;
+}
