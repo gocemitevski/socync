@@ -87,18 +87,18 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $x_connected || ! $x_has_credentials ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <p class="description" style="margin-bottom:0">
+                <p class="description">
                     <?php esc_html_e( 'OAuth Redirect URL (enter this in your X app settings):', 'social-sync' ); ?>
                 </p>
                 <code class="socialsync-oauth-url"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' ) ); ?></code>
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
-                        <li><?php esc_html_e( 'Go to developer.x.com → Projects & Apps → Create App (Web App).', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'Under User Authentication Settings, enable OAuth 2.0, set App Type to Web App.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'Paste the redirect URL above into the Redirect URI field.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'Under Permissions, check Read and Write + Offline access.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'Save, then copy the Client ID and Client Secret from the Keys and Tokens tab.', 'social-sync' ); ?></li>
+                        <li><?php echo wp_kses( __( 'Go to <strong>developer.x.com</strong> → <strong>Projects &amp; Apps</strong> → <strong>Create App</strong> (Web App).', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Under <strong>User Authentication Settings</strong>, enable <strong>OAuth 2.0</strong>, set App Type to <strong>Web App</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Paste the redirect URL above into the <strong>Redirect URI</strong> field.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Under <strong>Permissions</strong>, check <strong>Read and Write</strong> + <strong>Offline access</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Save, then copy the <strong>Client ID</strong> and <strong>Client Secret</strong> from the <strong>Keys and Tokens</strong> tab.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                     </ol>
                 </details>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -157,17 +157,17 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $linkedin_connected || ! $linkedin_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <p class="description" style="margin-bottom:0">
+                <p class="description">
                     <?php esc_html_e( 'OAuth Redirect URL (enter this in your LinkedIn app settings):', 'social-sync' ); ?>
                 </p>
                 <code class="socialsync-oauth-url"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' ) ); ?></code>
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
-                        <li><?php esc_html_e( 'Go to developer.linkedin.com → My Apps → Create App.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'In the Products tab, add Share on LinkedIn. Also request Posts API if available.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'In the Auth tab, add the redirect URL above to Authorized redirect URLs for your app.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'From the Auth tab, copy the Client ID and Client Secret.', 'social-sync' ); ?></li>
+                        <li><?php echo wp_kses( __( 'Go to <strong>developer.linkedin.com</strong> → <strong>My Apps</strong> → <strong>Create App</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'In the <strong>Products</strong> tab, add <strong>Share on LinkedIn</strong>. Also request <strong>Posts API</strong> if available.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'In the <strong>Auth</strong> tab, add the redirect URL above to <strong>Authorized redirect URLs</strong> for your app.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'From the <strong>Auth</strong> tab, copy the <strong>Client ID</strong> and <strong>Client Secret</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                     </ol>
                 </details>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -254,17 +254,17 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $facebook_connected || ! $facebook_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <p class="description" style="margin-bottom:0">
+                <p class="description">
                     <?php esc_html_e( 'OAuth Redirect URL (enter this in your Facebook app settings):', 'social-sync' ); ?>
                 </p>
                 <code class="socialsync-oauth-url"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' ) ); ?></code>
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
-                        <li><?php esc_html_e( 'Go to developers.facebook.com → My Apps → Create App → Business.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'Add the Pages API permission to your app.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'From Settings → Basic, copy the App ID and App Secret.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'Under Facebook Login → Settings, add the redirect URL above to Valid OAuth Redirect URIs.', 'social-sync' ); ?></li>
+                        <li><?php echo wp_kses( __( 'Go to <strong>developers.facebook.com</strong> → <strong>My Apps</strong> → <strong>Create App</strong> → <strong>Business</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Add the <strong>Pages API</strong> permission to your app.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'From <strong>Settings → Basic</strong>, copy the <strong>App ID</strong> and <strong>App Secret</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Under <strong>Facebook Login → Settings</strong>, add the redirect URL above to <strong>Valid OAuth Redirect URIs</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                     </ol>
                 </details>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -356,8 +356,8 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
-                        <li><?php esc_html_e( 'Sign in to bsky.app → Settings → App Passwords.', 'social-sync' ); ?></li>
-                        <li><?php esc_html_e( 'Click Add App Password, name it "SocialSync", copy the generated password.', 'social-sync' ); ?></li>
+                        <li><?php echo wp_kses( __( 'Sign in to <strong>bsky.app</strong> → <strong>Settings</strong> → <strong>App Passwords</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Click <strong>Add App Password</strong>, name it "SocialSync", copy the generated password.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                         <li><?php esc_html_e( 'Enter your handle (or email) and the app password below.', 'social-sync' ); ?></li>
                     </ol>
                 </details>
