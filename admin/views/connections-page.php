@@ -91,7 +91,16 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                     <?php esc_html_e( 'OAuth Redirect URL (enter this in your X app settings):', 'social-sync' ); ?>
                 </p>
                 <code style="display:inline-block;padding:6px 10px;margin:6px 0 16px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:2px;user-select:all;font-size:13px"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' ) ); ?></code>
-                <p><?php esc_html_e( 'Enter your X OAuth 2.0 Client ID and Client Secret. Create a Web App in the X Developer Portal with OAuth 2.0 enabled and the redirect URL above configured.', 'social-sync' ); ?></p>
+                <details>
+                    <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
+                    <ol>
+                        <li><?php esc_html_e( 'Go to developer.x.com → Projects & Apps → Create App (Web App).', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'Under User Authentication Settings, enable OAuth 2.0, set App Type to Web App.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'Paste the redirect URL above into the Redirect URI field.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'Under Permissions, check Read and Write + Offline access.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'Save, then copy the Client ID and Client Secret from the Keys and Tokens tab.', 'social-sync' ); ?></li>
+                    </ol>
+                </details>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_x', 'socialsync-connect-x-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_x">
@@ -152,6 +161,15 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                     <?php esc_html_e( 'OAuth Redirect URL (enter this in your LinkedIn app settings):', 'social-sync' ); ?>
                 </p>
                 <code style="display:inline-block;padding:6px 10px;margin:6px 0 16px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:2px;user-select:all;font-size:13px"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' ) ); ?></code>
+                <details>
+                    <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
+                    <ol>
+                        <li><?php esc_html_e( 'Go to developer.linkedin.com → My Apps → Create App.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'In the Products tab, add Share on LinkedIn. Also request Posts API if available.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'In the Auth tab, add the redirect URL above to Authorized redirect URLs for your app.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'From the Auth tab, copy the Client ID and Client Secret.', 'social-sync' ); ?></li>
+                    </ol>
+                </details>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_linkedin', 'socialsync-connect-linkedin-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_linkedin">
@@ -240,6 +258,15 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                     <?php esc_html_e( 'OAuth Redirect URL (enter this in your Facebook app settings):', 'social-sync' ); ?>
                 </p>
                 <code style="display:inline-block;padding:6px 10px;margin:6px 0 16px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:2px;user-select:all;font-size:13px"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' ) ); ?></code>
+                <details>
+                    <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
+                    <ol>
+                        <li><?php esc_html_e( 'Go to developers.facebook.com → My Apps → Create App → Business.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'Add the Pages API permission to your app.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'From Settings → Basic, copy the App ID and App Secret.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'Under Facebook Login → Settings, add the redirect URL above to Valid OAuth Redirect URIs.', 'social-sync' ); ?></li>
+                    </ol>
+                </details>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_facebook', 'socialsync-connect-facebook-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_facebook">
@@ -326,7 +353,14 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $bluesky_connected || ! $bluesky_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <p><?php esc_html_e( 'Enter your Bluesky handle (or email) and an App Password. Generate an App Password from Settings &raquo; App Passwords in Bluesky.', 'social-sync' ); ?></p>
+                <details>
+                    <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
+                    <ol>
+                        <li><?php esc_html_e( 'Sign in to bsky.app → Settings → App Passwords.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'Click Add App Password, name it "SocialSync", copy the generated password.', 'social-sync' ); ?></li>
+                        <li><?php esc_html_e( 'Enter your handle (or email) and the app password below.', 'social-sync' ); ?></li>
+                    </ol>
+                </details>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_bluesky', 'socialsync-connect-bluesky-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_bluesky">
