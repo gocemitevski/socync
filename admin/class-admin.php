@@ -47,6 +47,7 @@ class SocialSync_Admin {
         add_action( 'admin_post_socialsync_disconnect_facebook', array( $this, 'handle_disconnect_facebook' ) );
         add_action( 'admin_post_socialsync_connect_bluesky', array( $this, 'handle_connect_bluesky' ) );
         add_action( 'admin_post_socialsync_disconnect_bluesky', array( $this, 'handle_disconnect_bluesky' ) );
+        add_action( 'admin_post_socialsync_oauth_callback_x', array( $this, 'handle_oauth_callback_x' ) );
         add_action( 'admin_post_socialsync_oauth_callback_linkedin', array( $this, 'handle_oauth_callback_linkedin' ) );
         add_action( 'admin_post_socialsync_oauth_callback_facebook', array( $this, 'handle_oauth_callback_facebook' ) );
         add_action( 'admin_post_socialsync_delete_log', array( $this, 'handle_delete_log' ) );
@@ -219,22 +220,42 @@ class SocialSync_Admin {
         }
         check_admin_referer( 'socialsync_connect_x', 'socialsync-connect-x-nonce' );
 
-        $api_key             = sanitize_text_field( wp_unslash( $_POST['x_api_key'] ?? '' ) );
-        $api_key_secret      = sanitize_text_field( wp_unslash( $_POST['x_api_key_secret'] ?? '' ) );
-        $access_token        = sanitize_text_field( wp_unslash( $_POST['x_access_token'] ?? '' ) );
-        $access_token_secret = sanitize_text_field( wp_unslash( $_POST['x_access_token_secret'] ?? '' ) );
+        $client_id     = sanitize_text_field( wp_unslash( $_POST['x_client_id'] ?? '' ) );
+        $client_secret = sanitize_text_field( wp_unslash( $_POST['x_client_secret'] ?? '' ) );
 
-        if ( empty( $api_key ) || empty( $api_key_secret ) || empty( $access_token ) || empty( $access_token_secret ) ) {
-            wp_die( esc_html__( 'All four credential fields are required.', 'social-sync' ) );
+        if ( empty( $client_id ) || empty( $client_secret ) ) {
+            wp_die( esc_html__( 'Client ID and Client Secret are required.', 'social-sync' ) );
         }
 
-        update_option( 'socialsync_x_api_key', $api_key );
-        update_option( 'socialsync_x_api_key_secret', $api_key_secret );
-        update_option( 'socialsync_x_access_token', $access_token );
-        update_option( 'socialsync_x_access_token_secret', $access_token_secret );
-        update_option( 'socialsync_x_connected', true );
+        update_option( 'socialsync_x_client_id', $client_id );
+        update_option( 'socialsync_x_client_secret', $client_secret );
 
-        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1&tab=x' ) );
+        $raw_state = wp_generate_password( 32, false );
+        $state     = 'x_' . $raw_state;
+        set_transient( 'socialsync_x_oauth_state', $state, 300 );
+
+        $code_verifier = bin2hex( random_bytes( 32 ) );
+        $code_challenge = rtrim( strtr( base64_encode( hash( 'sha256', $code_verifier, true ) ), '+/', '-_' ), '=' );
+        set_transient( 'socialsync_x_code_verifier', $code_verifier, 300 );
+
+        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' );
+
+        $auth_url = 'https://x.com/i/oauth2/authorize?' . http_build_query(
+            array(
+                'response_type'         => 'code',
+                'client_id'             => $client_id,
+                'redirect_uri'          => $redirect_uri,
+                'scope'                 => 'tweet.read tweet.write users.read offline.access',
+                'state'                 => $state,
+                'code_challenge'        => $code_challenge,
+                'code_challenge_method' => 'S256',
+            ),
+            '',
+            '&',
+            PHP_QUERY_RFC3986
+        );
+
+        wp_redirect( $auth_url );
         exit;
     }
 
@@ -252,6 +273,104 @@ class SocialSync_Admin {
 
         wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&disconnected=1&tab=x' ) );
         exit;
+    }
+
+    /**
+     * Handle OAuth callback from X after user authorization.
+     */
+    public function handle_oauth_callback_x(): void {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+        }
+
+        $code  = sanitize_text_field( wp_unslash( $_GET['code'] ?? '' ) );
+        $state = sanitize_text_field( wp_unslash( $_GET['state'] ?? '' ) );
+        $error = sanitize_text_field( wp_unslash( $_GET['error'] ?? '' ) );
+
+        if ( ! empty( $error ) ) {
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( $error ) . '&tab=x' ) );
+            exit;
+        }
+
+        if ( empty( $code ) || empty( $state ) ) {
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Invalid OAuth callback parameters.' ) . '&tab=x' ) );
+            exit;
+        }
+
+        $expected_state = get_transient( 'socialsync_x_oauth_state' );
+        if ( $expected_state !== $state ) {
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Invalid OAuth state parameter.' ) . '&tab=x' ) );
+            exit;
+        }
+        delete_transient( 'socialsync_x_oauth_state' );
+
+        $code_verifier = get_transient( 'socialsync_x_code_verifier' );
+        delete_transient( 'socialsync_x_code_verifier' );
+
+        if ( empty( $code_verifier ) ) {
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'PKCE code verifier expired. Please try again.' ) . '&tab=x' ) );
+            exit;
+        }
+
+        $redirect_uri = admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' );
+        $this->exchange_x_token( $code, $redirect_uri, $code_verifier );
+
+        update_option( 'socialsync_x_connected', true );
+        wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1&tab=x' ) );
+        exit;
+    }
+
+    /**
+     * Exchange authorization code for X access token via OAuth 2.0 token endpoint.
+     *
+     * @param string $code         Authorization code from OAuth callback.
+     * @param string $redirect_uri Redirect URI used in the auth request.
+     * @param string $code_verifier PKCE code verifier generated during connect.
+     */
+    private function exchange_x_token( string $code, string $redirect_uri, string $code_verifier ): void {
+        $client_id     = get_option( 'socialsync_x_client_id' );
+        $client_secret = get_option( 'socialsync_x_client_secret' );
+        $basic_auth    = base64_encode( $client_id . ':' . $client_secret );
+
+        $response = wp_remote_post(
+            'https://api.x.com/2/oauth2/token',
+            array(
+                'headers' => array(
+                    'Content-Type'  => 'application/x-www-form-urlencoded',
+                    'Authorization' => 'Basic ' . $basic_auth,
+                ),
+                'body' => array(
+                    'grant_type'    => 'authorization_code',
+                    'code'          => $code,
+                    'redirect_uri'  => $redirect_uri,
+                    'code_verifier' => $code_verifier,
+                ),
+                'timeout' => 15,
+            )
+        );
+
+        if ( is_wp_error( $response ) ) {
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Token exchange failed: ' . $response->get_error_message() ) . '&tab=x' ) );
+            exit;
+        }
+
+        $body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+        if ( ! isset( $body['access_token'] ) ) {
+            $err = isset( $body['error_description'] ) ? $body['error_description'] : ( isset( $body['error'] ) ? $body['error'] : 'Failed to obtain X access token.' );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( $err ) . '&tab=x' ) );
+            exit;
+        }
+
+        update_option(
+            'socialsync_x_token',
+            array(
+                'access_token'  => sanitize_text_field( $body['access_token'] ),
+                'refresh_token' => isset( $body['refresh_token'] ) ? sanitize_text_field( $body['refresh_token'] ) : '',
+                'expires_in'    => intval( $body['expires_in'] ?? 7200 ),
+                'created_at'    => time(),
+            )
+        );
     }
 
     /**
