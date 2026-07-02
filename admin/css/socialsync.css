@@ -2,6 +2,7 @@
     --socialsync-border: #c3c4c7;
     --socialsync-bg-muted: #f0f0f1;
     --socialsync-bg: #fff;
+    --socialsync-bg-subtle: #f7f7f7;
     --socialsync-danger: #b32d2e;
     --socialsync-radius: 4px;
     --socialsync-gap: 12px;
@@ -82,7 +83,7 @@
 .socialsync-tab-content details {
     margin: 1em 0;
     padding: 10px 14px;
-    background: #f6f7f7;
+    background: var(--socialsync-bg-subtle);
     border: 1px solid var(--socialsync-border);
     border-radius: var(--socialsync-radius);
 }
@@ -104,15 +105,4 @@
 
 .socialsync-tab-content details ol li {
     margin-bottom: 6px;
-}
-
-.socialsync-oauth-url {
-    display: inline-block;
-    padding: 6px 10px;
-    margin: 6px 0 16px;
-    background: #f0f0f1;
-    border: 1px solid #c3c4c7;
-    border-radius: 2px;
-    user-select: all;
-    font-size: 13px;
 }
