@@ -37,7 +37,7 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
             <div class="notice notice-success is-dismissible"><p><?php echo esc_html( sprintf( __( '%s: Posted successfully.', 'social-sync' ), $label ) ); ?></p></div>
         <?php endif; ?>
         <?php if ( isset( $_GET[ 'error_' . $slug ] ) ) : ?>
-            <div class="notice notice-error is-dismissible"><p><?php echo esc_html( sprintf( __( '%s: %s', 'social-sync' ), $label, wp_unslash( $_GET[ 'error_' . $slug ] ) ) ); ?></p></div>
+            <div class="notice notice-error is-dismissible"><p><?php                 echo esc_html( sprintf( __( '%s: %s', 'social-sync' ), $label, sanitize_text_field( wp_unslash( $_GET[ 'error_' . $slug ] ) ) ) ); ?></p></div>
         <?php endif; ?>
     <?php endforeach; ?>
     <?php if ( isset( $_GET['dry_run'] ) ) : ?>
