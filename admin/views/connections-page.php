@@ -14,7 +14,7 @@ $x_connected = get_option( 'socialsync_x_connected', false );
 $linkedin_connected = get_option( 'socialsync_linkedin_connected', false );
 $facebook_connected = get_option( 'socialsync_facebook_connected', false );
 $bluesky_connected = get_option( 'socialsync_bluesky_connected', false );
-$x_api_key_exists = ! empty( get_option( 'socialsync_x_api_key', '' ) );
+$x_has_credentials = ! empty( get_option( 'socialsync_x_token', '' ) ) || ! empty( get_option( 'socialsync_x_client_id', '' ) ) || ! empty( get_option( 'socialsync_x_api_key', '' ) );
 $linkedin_token = get_option( 'socialsync_linkedin_token', '' );
 $facebook_token = get_option( 'socialsync_facebook_token', '' );
 $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
@@ -51,7 +51,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
         </div>
 
         <div id="x" class="socialsync-tab-content<?php echo 'x' === $tab_from_get ? ' active' : ''; ?>">
-            <?php if ( $x_connected && $x_api_key_exists ) : ?>
+            <?php if ( $x_connected && $x_has_credentials ) : ?>
                 <div class="socialsync-connected-row">
                     <div class="notice notice-success inline">
                         <span class="dashicons dashicons-yes"></span> <?php esc_html_e( 'Connected', 'social-sync' ); ?>
@@ -84,30 +84,26 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <p class="submit"><button type="submit" class="button button-primary"><?php esc_html_e( 'Save', 'social-sync' ); ?></button></p>
             </form>
 
-            <?php if ( ! $x_connected || ! $x_api_key_exists ) : ?>
+            <?php if ( ! $x_connected || ! $x_has_credentials ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <p><?php esc_html_e( 'Enter your X API credentials. Generate an Access Token and Secret from your X Developer Portal App &raquo; Keys and Tokens (OAuth 1.0a User Context).', 'social-sync' ); ?></p>
+                <p class="description" style="margin-bottom:0">
+                    <?php esc_html_e( 'OAuth Redirect URL (enter this in your X app settings):', 'social-sync' ); ?>
+                </p>
+                <code style="display:inline-block;padding:6px 10px;margin:6px 0 16px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:2px;user-select:all;font-size:13px"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' ) ); ?></code>
+                <p><?php esc_html_e( 'Enter your X OAuth 2.0 Client ID and Client Secret. Create a Web App in the X Developer Portal with OAuth 2.0 enabled and the redirect URL above configured.', 'social-sync' ); ?></p>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_x', 'socialsync-connect-x-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_x">
                     <input type="hidden" name="tab" value="x">
                     <table class="form-table" role="presentation">
                         <tr>
-                            <th scope="row"><label for="x_api_key"><?php esc_html_e( 'API Key', 'social-sync' ); ?></label></th>
-                            <td><input type="text" id="x_api_key" name="x_api_key" class="large-text" required></td>
+                            <th scope="row"><label for="x_client_id"><?php esc_html_e( 'Client ID', 'social-sync' ); ?></label></th>
+                            <td><input type="text" id="x_client_id" name="x_client_id" class="large-text" required></td>
                         </tr>
                         <tr>
-                            <th scope="row"><label for="x_api_key_secret"><?php esc_html_e( 'API Key Secret', 'social-sync' ); ?></label></th>
-                            <td><input type="text" id="x_api_key_secret" name="x_api_key_secret" class="large-text" required></td>
-                        </tr>
-                        <tr>
-                            <th scope="row"><label for="x_access_token"><?php esc_html_e( 'Access Token', 'social-sync' ); ?></label></th>
-                            <td><input type="text" id="x_access_token" name="x_access_token" class="large-text" required></td>
-                        </tr>
-                        <tr>
-                            <th scope="row"><label for="x_access_token_secret"><?php esc_html_e( 'Access Token Secret', 'social-sync' ); ?></label></th>
-                            <td><input type="text" id="x_access_token_secret" name="x_access_token_secret" class="large-text" required></td>
+                            <th scope="row"><label for="x_client_secret"><?php esc_html_e( 'Client Secret', 'social-sync' ); ?></label></th>
+                            <td><input type="text" id="x_client_secret" name="x_client_secret" class="large-text" required></td>
                         </tr>
                     </table>
                     <p class="submit"><button type="submit" class="button button-primary"><?php esc_html_e( 'Connect', 'social-sync' ); ?></button></p>

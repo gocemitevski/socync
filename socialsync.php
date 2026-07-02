@@ -129,6 +129,8 @@ function socialsync_encrypted_options(): array {
         'socialsync_x_api_key_secret',
         'socialsync_x_access_token',
         'socialsync_x_access_token_secret',
+        'socialsync_x_client_secret',
+        'socialsync_x_token',
         'socialsync_linkedin_client_secret',
         'socialsync_facebook_app_secret',
         'socialsync_bluesky_app_password',
