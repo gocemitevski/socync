@@ -88,7 +88,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
                 <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'social-sync' ); ?></strong></p>
-                <textarea class="large-text" rows="1" readonly onclick="this.select()" placeholder="<?php esc_attr_e( 'Paste this URL into your X app settings', 'social-sync' ); ?>"><?php echo esc_textarea( admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' ) ); ?></textarea>
+                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' ) ); ?>" />
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
@@ -156,7 +156,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
                 <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'social-sync' ); ?></strong></p>
-                <textarea class="large-text" rows="1" readonly onclick="this.select()" placeholder="<?php esc_attr_e( 'Paste this URL into your LinkedIn app settings', 'social-sync' ); ?>"><?php echo esc_textarea( admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' ) ); ?></textarea>
+                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' ) ); ?>" />
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
@@ -251,7 +251,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
                 <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'social-sync' ); ?></strong></p>
-                <textarea class="large-text" rows="1" readonly onclick="this.select()" placeholder="<?php esc_attr_e( 'Paste this URL into your Facebook app settings', 'social-sync' ); ?>"><?php echo esc_textarea( admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' ) ); ?></textarea>
+                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' ) ); ?>" />
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
