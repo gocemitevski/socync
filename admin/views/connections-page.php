@@ -87,18 +87,18 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $x_connected || ! $x_has_credentials ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'social-sync' ); ?></strong></p>
-                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' ) ); ?>" />
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
                         <li><?php echo wp_kses( __( 'Go to <strong>developer.x.com</strong> → <strong>Projects &amp; Apps</strong> → <strong>Create App</strong> (Web App).', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                         <li><?php echo wp_kses( __( 'Under <strong>User Authentication Settings</strong>, enable <strong>OAuth 2.0</strong>, set App Type to <strong>Web App</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
-                        <li><?php echo wp_kses( __( 'Paste the redirect URL above into the <strong>Redirect URI</strong> field.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Paste the redirect URL below into the <strong>Redirect URI</strong> field.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                         <li><?php echo wp_kses( __( 'Under <strong>Permissions</strong>, check <strong>Read and Write</strong> + <strong>Offline access</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                         <li><?php echo wp_kses( __( 'Save, then copy the <strong>Client ID</strong> and <strong>Client Secret</strong> from the <strong>Keys and Tokens</strong> tab.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                     </ol>
                 </details>
+                <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'social-sync' ); ?></strong></p>
+                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' ) ); ?>" />
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_x', 'socialsync-connect-x-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_x">
@@ -155,8 +155,6 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $linkedin_connected || ! $linkedin_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'social-sync' ); ?></strong></p>
-                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' ) ); ?>" />
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
@@ -166,6 +164,8 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                         <li><?php echo wp_kses( __( 'From the <strong>Auth</strong> tab, copy the <strong>Client ID</strong> and <strong>Client Secret</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                     </ol>
                 </details>
+                <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'social-sync' ); ?></strong></p>
+                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' ) ); ?>" />
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_linkedin', 'socialsync-connect-linkedin-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_linkedin">
@@ -250,8 +250,6 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $facebook_connected || ! $facebook_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'social-sync' ); ?></strong></p>
-                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' ) ); ?>" />
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
@@ -261,6 +259,8 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                         <li><?php echo wp_kses( __( 'Under <strong>Facebook Login → Settings</strong>, add the redirect URL above to <strong>Valid OAuth Redirect URIs</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
                     </ol>
                 </details>
+                <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'social-sync' ); ?></strong></p>
+                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' ) ); ?>" />
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socialsync_connect_facebook', 'socialsync-connect-facebook-nonce' ); ?>
                     <input type="hidden" name="action" value="socialsync_connect_facebook">
