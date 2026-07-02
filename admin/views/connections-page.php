@@ -90,7 +90,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <p class="description" style="margin-bottom:0">
                     <?php esc_html_e( 'OAuth Redirect URL (enter this in your X app settings):', 'social-sync' ); ?>
                 </p>
-                <code style="display:inline-block;padding:6px 10px;margin:6px 0 16px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:2px;user-select:all;font-size:13px"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' ) ); ?></code>
+                <code class="socialsync-oauth-url"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_x' ) ); ?></code>
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
@@ -160,7 +160,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <p class="description" style="margin-bottom:0">
                     <?php esc_html_e( 'OAuth Redirect URL (enter this in your LinkedIn app settings):', 'social-sync' ); ?>
                 </p>
-                <code style="display:inline-block;padding:6px 10px;margin:6px 0 16px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:2px;user-select:all;font-size:13px"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' ) ); ?></code>
+                <code class="socialsync-oauth-url"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_linkedin' ) ); ?></code>
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
@@ -257,7 +257,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
                 <p class="description" style="margin-bottom:0">
                     <?php esc_html_e( 'OAuth Redirect URL (enter this in your Facebook app settings):', 'social-sync' ); ?>
                 </p>
-                <code style="display:inline-block;padding:6px 10px;margin:6px 0 16px;background:#f0f0f1;border:1px solid #c3c4c7;border-radius:2px;user-select:all;font-size:13px"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' ) ); ?></code>
+                <code class="socialsync-oauth-url"><?php echo esc_url( admin_url( 'admin-post.php?action=socialsync_oauth_callback_facebook' ) ); ?></code>
                 <details>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>

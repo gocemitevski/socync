@@ -105,3 +105,14 @@
 .socialsync-tab-content details ol li {
     margin-bottom: 6px;
 }
+
+.socialsync-oauth-url {
+    display: inline-block;
+    padding: 6px 10px;
+    margin: 6px 0 16px;
+    background: #f0f0f1;
+    border: 1px solid #c3c4c7;
+    border-radius: 2px;
+    user-select: all;
+    font-size: 13px;
+}
