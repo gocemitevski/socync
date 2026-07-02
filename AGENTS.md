@@ -31,15 +31,18 @@ All classes follow `SocialSync_{Name}` naming convention.
 
 - **Auto-Post on Publish**: `transition_post_status` hook fires on initial publish (not re-publish). `enqueue_post()` checks `socialsync_autopost_platforms` setting, filters to currently-connected platforms, and inserts a row into `socialsync_scheduled_posts` with `post_id` set and `scheduled_date = now + 2 min` (local timezone). Content is built dynamically at cron time using per-platform prefix/hashtags from settings.
 - **Scheduler**: WP-Cron fires `socialsync_run_delayed_posts` every minute to process both standalone and WP-post-sourced scheduled posts. Each per-post run is wrapped in try/catch so exceptions don't stall the queue. Content is passed through `html_entity_decode()` before being sent to providers. Each `$provider->publish()` call is wrapped in try/catch — exceptions are caught and returned as `WP_Error` so cron continues to the next platform. For WP-post rows, `publish_to_platform()` builds content dynamically from the post title/permalink and per-platform prefix/hashtags.
+- **Log Resolution (log_version)**: Log entries store a `log_version` field. v1 entries stored the scheduled_post row ID in `post_id`; v2+ store the resolved WP post ID. The Log page uses this field to resolve old entries correctly — falling back through `SocialSync_Scheduled_Post::get()` for v1, direct `get_post()` for v2+.
+- **Schedule Page Defaults**: New standalone scheduled posts pre-check platforms from the `socialsync_autopost_platforms` option. Editing existing posts preserves the stored platforms JSON column.
+- **OAuth Redirect URL Display**: LinkedIn and Facebook callback URLs shown as copy-friendly `<code>` blocks with `user-select:all` above their Connect forms on the Connections page.
 - **OAuth**: LinkedIn and Facebook use OAuth 2.0 with state transients (5-min TTL). Callbacks go through `admin-post.php?action=socialsync_oauth_callback_{platform}`.
-- **X (Twitter)**: OAuth 1.0a with HMAC-SHA1 — no OAuth callback flow. Credentials entered directly on settings page.
+- **X (Twitter)**: OAuth 2.0 Authorization Code with PKCE (confidential client with Basic auth for token exchange). Token refresh via `offline.access` scope. OAuth 1.0a HMAC-SHA1 fallback retained — `auth_mode` auto-detected from stored credentials.
 - **Bluesky**: App password auth via `com.atproto.server.createSession`. No OAuth2.
 - **Dev Logger**: Captures API request/response details, publish steps, and cron events to a 500-entry ring buffer in `socialsync_dev_logs`. Toggled via Dev Mode on Settings page. Sensitive fields (`access_token`, `refresh_token`, `client_secret`, `app_password`, `password`) are redacted before logging.
 - **Admin assets**: `socialsync-admin` stylesheet depends on WP core `list-tables` to ensure proper pagination and table styling.
 
 ## Auth Quirks
 
-- X uses **OAuth 1.0a User Context** (4 fields: API key, API secret, access token, access token secret). Must have OAuth 1.0a enabled in X Developer Portal with Read+Write permission.
+- X uses **OAuth 2.0 Authorization Code with PKCE** (Client ID + Client Secret, confidential client). Must have OAuth 2.0 enabled in X Developer Portal with Read+Write + `offline.access` scopes. **OAuth 1.0a fallback** — if only legacy credentials (API key/secret + access token/secret) are stored, the provider auto-detects and uses OAuth 1.0a.
 - Facebook requires selecting a Page after OAuth (stores `facebook_page_id` + `facebook_page_token` separately).
 - LinkedIn uses the **Posts API** (`/rest/posts`) with `LinkedIn-Version: 202506` — requires the "Posts API" product in the LinkedIn Developer App (not just "Share on LinkedIn"). Thumbnail uploads go through the Images API.
 - LinkedIn can post as a person or organization (selectable after OAuth).
@@ -58,7 +61,7 @@ All classes follow `SocialSync_{Name}` naming convention.
 Credentials are encrypted at rest via AES-256-CBC using option filters (`pre_update_option_` / `option_`) registered on `init`.
 
 - **Encryption key**: Derived from `AUTH_KEY` (or `wp_salt('auth')` as fallback). If `AUTH_KEY` changes (server migration, security rotation), stored credentials become unreadable and the admin must re-enter them.
-- **Coverage**: 11 sensitive options (`*_secret`, `*_token`, `*_app_password`, `*_refresh_jwt`, plus token arrays where `access_token`/`refresh_token` fields are encrypted).
+- **Coverage**: 13 sensitive options (`*_secret`, `*_token`, `*_app_password`, `*_refresh_jwt`, plus token arrays where `access_token`/`refresh_token` fields are encrypted).
 - **Not encrypted**: Client/app IDs (`x_api_key`, `linkedin_client_id`, `facebook_app_id`), identifiers (`bluesky_identifier`), DIDs, page/org/person IDs — these are not secrets.
 - **Backward compat**: `socialsync_decrypt()` returns the original value on failure, so unencrypted legacy data passes through unchanged. On the next `update_option` call, the value is encrypted.
 
