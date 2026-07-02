@@ -87,7 +87,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $x_connected || ! $x_has_credentials ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <details>
+                <details open>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
                         <li><?php echo wp_kses( __( 'Go to <strong>developer.x.com</strong> → <strong>Projects &amp; Apps</strong> → <strong>Create App</strong> (Web App).', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
@@ -155,7 +155,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $linkedin_connected || ! $linkedin_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <details>
+                <details open>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
                         <li><?php echo wp_kses( __( 'Go to <strong>developer.linkedin.com</strong> → <strong>My Apps</strong> → <strong>Create App</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
@@ -250,7 +250,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $facebook_connected || ! $facebook_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <details>
+                <details open>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
                         <li><?php echo wp_kses( __( 'Go to <strong>developers.facebook.com</strong> → <strong>My Apps</strong> → <strong>Create App</strong> → <strong>Business</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
@@ -347,7 +347,7 @@ $bluesky_token = get_option( 'socialsync_bluesky_token', '' );
             <?php if ( ! $bluesky_connected || ! $bluesky_token ) : ?>
                 <hr>
                 <h3><?php esc_html_e( 'Connect Account', 'social-sync' ); ?></h3>
-                <details>
+                <details open>
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'social-sync' ); ?></strong></summary>
                     <ol>
                         <li><?php echo wp_kses( __( 'Sign in to <strong>bsky.app</strong> → <strong>Settings</strong> → <strong>App Passwords</strong>.', 'social-sync' ), array( 'strong' => array() ) ); ?></li>
