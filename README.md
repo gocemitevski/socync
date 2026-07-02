@@ -14,13 +14,13 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 - **Dry Run Mode**: Preview what would be posted without actually publishing
 - **Clean Admin Interface**: Tabbed settings page with unified Log view
 - **Comprehensive Logging**: Track all posting attempts, errors, and developer-level API details
-- **Multiple Auth Methods**: OAuth 2.0 (LinkedIn, Facebook), OAuth 1.0a (X), App Password (Bluesky)
+- **Multiple Auth Methods**: OAuth 2.0 (X, LinkedIn, Facebook), OAuth 1.0a legacy (X fallback), App Password (Bluesky)
 
 ## Requirements
 
 - WordPress 5.0 or higher
 - PHP 7.4 or higher
-- API credentials for X (OAuth 1.0a), LinkedIn (OAuth 2.0), Facebook (OAuth 2.0), Bluesky (App Password)
+- API credentials for X (OAuth 2.0 PKCE or legacy OAuth 1.0a), LinkedIn (OAuth 2.0), Facebook (OAuth 2.0), Bluesky (App Password)
 
 ## Installation
 
@@ -30,11 +30,13 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 ## Configuration
 
-### X (Twitter) — OAuth 1.0a
+### X (Twitter) — OAuth 2.0 PKCE
 1. Go to SocialSync > Connections
 2. Click "Connect" for X
-3. Enter your API Key, API Key Secret, Access Token, and Access Token Secret
-4. Save credentials (no OAuth redirect — credentials must be generated in X Developer Portal with Read+Write permission)
+3. Enter your Client ID and Client Secret (Confidential Client with Read+Write + `offline.access` scopes)
+4. Click "Authorize" and log in with your X account
+
+**Legacy OAuth 1.0a fallback**: If you previously configured OAuth 1.0a credentials (API Key/Secret + Access Token/Secret), they continue to work. The provider auto-detects which auth mode to use based on stored credentials.
 
 ### LinkedIn — OAuth 2.0
 1. Go to SocialSync > Connections
