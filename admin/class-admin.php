@@ -24,7 +24,7 @@ class SocialSync_Admin {
      *
      * @var string
      */
-    public $version = '0.5.4';
+    public $version = '0.5.5';
 
     /**
      * Constructor for admin class initialization.
