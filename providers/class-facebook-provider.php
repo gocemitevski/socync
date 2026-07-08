@@ -125,7 +125,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
         }
 
         // Extract and store new Facebook Page Access Token with expiry information
-        $new_access_token = sanitize_text_field(wp_unslash($token_response['access_token']));
+        $new_access_token = $token_response['access_token'];
         
         if ( isset($token_response['expires_in']) ) {
             $expiry_seconds = intval($token_response['expires_in']);

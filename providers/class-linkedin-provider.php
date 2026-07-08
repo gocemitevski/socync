@@ -137,7 +137,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             return false;
         }
 
-        $new_access_token = sanitize_text_field(wp_unslash($token_response['access_token']));
+        $new_access_token = $token_response['access_token'];
 
         if ( isset($token_response['expires_in']) ) {
             $expiry_seconds = intval($token_response['expires_in']);
@@ -148,7 +148,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
 
         update_option('socialsync_linkedin_token', array(
             'access_token'  => $new_access_token,
-            'refresh_token' => isset( $token_response['refresh_token'] ) ? sanitize_text_field( wp_unslash( $token_response['refresh_token'] ) ) : $refresh_token,
+            'refresh_token' => isset( $token_response['refresh_token'] ) ? $token_response['refresh_token'] : $refresh_token,
             'expires_in'    => isset($token_response['expires_in']) ? intval($token_response['expires_in']) : 0,
             'created_at'    => time(),
         ));

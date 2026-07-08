@@ -83,8 +83,8 @@ abstract class SocialSync_API_Handler {
             return;
         }
 
-        // Extract and validate token data from wp_options
-        $this->access_token = sanitize_text_field( wp_unslash( $token_data['access_token'] ) );
+        // Extract token data from wp_options — stored as-is from OAuth exchange, no sanitization needed
+        $this->access_token = $token_data['access_token'];
 
         if ( ! empty( $token_data['expires_in'] ) && isset( $token_data['created_at'] ) ) {
             $expiry_time = $token_data['expires_in'];
