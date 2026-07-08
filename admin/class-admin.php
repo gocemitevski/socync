@@ -1206,6 +1206,9 @@ class SocialSync_Admin {
         $platforms = array_intersect( $platforms, $allowed );
         update_option( 'socialsync_autopost_platforms', array_values( $platforms ) );
 
+        $delay = isset( $_POST['autopost_delay'] ) ? max( 0, intval( wp_unslash( $_POST['autopost_delay'] ) ) ) : 2;
+        update_option( 'socialsync_autopost_delay', $delay );
+
         wp_safe_redirect( admin_url( 'admin.php?page=social-sync-dev&saved=1' ) );
         exit;
     }
