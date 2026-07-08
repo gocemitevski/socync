@@ -131,23 +131,36 @@ abstract class SocialSync_API_Handler {
     abstract protected function refresh_token();
 
     /**
-     * Redact sensitive fields from a JSON body before logging.
+     * Redact sensitive fields from a body before logging.
      *
-     * @param string $body Raw JSON string to redact.
-     * @return string Redacted JSON string.
+     * Handles JSON and falls back to regex for non-JSON bodies
+     * (URL-encoded forms, XML, plaintext error pages).
+     *
+     * @param string $body Raw body string to redact.
+     * @return string Redacted body string.
      */
     private function redact_sensitive_body( string $body ): string {
-        $data = json_decode( $body, true );
-        if ( ! is_array( $data ) ) {
-            return $body;
-        }
         $sensitive_keys = array( 'access_token', 'refresh_token', 'client_secret', 'app_password', 'password' );
-        array_walk_recursive( $data, function ( &$value, $key ) use ( $sensitive_keys ) {
-            if ( in_array( $key, $sensitive_keys, true ) && is_string( $value ) ) {
-                $value = substr( $value, 0, 6 ) . '***REDACTED***';
-            }
-        } );
-        return wp_json_encode( $data );
+
+        $data = json_decode( $body, true );
+        if ( is_array( $data ) ) {
+            array_walk_recursive( $data, function ( &$value, $key ) use ( $sensitive_keys ) {
+                if ( in_array( $key, $sensitive_keys, true ) && is_string( $value ) ) {
+                    $value = substr( $value, 0, 6 ) . '***REDACTED***';
+                }
+            } );
+            return wp_json_encode( $data );
+        }
+
+        foreach ( $sensitive_keys as $key ) {
+            $body = preg_replace(
+                '/(' . preg_quote( $key, '/' ) . '=)([^&\s]+)/i',
+                '$1***REDACTED***',
+                $body
+            );
+        }
+
+        return $body;
     }
 
     /**
