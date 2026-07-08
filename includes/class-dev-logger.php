@@ -23,10 +23,19 @@ class SocialSync_Dev_Logger {
         }
 
         $logs   = get_option( self::LOG_KEY, array() );
-        $logs[] = array_merge( array(
+        $entry  = array_merge( array(
             'time'  => current_time( 'mysql' ),
             'event' => $event,
         ), $data );
+
+        // Strip HTML tags from string values as defense-in-depth.
+        array_walk( $entry, function ( &$value ) {
+            if ( is_string( $value ) ) {
+                $value = wp_strip_all_tags( $value );
+            }
+        } );
+
+        $logs[] = $entry;
 
         if ( count( $logs ) > self::MAX_LOG ) {
             $logs = array_slice( $logs, -self::MAX_LOG );

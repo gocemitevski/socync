@@ -350,7 +350,10 @@ class SocialSync_Admin {
         );
 
         if ( is_wp_error( $response ) ) {
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Token exchange failed: ' . $response->get_error_message() ) . '&tab=x' ) );
+            $this->log_callback_event( 'X token exchange failed', array(
+                'error' => $response->get_error_message(),
+            ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Token exchange failed. Please try again.' ) . '&tab=x' ) );
             exit;
         }
 
@@ -409,7 +412,6 @@ class SocialSync_Admin {
 
         $this->log_callback_event( 'LinkedIn auth URL', array(
             'scope_encoded' => rawurlencode( $scope ),
-            'auth_url'      => $auth_url,
         ) );
 
         wp_redirect( $auth_url );
@@ -760,7 +762,7 @@ class SocialSync_Admin {
             $this->log_callback_event( 'LinkedIn token exchange wp_error', array(
                 'error' => $response->get_error_message(),
             ) );
-            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Token exchange failed: ' . $response->get_error_message() ) . '&tab=linkedin' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_error=' . rawurlencode( 'Token exchange failed. Please try again.' ) . '&tab=linkedin' ) );
             exit;
         }
 
