@@ -4,7 +4,7 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 ## Features
 
-- **Auto-Post on Publish**: Automatically push new WordPress posts to all connected platforms 2 minutes after publishing
+- **Auto-Post on Publish**: Automatically push new WordPress posts to all connected platforms after a configurable delay (default 2 minutes)
 - **Per-Platform Autoposting Toggle**: Choose which connected platforms receive auto-posts on the Settings page
 - **Multi-Platform Support**: Post to X (Twitter), LinkedIn, Facebook, and Bluesky
 - **Link Previews with Thumbnails**: LinkedIn and Bluesky posts include OG thumbnail images
@@ -60,7 +60,7 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 ### Auto-Posting on Publish
 
-When you publish a new WordPress post, SocialSync automatically enqueues it for delivery to all platforms enabled in **SocialSync > Settings > Autoposting**. The post is sent 2 minutes after publishing (to allow for edits).
+When you publish a new WordPress post, SocialSync automatically enqueues it for delivery to all platforms enabled in **SocialSync > Settings > Autoposting**. The post is sent after a configurable delay (default 2 minutes, set on the Settings page).
 
 Content format: `{prefix}: {title} {permalink} {hashtags}` (all on one line).
 
