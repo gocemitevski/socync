@@ -95,10 +95,7 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
                 <tr>
                     <th scope="row"><label for="scheduled_date"><?php esc_html_e( 'Schedule', 'social-sync' ); ?></label></th>
                     <td>
-                        <div style="display:flex;align-items:center;gap:12px">
-                            <input type="datetime-local" id="scheduled_date" name="scheduled_date" class="regular-text" value="<?php echo $edit_item ? esc_attr( str_replace( ' ', 'T', $edit_item->scheduled_date ) ) : ''; ?>">
-                            <button type="submit" name="post_now" value="1" class="button"><?php esc_html_e( 'Post Now', 'social-sync' ); ?></button>
-                        </div>
+                        <input type="datetime-local" id="scheduled_date" name="scheduled_date" class="regular-text" value="<?php echo $edit_item ? esc_attr( str_replace( ' ', 'T', $edit_item->scheduled_date ) ) : ''; ?>">
                     </td>
                 </tr>
             </tbody>
@@ -106,8 +103,9 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
 
         <p class="submit">
             <button type="submit" name="save" class="button button-primary">
-                <?php echo $edit_item ? esc_html__( 'Update Scheduled Post', 'social-sync' ) : esc_html__( 'Schedule Post', 'social-sync' ); ?>
+                <?php echo $edit_item ? esc_html__( 'Update Scheduled Post', 'social-sync' ) : esc_html__( 'Schedule', 'social-sync' ); ?>
             </button>
+            <button type="submit" name="post_now" value="1" class="button"><?php esc_html_e( 'Post Now', 'social-sync' ); ?></button>
             <?php if ( $edit_item ) : ?>
                 <a href="<?php echo esc_url( $page_url ); ?>" class="button"><?php esc_html_e( 'Cancel', 'social-sync' ); ?></a>
             <?php endif; ?>

@@ -457,7 +457,7 @@ $entries     = array_slice( $entries, $offset, $per_page );
             </tr>
         </table>
         <p class="submit">
-            <button type="submit" class="button button-primary"><?php esc_html_e( 'Save Settings', 'social-sync' ); ?></button>
+            <button type="submit" class="button button-primary"><?php esc_html_e( 'Save', 'social-sync' ); ?></button>
             <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=socialsync_clear_log' ), 'socialsync_clear_log' ) ); ?>" class="button button-disconnect" onclick="return confirm('<?php echo esc_js( __( 'Clear all log entries? This cannot be undone.', 'social-sync' ) ); ?>');"><?php esc_html_e( 'Clear Log', 'social-sync' ); ?></a>
         </p>
     </form>

@@ -132,7 +132,8 @@ class SocialSync_Scheduler {
         }
 
         $local_timestamp = time() + (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
-        $scheduled_date  = gmdate( 'Y-m-d H:i:s', $local_timestamp + 2 * MINUTE_IN_SECONDS );
+        $delay_minutes   = max( 0, (int) get_option( 'socialsync_autopost_delay', 2 ) );
+        $scheduled_date  = gmdate( 'Y-m-d H:i:s', $local_timestamp + $delay_minutes * MINUTE_IN_SECONDS );
 
         SocialSync_Scheduled_Post::insert( array(
             'post_id'        => $post_id,
