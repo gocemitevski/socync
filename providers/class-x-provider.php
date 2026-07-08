@@ -92,14 +92,14 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
                 return false;
             }
 
-            $this->access_token = sanitize_text_field( $body['access_token'] );
+            $this->access_token = $body['access_token'];
             $this->token_expiry = time() + ( isset( $body['expires_in'] ) ? intval( $body['expires_in'] ) : 7200 );
 
             update_option(
                 'socialsync_x_token',
                 array(
                     'access_token'  => $this->access_token,
-                    'refresh_token' => isset( $body['refresh_token'] ) ? sanitize_text_field( $body['refresh_token'] ) : $refresh_token,
+                    'refresh_token' => isset( $body['refresh_token'] ) ? $body['refresh_token'] : $refresh_token,
                     'expires_in'    => isset( $body['expires_in'] ) ? intval( $body['expires_in'] ) : 7200,
                     'created_at'    => time(),
                 )

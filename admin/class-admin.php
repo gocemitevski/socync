@@ -365,8 +365,8 @@ class SocialSync_Admin {
         update_option(
             'socialsync_x_token',
             array(
-                'access_token'  => sanitize_text_field( $body['access_token'] ),
-                'refresh_token' => isset( $body['refresh_token'] ) ? sanitize_text_field( $body['refresh_token'] ) : '',
+                'access_token'  => $body['access_token'],
+                'refresh_token' => isset( $body['refresh_token'] ) ? $body['refresh_token'] : '',
                 'expires_in'    => intval( $body['expires_in'] ?? 7200 ),
                 'created_at'    => time(),
             )
@@ -779,8 +779,8 @@ class SocialSync_Admin {
         ) );
 
         update_option( 'socialsync_linkedin_token', array(
-            'access_token'  => sanitize_text_field( $body['access_token'] ),
-            'refresh_token' => isset( $body['refresh_token'] ) ? sanitize_text_field( $body['refresh_token'] ) : '',
+            'access_token'  => $body['access_token'],
+            'refresh_token' => isset( $body['refresh_token'] ) ? $body['refresh_token'] : '',
             'expires_in'    => intval( $body['expires_in'] ?? 86400 ),
             'created_at'    => time(),
         ) );
@@ -832,7 +832,7 @@ class SocialSync_Admin {
         }
 
         update_option( 'socialsync_facebook_token', array(
-            'access_token' => sanitize_text_field( $body['access_token'] ),
+            'access_token' => $body['access_token'],
             'expires_in'   => intval( $body['expires_in'] ?? 5184000 ),
             'created_at'   => time(),
         ) );
