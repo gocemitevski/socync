@@ -55,6 +55,13 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
 
         <table class="form-table" role="presentation">
             <tbody>
+                <tr>
+                    <th scope="row"><label for="autopost_delay"><?php esc_html_e( 'Delay', 'social-sync' ); ?></label></th>
+                    <td>
+                        <input type="number" id="autopost_delay" name="autopost_delay" class="small-text" min="0" value="<?php echo esc_attr( get_option( 'socialsync_autopost_delay', 2 ) ); ?>">
+                        <span class="description"><?php esc_html_e( 'minutes after publishing', 'social-sync' ); ?></span>
+                    </td>
+                </tr>
                 <?php
                 $autopost_platforms = get_option( 'socialsync_autopost_platforms', array() );
                 if ( ! is_array( $autopost_platforms ) ) {
@@ -94,7 +101,7 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
 
         <p class="submit">
             <button type="submit" name="save" class="button button-primary">
-                <?php esc_html_e( 'Save Settings', 'social-sync' ); ?>
+                <?php esc_html_e( 'Save', 'social-sync' ); ?>
             </button>
         </p>
     </form>
