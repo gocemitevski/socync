@@ -81,7 +81,7 @@ $dry_run   = get_option( 'socialsync_dry_run', false );
                     <th scope="row"><?php echo esc_html( $label ); ?></th>
                     <td>
                         <label>
-                            <input type="checkbox" name="autopost_platforms[]" value="<?php echo esc_attr( $slug ); ?>" <?php checked( in_array( $slug, $autopost_platforms, true ) ); ?> <?php echo $disabled; ?>>
+                            <input type="checkbox" name="autopost_platforms[]" value="<?php echo esc_attr( $slug ); ?>" <?php checked( in_array( $slug, $autopost_platforms, true ) ); ?> <?php echo esc_attr( $disabled ); ?>>
                             <?php if ( $connected ) : ?>
                                 <?php esc_html_e( 'Auto-post to', 'social-sync' ); ?>
                                 <?php echo esc_html( $label ); ?>

@@ -248,6 +248,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
         delete_option('socialsync_facebook_connected');
         delete_option('socialsync_facebook_app_id');
         delete_option('socialsync_facebook_app_secret');
+        delete_option('socialsync_facebook_logs');
         delete_transient('socialsync_facebook_oauth_state');
 
         $this->log_success(
@@ -260,66 +261,68 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
     }
 
     /**
-     * Log API errors for Facebook provider to wp_options table.
+     * Log API errors for Facebook provider to unified log.
      *
      * @param string $error_message Error message description.
-     * @param mixed  $context       Contextual data for error logging (e.g., HTTP status code).
-     * @return void Writes error entry to log in wp_options table.
+     * @param array  $context       Contextual data for error logging.
+     * @return void Writes error entry to socialsync_logs.
      */
     protected function log_error( string $error_message, array $context = array() ): void {
-        // Load existing logs or create new empty array
-        $logs = get_option('socialsync_facebook_logs', array());
+        $logs = get_option( 'socialsync_logs', array() );
 
-        // Add error entry to wp_options table with timestamp and status
-        $log_entry = array(
-            'message'    => esc_html($error_message),
-            'platform'   => 'Facebook',
-            'status'     => 'failed',
-            'date'       => current_time('mysql'),
-            'context'    => is_array($context) ? json_encode($context) : '',
-        );
-
-        // Insert error log into wp_options table with timestamp
-        $logs[] = $log_entry;
-
-        // Limit logs to last 100 entries to prevent database bloat
-        if ( count($logs) > 100 ) {
-            array_shift($logs);
+        $full_message = $error_message;
+        if ( ! empty( $context ) ) {
+            $full_message .= ' | ' . wp_json_encode( $context );
         }
 
-        update_option('socialsync_facebook_logs', $logs, false);
+        $logs[] = array(
+            'id'       => uniqid(),
+            'post_id'  => 0,
+            'platform' => 'facebook',
+            'status'   => 'failed',
+            'message'  => $full_message,
+            'date'     => current_time( 'mysql' ),
+            'type'     => 'facebook',
+        );
+
+        if ( count( $logs ) > 100 ) {
+            $logs = array_slice( $logs, -50 );
+        }
+
+        update_option( 'socialsync_logs', $logs, false );
     }
 
     /**
-     * Log successful API operations for Facebook provider.
+     * Log successful API operations for Facebook provider to unified log.
      *
-     * @param string $message     Success message to log.
-     * @param string $platform    Platform name for log categorization.
-     * @param string $status      Operation status (e.g., 'success').
-     * @param array  $context     Additional context data (e.g., post ID).
-     * @return void Writes success entry to log in wp_options table.
+     * @param string $message  Success message to log.
+     * @param string $platform Platform name for log categorization.
+     * @param string $status   Operation status (e.g., 'success').
+     * @param array  $context  Additional context data.
+     * @return void Writes success entry to socialsync_logs.
      */
     protected function log_success( string $message, string $platform, string $status, array $context = array() ): void {
-        // Load existing logs or create new empty array
-        $logs = get_option('socialsync_facebook_logs', array());
+        $logs = get_option( 'socialsync_logs', array() );
 
-        // Add success entry to wp_options table with timestamp and status
-        $log_entry = array(
-            'message'    => esc_html($message),
-            'platform'   => $platform,
-            'status'     => $status,
-            'date'       => current_time('mysql'),
-            'context'    => is_array($context) ? json_encode($context) : '',
-        );
-
-        // Insert success log into wp_options table with timestamp
-        $logs[] = $log_entry;
-
-        // Limit logs to last 100 entries to prevent database bloat
-        if ( count($logs) > 100 ) {
-            array_shift($logs);
+        $full_message = $message;
+        if ( ! empty( $context ) ) {
+            $full_message .= ' | ' . wp_json_encode( $context );
         }
 
-        update_option('socialsync_facebook_logs', $logs, false);
+        $logs[] = array(
+            'id'       => uniqid(),
+            'post_id'  => 0,
+            'platform' => $platform,
+            'status'   => $status,
+            'message'  => $full_message,
+            'date'     => current_time( 'mysql' ),
+            'type'     => 'facebook',
+        );
+
+        if ( count( $logs ) > 100 ) {
+            $logs = array_slice( $logs, -50 );
+        }
+
+        update_option( 'socialsync_logs', $logs, false );
     }
 }
