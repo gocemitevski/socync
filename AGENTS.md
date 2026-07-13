@@ -5,7 +5,7 @@
 WordPress plugin that auto-publishes posts to X (Twitter), LinkedIn, Facebook, and Bluesky.
 
 - Entry point: `socialsync.php` (plugin header + class loader)
-- Text domain: `social-sync`
+- Text domain: `socialsync`
 - PHP 7.4+, no build step, no JS bundler, no task runner
 - No `composer.json` or test infrastructure exists yet (README mentions them but they're not implemented)
 

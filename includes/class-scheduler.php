@@ -62,7 +62,7 @@ class SocialSync_Scheduler {
     public function register_cron_schedule( array $schedules ): array {
         $schedules['socialsync_every_minute'] = array(
             'interval' => 60,
-            'display'  => __( 'Every Minute', 'social-sync' ),
+            'display'  => __( 'Every Minute', 'socialsync' ),
         );
         return $schedules;
     }
@@ -364,7 +364,7 @@ class SocialSync_Scheduler {
                     $log_post_id,
                     sanitize_text_field( $platform_slug ),
                     'failed',
-                    __( 'Unknown or unsupported social media platform.', 'social-sync' ),
+                    __( 'Unknown or unsupported social media platform.', 'socialsync' ),
                     $post['source'] ?? 'standalone'
                 );
 
@@ -372,7 +372,7 @@ class SocialSync_Scheduler {
                     'success' => false,
                     'message' => sprintf(
                         /* translators: %s: Platform slug */
-                        __( 'Unsupported platform: %s', 'social-sync' ),
+                        __( 'Unsupported platform: %s', 'socialsync' ),
                         sanitize_text_field( wp_unslash( $platform_slug ) )
                     ),
                 );
@@ -414,7 +414,7 @@ class SocialSync_Scheduler {
         if ( empty($content) ) {
             return array(
                 'success' => false,
-                'message' => __( 'Post title is required but missing.', 'social-sync' ),
+                'message' => __( 'Post title is required but missing.', 'socialsync' ),
             );
         }
 
@@ -478,7 +478,7 @@ class SocialSync_Scheduler {
                     'success',
                     isset($result['data']['id']) ? sprintf(
                         /* translators: %s: Platform post ID */
-                        __( 'Posted successfully. Post ID: %s', 'social-sync' ),
+                        __( 'Posted successfully. Post ID: %s', 'socialsync' ),
                         esc_html( wp_unslash( $result['data']['id'] ) )
                     ) : '',
                     $post['source'] ?? 'standalone'
@@ -493,7 +493,7 @@ class SocialSync_Scheduler {
                         esc_html( wp_unslash( $result['message'] ) ) :
                         sprintf(
                             /* translators: %s: Platform slug */
-                            __( 'Failed to post. API returned an error.', 'social-sync' ),
+                            __( 'Failed to post. API returned an error.', 'socialsync' ),
                             sanitize_text_field( wp_unslash( $platform_slug ) )
                         ),
                     $post['source'] ?? 'standalone'

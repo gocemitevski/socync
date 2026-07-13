@@ -316,8 +316,9 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         return array(
             'success' => true,
             'message' => sprintf(
-                __( 'Posted to LinkedIn (Post ID: %s)', 'social-sync' ),
-                $post_id ? esc_html( $post_id ) : __( 'Success', 'social-sync' )
+                /* translators: %s: LinkedIn post ID */
+                __( 'Posted to LinkedIn (Post ID: %s)', 'socialsync' ),
+                $post_id ? esc_html( $post_id ) : __( 'Success', 'socialsync' )
             ),
         );
     }

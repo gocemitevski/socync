@@ -224,7 +224,8 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
             $preview = mb_substr($response_body, 0, 80) . '...';
         } else {
             $preview = sprintf(
-                __('Facebook Post #%d created successfully.', 'social-sync'),
+                /* translators: %d: Facebook post ID */
+                __('Facebook Post #%d created successfully.', 'socialsync'),
                 $post_id
             );
         }

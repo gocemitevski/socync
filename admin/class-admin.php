@@ -79,8 +79,8 @@ class SocialSync_Admin {
         $page_slug = 'social-sync-settings';
 
         add_menu_page(
-            __( 'SocialSync', 'social-sync' ),
-            __( 'SocialSync', 'social-sync' ),
+            __( 'SocialSync', 'socialsync' ),
+            __( 'SocialSync', 'socialsync' ),
             'manage_options',
             $page_slug,
             array( $this, 'render_settings_page' ),
@@ -90,8 +90,8 @@ class SocialSync_Admin {
 
         add_submenu_page(
             $page_slug,
-            __( 'Connections', 'social-sync' ),
-            __( 'Connections', 'social-sync' ),
+            __( 'Connections', 'socialsync' ),
+            __( 'Connections', 'socialsync' ),
             'manage_options',
             $page_slug,
             array( $this, 'render_settings_page' )
@@ -99,8 +99,8 @@ class SocialSync_Admin {
 
         add_submenu_page(
             $page_slug,
-            __( 'Schedule', 'social-sync' ),
-            __( 'Schedule', 'social-sync' ),
+            __( 'Schedule', 'socialsync' ),
+            __( 'Schedule', 'socialsync' ),
             'manage_options',
             'social-sync-scheduled',
             array( $this, 'render_scheduled_posts_page' )
@@ -108,8 +108,8 @@ class SocialSync_Admin {
 
         $log_hook = add_submenu_page(
             $page_slug,
-            __( 'Log', 'social-sync' ),
-            __( 'Log', 'social-sync' ),
+            __( 'Log', 'socialsync' ),
+            __( 'Log', 'socialsync' ),
             'manage_options',
             'social-sync-log',
             array( $this, 'render_logs_page' )
@@ -118,8 +118,8 @@ class SocialSync_Admin {
 
         add_submenu_page(
             $page_slug,
-            __( 'Settings', 'social-sync' ),
-            __( 'Settings', 'social-sync' ),
+            __( 'Settings', 'socialsync' ),
+            __( 'Settings', 'socialsync' ),
             'manage_options',
             'social-sync-dev',
             array( $this, 'render_dev_page' )
@@ -134,7 +134,7 @@ class SocialSync_Admin {
     public function render_settings_page(): void {
         // Verify user capability before rendering page content
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( __( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
 
         // Get and sanitize social connection settings from wp_options table
@@ -150,12 +150,13 @@ class SocialSync_Admin {
      */
     public function render_scheduled_posts_page(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
 
         // Ensure the database table exists (creates it if plugin wasn't reactivated)
         SocialSync_Scheduled_Post::create_table();
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $status_filter = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '';
 
         include_once dirname( __FILE__ ) . '/views/scheduled-posts-page.php';
@@ -168,7 +169,7 @@ class SocialSync_Admin {
      */
     public function render_logs_page(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
 
         include_once dirname( __FILE__ ) . '/views/log-page.php';
@@ -179,7 +180,7 @@ class SocialSync_Admin {
      */
     public function add_log_screen_options(): void {
         add_screen_option( 'per_page', array(
-            'label'   => __( 'Log entries per page', 'social-sync' ),
+            'label'   => __( 'Log entries per page', 'socialsync' ),
             'default' => 20,
             'option'  => 'socialsync_log_per_page',
         ) );
@@ -216,7 +217,7 @@ class SocialSync_Admin {
      */
     public function handle_connect_x(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_connect_x', 'socialsync-connect-x-nonce' );
 
@@ -224,7 +225,7 @@ class SocialSync_Admin {
         $client_secret = sanitize_text_field( wp_unslash( $_POST['x_client_secret'] ?? '' ) );
 
         if ( empty( $client_id ) || empty( $client_secret ) ) {
-            wp_die( esc_html__( 'Client ID and Client Secret are required.', 'social-sync' ) );
+            wp_die( esc_html__( 'Client ID and Client Secret are required.', 'socialsync' ) );
         }
 
         update_option( 'socialsync_x_client_id', $client_id );
@@ -255,7 +256,11 @@ class SocialSync_Admin {
             PHP_QUERY_RFC3986
         );
 
-        wp_redirect( $auth_url );
+        add_filter( 'allowed_redirect_hosts', function( $hosts ) {
+            $hosts[] = 'x.com';
+            return $hosts;
+        } );
+        wp_safe_redirect( $auth_url );
         exit;
     }
 
@@ -264,7 +269,7 @@ class SocialSync_Admin {
      */
     public function handle_disconnect_x(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_disconnect_x' );
 
@@ -280,11 +285,14 @@ class SocialSync_Admin {
      */
     public function handle_oauth_callback_x(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
         $code  = sanitize_text_field( wp_unslash( $_GET['code'] ?? '' ) );
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
         $state = sanitize_text_field( wp_unslash( $_GET['state'] ?? '' ) );
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
         $error = sanitize_text_field( wp_unslash( $_GET['error'] ?? '' ) );
 
         if ( ! empty( $error ) ) {
@@ -381,7 +389,7 @@ class SocialSync_Admin {
      */
     public function handle_connect_linkedin(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_connect_linkedin', 'socialsync-connect-linkedin-nonce' );
 
@@ -389,7 +397,7 @@ class SocialSync_Admin {
         $client_secret = sanitize_text_field( wp_unslash( $_POST['linkedin_client_secret'] ?? '' ) );
 
         if ( empty( $client_id ) || empty( $client_secret ) ) {
-            wp_die( esc_html__( 'Client ID and Client Secret are required.', 'social-sync' ) );
+            wp_die( esc_html__( 'Client ID and Client Secret are required.', 'socialsync' ) );
         }
 
         update_option( 'socialsync_linkedin_client_id', $client_id );
@@ -414,7 +422,11 @@ class SocialSync_Admin {
             'scope_encoded' => rawurlencode( $scope ),
         ) );
 
-        wp_redirect( $auth_url );
+        add_filter( 'allowed_redirect_hosts', function( $hosts ) {
+            $hosts[] = 'www.linkedin.com';
+            return $hosts;
+        } );
+        wp_safe_redirect( $auth_url );
         exit;
     }
 
@@ -423,7 +435,7 @@ class SocialSync_Admin {
      */
     public function handle_disconnect_linkedin(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_disconnect_linkedin' );
 
@@ -439,7 +451,7 @@ class SocialSync_Admin {
      */
     public function handle_connect_facebook(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_connect_facebook', 'socialsync-connect-facebook-nonce' );
 
@@ -447,7 +459,7 @@ class SocialSync_Admin {
         $client_secret = sanitize_text_field( wp_unslash( $_POST['facebook_client_secret'] ?? '' ) );
 
         if ( empty( $client_id ) || empty( $client_secret ) ) {
-            wp_die( esc_html__( 'Client ID and Client Secret are required.', 'social-sync' ) );
+            wp_die( esc_html__( 'Client ID and Client Secret are required.', 'socialsync' ) );
         }
 
         update_option( 'socialsync_facebook_app_id', $client_id );
@@ -467,7 +479,11 @@ class SocialSync_Admin {
             'scope'         => 'pages_manage_posts,pages_read_engagement',
         ), '', '&', PHP_QUERY_RFC3986 );
 
-        wp_redirect( $auth_url );
+        add_filter( 'allowed_redirect_hosts', function( $hosts ) {
+            $hosts[] = 'www.facebook.com';
+            return $hosts;
+        } );
+        wp_safe_redirect( $auth_url );
         exit;
     }
 
@@ -476,7 +492,7 @@ class SocialSync_Admin {
      */
     public function handle_disconnect_facebook(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_disconnect_facebook' );
 
@@ -493,7 +509,7 @@ class SocialSync_Admin {
     public function handle_connect_bluesky(): void {
         try {
             if ( ! current_user_can( 'manage_options' ) ) {
-                wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+                wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
             }
             check_admin_referer( 'socialsync_connect_bluesky', 'socialsync-connect-bluesky-nonce' );
 
@@ -501,7 +517,7 @@ class SocialSync_Admin {
             $app_password = sanitize_text_field( wp_unslash( $_POST['bluesky_app_password'] ?? '' ) );
 
             if ( empty( $identifier ) || empty( $app_password ) ) {
-                wp_die( esc_html__( 'Identifier and App Password are required.', 'social-sync' ) );
+                wp_die( esc_html__( 'Identifier and App Password are required.', 'socialsync' ) );
             }
 
             update_option( 'socialsync_bluesky_identifier', $identifier );
@@ -513,15 +529,16 @@ class SocialSync_Admin {
                 if ( ! $result ) {
                     delete_option( 'socialsync_bluesky_identifier' );
                     delete_option( 'socialsync_bluesky_app_password' );
-                    wp_die( esc_html__( 'Failed to authenticate with Bluesky. Check your identifier and App Password.', 'social-sync' ) );
+                    wp_die( esc_html__( 'Failed to authenticate with Bluesky. Check your identifier and App Password.', 'socialsync' ) );
                 }
             }
 
             wp_safe_redirect( admin_url( 'admin.php?page=social-sync-settings&oauth_success=1&tab=bluesky' ) );
             exit;
         } catch ( \Throwable $e ) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             error_log( 'SocialSync Bluesky fatal error: ' . sanitize_text_field( $e->getMessage() ) );
-            wp_die( esc_html__( 'Bluesky connection failed. Check the SocialSync log for details.', 'social-sync' ) );
+            wp_die( esc_html__( 'Bluesky connection failed. Check the SocialSync log for details.', 'socialsync' ) );
         }
     }
 
@@ -530,7 +547,7 @@ class SocialSync_Admin {
      */
     public function handle_disconnect_bluesky(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_disconnect_bluesky' );
 
@@ -546,14 +563,14 @@ class SocialSync_Admin {
      */
     public function handle_save_platform_settings(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_save_platform_settings', 'socialsync-platform-settings-nonce' );
 
         $platform   = sanitize_text_field( wp_unslash( $_POST['platform'] ?? '' ) );
         $allowed    = array( 'x', 'linkedin', 'facebook', 'bluesky' );
         if ( ! in_array( $platform, $allowed, true ) ) {
-            wp_die( esc_html__( 'Invalid platform.', 'social-sync' ) );
+            wp_die( esc_html__( 'Invalid platform.', 'socialsync' ) );
         }
         $prefix     = sanitize_text_field( wp_unslash( $_POST['prefix_text'] ?? '' ) );
         $hashtags   = sanitize_text_field( wp_unslash( $_POST['hashtags'] ?? '' ) );
@@ -572,7 +589,7 @@ class SocialSync_Admin {
      */
     public function handle_select_facebook_page(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_select_facebook_page', 'socialsync-select-facebook-page-nonce' );
 
@@ -591,7 +608,7 @@ class SocialSync_Admin {
                 }
             }
             if ( empty( $page_token ) ) {
-                wp_die( esc_html__( 'Selected Facebook page not found. Please reconnect your Facebook account.', 'social-sync' ) );
+                wp_die( esc_html__( 'Selected Facebook page not found. Please reconnect your Facebook account.', 'socialsync' ) );
             }
             update_option( 'socialsync_facebook_page_id', $page_id );
             update_option( 'socialsync_facebook_page_token', $page_token );
@@ -607,7 +624,7 @@ class SocialSync_Admin {
      */
     public function handle_select_linkedin_org(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_select_linkedin_org', 'socialsync-select-linkedin-org-nonce' );
 
@@ -642,6 +659,7 @@ class SocialSync_Admin {
      * Process an OAuth callback for a given platform.
      */
     private function process_oauth_callback( string $platform ): void {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
         $safe_get = $_GET;
         unset( $safe_get['code'], $safe_get['state'] );
         $this->log_callback_event( 'OAuth callback received for ' . $platform, array(
@@ -650,11 +668,14 @@ class SocialSync_Admin {
 
         if ( ! current_user_can( 'manage_options' ) ) {
             $this->log_callback_event( 'Permission denied', array() );
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
         $code  = sanitize_text_field( wp_unslash( $_GET['code'] ?? '' ) );
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
         $state = sanitize_text_field( wp_unslash( $_GET['state'] ?? '' ) );
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
         $error = sanitize_text_field( wp_unslash( $_GET['error'] ?? '' ) );
 
         $tab_param = in_array( $platform, array( 'x', 'linkedin', 'facebook', 'bluesky' ), true ) ? '&tab=' . $platform : '';
@@ -830,7 +851,7 @@ class SocialSync_Admin {
         $body = json_decode( wp_remote_retrieve_body( $response ), true );
 
         if ( ! isset( $body['access_token'] ) ) {
-            wp_die( esc_html__( 'Failed to obtain Facebook access token.', 'social-sync' ) );
+            wp_die( esc_html__( 'Failed to obtain Facebook access token.', 'socialsync' ) );
         }
 
         update_option( 'socialsync_facebook_token', array(
@@ -852,7 +873,7 @@ class SocialSync_Admin {
      */
     public function handle_delete_log(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_delete_log' );
 
@@ -877,7 +898,7 @@ class SocialSync_Admin {
      */
     public function handle_clear_log(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_clear_log' );
 
@@ -900,7 +921,7 @@ class SocialSync_Admin {
      */
     public function handle_save_log_settings(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_save_log_settings', 'socialsync-log-settings-nonce' );
 
@@ -949,10 +970,10 @@ class SocialSync_Admin {
 
         // Purge standalone scheduled posts that have reached a terminal status (published, failed, cancelled)
         global $wpdb;
-        $table = $wpdb->prefix . 'socialsync_scheduled_posts';
-        $wpdb->query(
+        $table = $wpdb->prefix . 'socialsync_scheduled_posts'; // phpcs:ignore WordPress.DB.DatabaseValue
+        $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
             $wpdb->prepare(
-                "DELETE FROM {$table} WHERE status IN ('published', 'failed', 'cancelled', 'dry_run') AND scheduled_date < %s",
+                "DELETE FROM {$table} WHERE status IN ('published', 'failed', 'cancelled', 'dry_run') AND scheduled_date < %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 gmdate( 'Y-m-d H:i:s', $cutoff )
             )
         );
@@ -998,8 +1019,8 @@ class SocialSync_Admin {
         wp_enqueue_script('socialsync-admin-script', plugin_dir_url( __FILE__ ) . 'js/socialsync.js', array('jquery'), $this->version, true);
 
         wp_localize_script('socialsync-admin-script', 'SocialSyncAdmin', array(
-            'confirm_delete' => __( 'Delete this scheduled post?', 'social-sync' ),
-            'confirm_cancel' => __( 'Cancel this scheduled post?', 'social-sync' ),
+            'confirm_delete' => __( 'Delete this scheduled post?', 'socialsync' ),
+            'confirm_cancel' => __( 'Cancel this scheduled post?', 'socialsync' ),
         ));
     }
 
@@ -1008,7 +1029,7 @@ class SocialSync_Admin {
      */
     public function handle_save_scheduled_post(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_save_scheduled_post', 'socialsync-scheduled-post-nonce' );
 
@@ -1020,16 +1041,16 @@ class SocialSync_Admin {
         $post_now       = isset( $_POST['post_now'] );
 
         if ( empty( $content ) ) {
-            wp_die( esc_html__( 'Content is required.', 'social-sync' ) );
+            wp_die( esc_html__( 'Content is required.', 'socialsync' ) );
         }
         if ( empty( $platforms ) ) {
-            wp_die( esc_html__( 'Select at least one platform.', 'social-sync' ) );
+            wp_die( esc_html__( 'Select at least one platform.', 'socialsync' ) );
         }
 
         if ( $post_now ) {
             $scheduled_date = current_time( 'mysql' );
         } elseif ( empty( $scheduled_date ) ) {
-            wp_die( esc_html__( 'Scheduled date is required.', 'social-sync' ) );
+            wp_die( esc_html__( 'Scheduled date is required.', 'socialsync' ) );
         }
 
         $data = array(
@@ -1066,7 +1087,7 @@ class SocialSync_Admin {
                         $provider = new SocialSync_Bluesky_Provider();
                         break;
                     default:
-                        $platform_errors[ $platform_slug ] = __( 'Unknown platform', 'social-sync' );
+                        $platform_errors[ $platform_slug ] = __( 'Unknown platform', 'socialsync' );
                         continue 2;
                 }
 
@@ -1100,7 +1121,7 @@ class SocialSync_Admin {
                 } elseif ( isset( $result['success'] ) && $result['success'] ) {
                     $platform_ok[] = $platform_slug;
                 } else {
-                    $msg = isset( $result['message'] ) ? $result['message'] : __( 'Unknown error', 'social-sync' );
+                    $msg = isset( $result['message'] ) ? $result['message'] : __( 'Unknown error', 'socialsync' );
                     $platform_errors[ $platform_slug ] = $msg;
                 }
             }
@@ -1137,13 +1158,14 @@ class SocialSync_Admin {
      */
     public function handle_delete_scheduled_post(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         $id = isset( $_GET['id'] ) ? intval( $_GET['id'] ) : 0;
         check_admin_referer( 'socialsync_delete_scheduled_post_' . $id );
         if ( empty( $id ) ) {
-            wp_die( esc_html__( 'Invalid post ID.', 'social-sync' ) );
+            wp_die( esc_html__( 'Invalid post ID.', 'socialsync' ) );
         }
 
         SocialSync_Scheduled_Post::delete( $id );
@@ -1157,13 +1179,14 @@ class SocialSync_Admin {
      */
     public function handle_cancel_scheduled_post(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         $id = isset( $_GET['id'] ) ? intval( $_GET['id'] ) : 0;
         check_admin_referer( 'socialsync_cancel_scheduled_post_' . $id );
         if ( empty( $id ) ) {
-            wp_die( esc_html__( 'Invalid post ID.', 'social-sync' ) );
+            wp_die( esc_html__( 'Invalid post ID.', 'socialsync' ) );
         }
 
         SocialSync_Scheduled_Post::update( $id, array( 'status' => 'cancelled' ) );
@@ -1180,7 +1203,7 @@ class SocialSync_Admin {
      */
     public function render_dev_page(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
 
         include_once dirname( __FILE__ ) . '/views/settings-page.php';
@@ -1191,7 +1214,7 @@ class SocialSync_Admin {
      */
     public function handle_save_dev_settings(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_save_dev_settings', 'socialsync-dev-settings-nonce' );
 
@@ -1220,7 +1243,7 @@ class SocialSync_Admin {
      */
     public function handle_clear_dev_log(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'social-sync' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'socialsync' ) );
         }
         check_admin_referer( 'socialsync_clear_dev_log' );
 
@@ -1244,7 +1267,7 @@ class SocialSync_Admin {
         }
         ?>
         <div class="notice notice-warning is-dismissible">
-            <p><?php esc_html_e( 'SocialSync Dry Run mode is active. API calls will be logged but not sent.', 'social-sync' ); ?></p>
+            <p><?php esc_html_e( 'SocialSync Dry Run mode is active. API calls will be logged but not sent.', 'socialsync' ); ?></p>
         </div>
         <?php
     }
