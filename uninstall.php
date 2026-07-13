@@ -24,14 +24,14 @@ function socialsync_uninstall() {
      */
     global $wpdb;
 
-    $wpdb->query(
+    $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->prepare(
             "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
             $wpdb->esc_like( 'socialsync_' ) . '%'
         )
     );
 
-    $wpdb->query(
+    $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->prepare(
             "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE %s",
             $wpdb->esc_like( '_socialsync_' ) . '%'
@@ -48,6 +48,7 @@ function socialsync_uninstall() {
      * Debug log uninstall completion (for support purposes only - not in production).
      */
     if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         error_log( 'SocialSync plugin uninstalled. Database cleanup complete.' );
     }
 }

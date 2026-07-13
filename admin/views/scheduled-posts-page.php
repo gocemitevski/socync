@@ -9,6 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound,WordPress.Security.NonceVerification.Recommended
+
 $editing_id = isset( $_GET['edit'] ) ? intval( $_GET['edit'] ) : 0;
 $edit_item  = null;
 if ( $editing_id ) {
@@ -19,10 +21,10 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
 ?>
 
 <div class="wrap">
-    <h1><?php echo esc_html__( 'Schedule', 'social-sync' ); ?></h1>
+    <h1><?php echo esc_html__( 'Schedule', 'socialsync' ); ?></h1>
 
     <?php if ( isset( $_GET['saved'] ) ) : ?>
-        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Scheduled post saved.', 'social-sync' ); ?></p></div>
+        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Scheduled post saved.', 'socialsync' ); ?></p></div>
     <?php endif; ?>
     <?php
     $platform_labels = array(
@@ -34,20 +36,29 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
     foreach ( $platform_labels as $slug => $label ) :
         if ( isset( $_GET[ 'success_' . $slug ] ) ) :
         ?>
-            <div class="notice notice-success is-dismissible"><p><?php echo esc_html( sprintf( __( '%s: Posted successfully.', 'social-sync' ), $label ) ); ?></p></div>
+            <div class="notice notice-success is-dismissible"><p><?php echo esc_html( sprintf(
+                /* translators: %s: Platform name */
+                __( '%s: Posted successfully.', 'socialsync' ),
+                $label
+            ) ); ?></p></div>
         <?php endif; ?>
         <?php if ( isset( $_GET[ 'error_' . $slug ] ) ) : ?>
-            <div class="notice notice-error is-dismissible"><p><?php                 echo esc_html( sprintf( __( '%s: %s', 'social-sync' ), $label, sanitize_text_field( wp_unslash( $_GET[ 'error_' . $slug ] ) ) ) ); ?></p></div>
+            <div class="notice notice-error is-dismissible"><p><?php echo esc_html( sprintf(
+                /* translators: 1: Platform name 2: Error message */
+                __( '%1$s: %2$s', 'socialsync' ),
+                $label,
+                sanitize_text_field( wp_unslash( $_GET[ 'error_' . $slug ] ) )
+            ) ); ?></p></div>
         <?php endif; ?>
     <?php endforeach; ?>
     <?php if ( isset( $_GET['dry_run'] ) ) : ?>
-        <div class="notice notice-warning is-dismissible"><p><?php esc_html_e( 'Dry run: No actual posts were published. Check the Developer page for details.', 'social-sync' ); ?></p></div>
+        <div class="notice notice-warning is-dismissible"><p><?php esc_html_e( 'Dry run: No actual posts were published. Check the Developer page for details.', 'socialsync' ); ?></p></div>
     <?php endif; ?>
     <?php if ( isset( $_GET['deleted'] ) ) : ?>
-        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Scheduled post deleted.', 'social-sync' ); ?></p></div>
+        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Scheduled post deleted.', 'socialsync' ); ?></p></div>
     <?php endif; ?>
     <?php if ( isset( $_GET['cancelled'] ) ) : ?>
-        <div class="notice notice-info is-dismissible"><p><?php esc_html_e( 'Scheduled post cancelled.', 'social-sync' ); ?></p></div>
+        <div class="notice notice-info is-dismissible"><p><?php esc_html_e( 'Scheduled post cancelled.', 'socialsync' ); ?></p></div>
     <?php endif; ?>
 
     <hr class="wp-header-end">
@@ -62,14 +73,14 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
         <table class="form-table" role="presentation">
             <tbody>
                 <tr>
-                    <th scope="row"><label for="scheduled_content"><?php esc_html_e( 'Content', 'social-sync' ); ?></label></th>
+                    <th scope="row"><label for="scheduled_content"><?php esc_html_e( 'Content', 'socialsync' ); ?></label></th>
                     <td>
                         <textarea id="scheduled_content" name="content" class="large-text" rows="5" required><?php echo $edit_item ? esc_textarea( $edit_item->content ) : ''; ?></textarea>
-                        <p class="description"><?php esc_html_e( 'The message to post to the selected networks.', 'social-sync' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'The message to post to the selected networks.', 'socialsync' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><?php esc_html_e( 'Platforms', 'social-sync' ); ?></th>
+                    <th scope="row"><?php esc_html_e( 'Platforms', 'socialsync' ); ?></th>
                     <td>
                         <?php
                         if ( $edit_item ) {
@@ -93,7 +104,7 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="scheduled_date"><?php esc_html_e( 'Schedule', 'social-sync' ); ?></label></th>
+                    <th scope="row"><label for="scheduled_date"><?php esc_html_e( 'Schedule', 'socialsync' ); ?></label></th>
                     <td>
                         <input type="datetime-local" id="scheduled_date" name="scheduled_date" class="regular-text" value="<?php echo $edit_item ? esc_attr( str_replace( ' ', 'T', $edit_item->scheduled_date ) ) : ''; ?>">
                     </td>
@@ -103,13 +114,15 @@ $page_url = menu_page_url( 'social-sync-scheduled', false );
 
         <p class="submit">
             <button type="submit" name="save" class="button button-primary">
-                <?php echo $edit_item ? esc_html__( 'Update Scheduled Post', 'social-sync' ) : esc_html__( 'Schedule', 'social-sync' ); ?>
+                <?php echo $edit_item ? esc_html__( 'Update Scheduled Post', 'socialsync' ) : esc_html__( 'Schedule', 'socialsync' ); ?>
             </button>
-            <button type="submit" name="post_now" value="1" class="button"><?php esc_html_e( 'Post Now', 'social-sync' ); ?></button>
+            <button type="submit" name="post_now" value="1" class="button"><?php esc_html_e( 'Post Now', 'socialsync' ); ?></button>
             <?php if ( $edit_item ) : ?>
-                <a href="<?php echo esc_url( $page_url ); ?>" class="button"><?php esc_html_e( 'Cancel', 'social-sync' ); ?></a>
+                <a href="<?php echo esc_url( $page_url ); ?>" class="button"><?php esc_html_e( 'Cancel', 'socialsync' ); ?></a>
             <?php endif; ?>
         </p>
     </form>
+
+<!-- phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound,WordPress.Security.NonceVerification.Recommended -->
 
 </div>

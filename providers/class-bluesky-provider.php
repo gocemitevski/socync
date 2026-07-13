@@ -184,7 +184,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $resp_body   = json_decode( wp_remote_retrieve_body( $response ), true );
 
         if ( ! is_numeric( $status_code ) || intval( $status_code ) < 200 || intval( $status_code ) >= 300 ) {
-            $error_msg = __( 'Unknown Bluesky API error', 'social-sync' );
+            $error_msg = __( 'Unknown Bluesky API error', 'socialsync' );
             if ( isset( $resp_body['message'] ) ) {
                 $error_msg = sanitize_text_field( $resp_body['message'] );
             } elseif ( isset( $resp_body['error'] ) ) {
@@ -197,7 +197,11 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         return array(
             'success' => true,
             'data'    => array( 'id' => $post_id ),
-            'message' => sprintf( __( 'Posted to Bluesky (URI: %s)', 'social-sync' ), $post_id ),
+            'message' => sprintf(
+                /* translators: %s: Bluesky post URI */
+                __( 'Posted to Bluesky (URI: %s)', 'socialsync' ),
+                $post_id
+            ),
         );
     }
 

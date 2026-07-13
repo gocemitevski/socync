@@ -114,10 +114,10 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
     public function publish( string $content, string $url = '' ): array|WP_Error {
         if ( 'oauth2' === $this->auth_mode ) {
             if ( ! $this->refresh_token() ) {
-                return new WP_Error( 'token_expired', __( 'X access token expired and could not be refreshed. Please reconnect.', 'social-sync' ) );
+                return new WP_Error( 'token_expired', __( 'X access token expired and could not be refreshed. Please reconnect.', 'socialsync' ) );
             }
             if ( ! $this->is_connected() ) {
-                return new WP_Error( 'not_connected', __( 'X account not connected.', 'social-sync' ) );
+                return new WP_Error( 'not_connected', __( 'X account not connected.', 'socialsync' ) );
             }
 
             $args = array(
@@ -132,7 +132,7 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
             $response = wp_remote_post( self::TWEETS_ENDPOINT, $args );
         } else {
             if ( ! $this->is_connected() ) {
-                return new WP_Error( 'not_connected', __( 'X account not connected. Please add your API credentials.', 'social-sync' ) );
+                return new WP_Error( 'not_connected', __( 'X account not connected. Please add your API credentials.', 'socialsync' ) );
             }
 
             $api_key    = $this->get_api_key();
@@ -193,7 +193,7 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
         $resp_body   = json_decode( wp_remote_retrieve_body( $response ), true );
 
         if ( 201 !== $status_code ) {
-            $error_msg = __( 'Unknown X API error', 'social-sync' );
+            $error_msg = __( 'Unknown X API error', 'socialsync' );
             if ( isset( $resp_body['detail'] ) ) {
                 $error_msg = sanitize_text_field( $resp_body['detail'] );
             } elseif ( isset( $resp_body['errors'][0]['message'] ) && is_array( $resp_body['errors'] ) ) {
@@ -202,7 +202,7 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
                 $error_msg = sanitize_text_field( $resp_body['title'] );
             }
             if ( 401 === $status_code ) {
-                $error_msg .= ' ' . __( 'Check that your app has the correct OAuth configuration in X Developer Portal.', 'social-sync' );
+                $error_msg .= ' ' . __( 'Check that your app has the correct OAuth configuration in X Developer Portal.', 'socialsync' );
             }
             return new WP_Error(
                 'x_post_error',
@@ -215,7 +215,11 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
         return array(
             'success' => true,
             'data'    => array( 'id' => $post_id ),
-            'message' => sprintf( __( 'Posted to X (Tweet ID: %s)', 'social-sync' ), $post_id ),
+            'message' => sprintf(
+                /* translators: %s: X/Twitter tweet ID */
+                __( 'Posted to X (Tweet ID: %s)', 'socialsync' ),
+                $post_id
+            ),
         );
     }
 
