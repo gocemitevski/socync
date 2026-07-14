@@ -91,9 +91,10 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 
 == Screenshots ==
 
-1. SocialSync Connections page with OAuth setup for X, LinkedIn, Facebook, and Bluesky
+1. SocialSync Connections page with OAuth setup for X (Twitter), LinkedIn, Facebook, and Bluesky
 2. Scheduled posts management interface with status indicators
 3. Log viewer with platform filter and detailed error reporting
+4. SocialSync Settings page
 
 == Frequently Asked Questions ==
 
