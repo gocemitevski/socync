@@ -3,8 +3,10 @@
  * Plugin Name: SocialSync - Automatic social media posting and scheduling
  * Description: Automatically publish your WordPress posts to X (Twitter), LinkedIn, Facebook and Bluesky when you publish content on your site.
  * Version: 0.5.6
- * Author: SocialSync Contributors
+ * Author: Goce Mitevski
+ * Author URI: https://www.gocemitevski.com/
  * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: socialsync
  */
 
