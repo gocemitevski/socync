@@ -33,6 +33,7 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 ## Configuration
 
 ### X (Twitter) — OAuth 2.0 PKCE
+
 1. Go to SocialSync > Connections
 2. Click "Connect" for X
 3. Enter your Client ID and Client Secret (Confidential Client with Read+Write + `offline.access` scopes)
@@ -41,18 +42,21 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 **Legacy OAuth 1.0a fallback**: If you previously configured OAuth 1.0a credentials (API Key/Secret + Access Token/Secret), they continue to work. The provider auto-detects which auth mode to use based on stored credentials.
 
 ### LinkedIn — OAuth 2.0
+
 1. Go to SocialSync > Connections
 2. Click "Connect" for LinkedIn
 3. Enter your Client ID and Client Secret
 4. Authorize the application via the OAuth redirect (redirects back to `admin-post.php?action=socialsync_oauth_callback_linkedin`)
 
 ### Facebook — OAuth 2.0
+
 1. Go to SocialSync > Connections
 2. Click "Connect" for Facebook
 3. Enter your Client ID and Client Secret
 4. Authorize the application via the OAuth redirect, then select a Facebook Page to post as
 
 ### Bluesky — App Password
+
 1. Go to SocialSync > Connections
 2. Click "Connect" for Bluesky
 3. Enter your Bluesky handle/email and an App Password (generate one at Settings > App Passwords in Bluesky)
@@ -87,7 +91,7 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 
 ## File Structure
 
-```
+````
 socialsync/
 ├── admin/
 │   ├── css/                # Admin styles
@@ -118,7 +122,7 @@ No test infrastructure or CI is configured yet. Test manually in a WordPress con
 ```bash
 wp plugin activate socialsync
 wp cron event run socialsync_run_delayed_posts
-```
+````
 
 ## License
 
@@ -130,4 +134,4 @@ Contributions are welcome! Please follow the WordPress Coding Standards and subm
 
 ## Support
 
-For issues and questions, please visit the [GitHub repository](https://github.com/yourusername/socialsync).
+For issues and questions, please visit the [GitHub repository](https://github.com/gocemitevski/socialsync).
