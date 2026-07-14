@@ -2,6 +2,8 @@
 
 A lightweight, stable, and maintainable WordPress plugin that automatically pushes published posts to X (Twitter), LinkedIn, Facebook and Bluesky.
 
+![SocialSync Connections page with OAuth setup for X (Twitter), LinkedIn, Facebook, and Bluesky](assets/screenshot-1.png)
+
 ## Features
 
 - **Auto-Post on Publish**: Automatically push new WordPress posts to all connected platforms after a configurable delay (default 2 minutes)
@@ -74,10 +76,14 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 4. Set the desired date and time
 5. Save — the post will be published automatically when the time arrives
 
+![Scheduled posts management interface with status indicators](assets/screenshot-2.png)
+
 ### Viewing Logs
 
 1. Go to SocialSync > Log
 2. View all posting attempts, their status, and any errors
+
+![Log viewer with platform filter and detailed error reporting](assets/screenshot-3.png)
 
 ## File Structure
 
