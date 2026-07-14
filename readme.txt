@@ -89,6 +89,12 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 1. Go to SocialSync > Log
 2. View all posting attempts, their status, and any errors
 
+== Screenshots ==
+
+1. SocialSync Connections page with OAuth setup for X, LinkedIn, Facebook, and Bluesky
+2. Scheduled posts management interface with status indicators
+3. Log viewer with platform filter and detailed error reporting
+
 == Frequently Asked Questions ==
 
 = Which platforms are supported? =
