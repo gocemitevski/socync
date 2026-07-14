@@ -3,7 +3,7 @@ Contributors: gocemitevski
 Tags: social media, twitter, x, linkedin, facebook, bluesky, auto-post, scheduling
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 0.5.7
+Stable tag: 0.5.8
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -109,6 +109,13 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 
 == Changelog ==
 
+= 0.5.8 =
+* Added missing plugin headers (Requires at least, Requires PHP, Tested up to, Domain Path)
+* Added load_plugin_textdomain() call and /languages/ directory
+* Created WordPress-format readme.txt for Plugin Directory
+* Drop custom scheduled_posts table on uninstall
+* Wrapped all static WP_Error messages in __() for i18n consistency
+
 = 0.5.7 =
 * Added SSRF protection for OG metadata and thumbnail fetches
 * Fixed Bluesky JWT storage (removed sanitize_text_field that could corrupt tokens)
@@ -127,6 +134,9 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.5.8 =
+Plugin directory compliance improvements. Recommended upgrade.
 
 = 0.5.7 =
 Security improvements including SSRF protection. Recommended upgrade for all users.
