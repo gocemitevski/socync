@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SocialSync - Automatic social media posting and scheduling
  * Description: Automatically publish your WordPress posts to X (Twitter), LinkedIn, Facebook and Bluesky when you publish content on your site.
- * Version: 0.5.6
+ * Version: 0.5.7
  * Author: Goce Mitevski
  * Author URI: https://www.gocemitevski.com/
  * License: GPL v2 or later
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'SOCIALSYNC_VERSION' ) ) {
-    define( 'SOCIALSYNC_VERSION', '0.5.6' );
+    define( 'SOCIALSYNC_VERSION', '0.5.7' );
 }
 if ( ! defined( 'SOCIALSYNC_PLUGIN_DIR' ) ) {
     define( 'SOCIALSYNC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
