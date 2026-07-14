@@ -749,7 +749,7 @@ class SocialSync_Admin {
         if ( count( $logs ) > 100 ) {
             $logs = array_slice( $logs, -50 );
         }
-        update_option( 'socialsync_logs', $logs );
+        update_option( 'socialsync_logs', $logs, false );
     }
 
     /**
@@ -886,7 +886,7 @@ class SocialSync_Admin {
                     break;
                 }
             }
-            update_option( 'socialsync_logs', $logs );
+            update_option( 'socialsync_logs', $logs, false );
         }
 
         wp_safe_redirect( admin_url( 'admin.php?page=social-sync-log&log_deleted=1' ) );
@@ -964,7 +964,7 @@ class SocialSync_Admin {
                 }
             }
             if ( count( $remaining ) !== count( $logs ) ) {
-                update_option( 'socialsync_logs', $remaining );
+                update_option( 'socialsync_logs', $remaining, false );
             }
         }
 

@@ -540,7 +540,7 @@ class SocialSync_Scheduler {
             $logs = array_slice($logs, -50);
         }
 
-        // Store updated logs back to wp_options table
-        update_option( 'socialsync_logs', $logs, true );
+        // Store updated logs back to wp_options table — not autoloaded
+        update_option( 'socialsync_logs', $logs, false );
     }
 }

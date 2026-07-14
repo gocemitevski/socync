@@ -330,10 +330,15 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'image_url'   => '',
         );
 
+        if ( ! socialsync_is_safe_url( $url ) ) {
+            return $meta;
+        }
+
         $response = wp_remote_get( $url, array(
-            'timeout'   => 10,
-            'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'timeout'     => 10,
+            'sslverify'   => true,
+            'redirection' => 0,
+            'user-agent'  => 'SocialSync/1.0',
         ) );
 
         if ( is_wp_error( $response ) ) {
@@ -368,6 +373,10 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
     }
 
     private function upload_thumbnail( string $image_url, string $author ): ?string {
+        if ( ! socialsync_is_safe_url( $image_url ) ) {
+            return null;
+        }
+
         // Step 1: Register the image upload with LinkedIn
         $register_response = wp_remote_post( self::IMAGES_URL, array(
             'headers' => array(
@@ -419,9 +428,10 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
 
         // Step 2: Download the image
         $image_response = wp_remote_head( $image_url, array(
-            'timeout'   => 10,
-            'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'timeout'     => 10,
+            'sslverify'   => true,
+            'redirection' => 0,
+            'user-agent'  => 'SocialSync/1.0',
         ) );
 
         $max_size = 5 * 1024 * 1024; // 5MB limit
@@ -439,9 +449,10 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         }
 
         $image_response = wp_remote_get( $image_url, array(
-            'timeout'   => 15,
-            'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'timeout'     => 15,
+            'sslverify'   => true,
+            'redirection' => 0,
+            'user-agent'  => 'SocialSync/1.0',
         ) );
 
         if ( is_wp_error( $image_response ) ) {

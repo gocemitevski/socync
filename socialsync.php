@@ -234,6 +234,33 @@ function socialsync_migrate_plaintext_credentials(): void {
 add_action( 'init', 'socialsync_migrate_plaintext_credentials', 20 );
 
 /**
+ * Validate that a URL points to a safe external host (not private/reserved IP range).
+ *
+ * Resolves the hostname to an IP and rejects RFC 1918 private ranges,
+ * loopback, link-local, and unresolvable hostnames.
+ *
+ * @param  string $url URL to validate.
+ * @return bool True if the URL is safe to fetch.
+ */
+function socialsync_is_safe_url( string $url ): bool {
+    $host = wp_parse_url( $url, PHP_URL_HOST );
+    if ( ! $host ) {
+        return false;
+    }
+
+    // gethostbyname returns the hostname unchanged for literal IPs and
+    // unresolvable names — both are rejected (literal IPs are never
+    // legitimate link targets in social posts and skipping DNS is a
+    // deliberate simplification that also rejects IPv6-only hosts).
+    $ip = gethostbyname( $host );
+    if ( $ip === $host ) {
+        return false;
+    }
+
+    return (bool) filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+}
+
+/**
  * SocialSync Plugin Class.
  *
  * @since 1.0.0

@@ -118,9 +118,9 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     private function store_session( array $body ): void {
-        $access_jwt  = sanitize_text_field( $body['accessJwt'] );
-        $refresh_jwt = sanitize_text_field( $body['refreshJwt'] );
-        $did         = sanitize_text_field( $body['did'] );
+        $access_jwt  = $body['accessJwt'];
+        $refresh_jwt = $body['refreshJwt'];
+        $did         = $body['did'];
 
         $this->access_token = $access_jwt;
         $this->token_expiry = time() + 7200;
@@ -210,6 +210,14 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             return null;
         }
 
+        if ( ! socialsync_is_safe_url( $url ) ) {
+            SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+                'url'     => $url,
+                'summary' => 'Skipped OG fetch: URL points to private/reserved IP range',
+            ) );
+            return null;
+        }
+
         $title       = '';
         $description = '';
         $thumb_blob  = null;
@@ -220,9 +228,10 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         ) );
 
         $response = wp_remote_get( $url, array(
-            'timeout'   => 10,
-            'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'timeout'     => 10,
+            'sslverify'   => true,
+            'redirection' => 0,
+            'user-agent'  => 'SocialSync/1.0',
         ) );
 
         if ( is_wp_error( $response ) ) {
@@ -305,6 +314,10 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     private function upload_image_blob( string $image_url ): ?array {
+        if ( ! socialsync_is_safe_url( $image_url ) ) {
+            return null;
+        }
+
         SocialSync_Dev_Logger::log( 'bluesky_upload', array(
             'image_url' => $image_url,
             'summary'   => 'Downloading OG image: ' . $image_url,
@@ -313,9 +326,10 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $max_size = 5 * 1024 * 1024; // 5MB limit
 
         $head_response = wp_remote_head( $image_url, array(
-            'timeout'   => 10,
-            'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'timeout'     => 10,
+            'sslverify'   => true,
+            'redirection' => 0,
+            'user-agent'  => 'SocialSync/1.0',
         ) );
 
         if ( ! is_wp_error( $head_response ) ) {
@@ -330,9 +344,10 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         }
 
         $image_response = wp_remote_get( $image_url, array(
-            'timeout'   => 15,
-            'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'timeout'     => 15,
+            'sslverify'   => true,
+            'redirection' => 0,
+            'user-agent'  => 'SocialSync/1.0',
         ) );
 
         if ( is_wp_error( $image_response ) ) {
@@ -519,7 +534,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
 
     private function resolve_handle( string $handle ): ?string {
         $response = wp_remote_get(
-            'https://bsky.social/xrpc/com.atproto.identity.resolveHandle?handle=' . urlencode( $handle ),
+            'https://bsky.social/xrpc/com.atproto.identity.resolveHandle?handle=' . rawurlencode( $handle ),
             array( 'timeout' => self::DEFAULT_TIMEOUT )
         );
 
@@ -549,6 +564,6 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         if ( count( $logs ) > 100 ) {
             $logs = array_slice( $logs, -50 );
         }
-        update_option( 'socialsync_logs', $logs );
+        update_option( 'socialsync_logs', $logs, false );
     }
 }
