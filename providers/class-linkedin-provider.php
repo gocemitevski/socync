@@ -31,7 +31,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
      */
     public function get_organizations(): array|WP_Error {
         if ( ! $this->is_connected() ) {
-            return new WP_Error('not_connected', 'LinkedIn not connected.');
+            return new WP_Error('not_connected', __( 'LinkedIn not connected.', 'socialsync' ));
         }
 
         $response = wp_remote_get(
@@ -55,7 +55,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
 
         if ( ! is_numeric( $status ) || intval( $status ) < 200 || intval( $status ) >= 300 ) {
             $err_msg = isset( $body['message'] ) ? $body['message'] : '';
-            return new WP_Error( 'linkedin_api_error', '' !== $err_msg ? sanitize_text_field( $err_msg ) : 'Unknown error' );
+            return new WP_Error( 'linkedin_api_error', '' !== $err_msg ? sanitize_text_field( $err_msg ) : __( 'Unknown error', 'socialsync' ) );
         }
 
         if ( ! isset( $body['elements'] ) || ! is_array( $body['elements'] ) ) {
@@ -173,7 +173,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             SocialSync_Dev_Logger::log( 'linkedin_publish', array(
                 'summary' => 'LinkedIN publish: refresh_token() FAILED. Token valid: ' . ( $this->is_token_valid() ? 'yes' : 'no' ) . ', token_expiry: ' . ( $this->token_expiry ?? 'null' ) . ', time(): ' . time(),
             ) );
-            return new WP_Error( 'token_expired', 'LinkedIn access token expired and could not be refreshed. Please reconnect.' );
+            return new WP_Error( 'token_expired', __( 'LinkedIn access token expired and could not be refreshed. Please reconnect.', 'socialsync' ) );
         }
 
         SocialSync_Dev_Logger::log( 'linkedin_publish', array(
@@ -181,7 +181,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         ) );
 
         if ( ! $this->is_connected() ) {
-            return new WP_Error('not_connected', 'LinkedIn account not connected or access token has expired.');
+            return new WP_Error('not_connected', __( 'LinkedIn account not connected or access token has expired.', 'socialsync' ));
         }
 
         $org_id    = get_option( 'socialsync_linkedin_org_id', '' );
@@ -195,7 +195,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             SocialSync_Dev_Logger::log( 'linkedin_publish', array(
                 'summary' => 'LinkedIn publish: no author (both org_id and person_id are empty)',
             ) );
-            return new WP_Error( 'no_author', 'No LinkedIn profile or organization selected. Go to SocialSync settings.' );
+            return new WP_Error( 'no_author', __( 'No LinkedIn profile or organization selected. Go to SocialSync settings.', 'socialsync' ) );
         }
 
         SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(

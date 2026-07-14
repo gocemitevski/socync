@@ -39,6 +39,11 @@ function socialsync_uninstall() {
     );
 
     /**
+     * Drop custom scheduled posts table.
+     */
+    $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}socialsync_scheduled_posts" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
+
+    /**
      * Optionally remove scheduled events for delayed posts.
      */
     wp_clear_scheduled_hook( 'socialsync_run_delayed_posts' );

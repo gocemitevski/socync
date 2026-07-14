@@ -137,11 +137,11 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
 
     public function publish( string $content, string $url = '' ): array|WP_Error {
         if ( ! $this->refresh_token() ) {
-            return new WP_Error( 'not_connected', 'Bluesky account not connected. Please reconnect.' );
+            return new WP_Error( 'not_connected', __( 'Bluesky account not connected. Please reconnect.', 'socialsync' ) );
         }
 
         if ( ! $this->is_connected() ) {
-            return new WP_Error( 'not_connected', 'Bluesky account not connected or session expired.' );
+            return new WP_Error( 'not_connected', __( 'Bluesky account not connected or session expired.', 'socialsync' ) );
         }
 
         $did = get_option( 'socialsync_bluesky_did', '' );

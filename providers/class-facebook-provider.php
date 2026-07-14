@@ -42,7 +42,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      */
     public function get_pages(): array|WP_Error {
         if ( ! $this->is_connected() ) {
-            return new WP_Error('not_connected', 'Facebook not connected.');
+            return new WP_Error('not_connected', __( 'Facebook not connected.', 'socialsync' ));
         }
 
         $response = $this->get_api( self::BASE_URL . '/me/accounts?fields=id,name,access_token,picture' );
@@ -154,10 +154,10 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      */
     public function publish( string $content, string $url = '' ): array|WP_Error {
         if ( ! $this->refresh_token() ) {
-            return new WP_Error( 'token_expired', 'Facebook access token expired and could not be refreshed. Please reconnect.' );
+            return new WP_Error( 'token_expired', __( 'Facebook access token expired and could not be refreshed. Please reconnect.', 'socialsync' ) );
         }
         if ( ! $this->is_connected() ) {
-            return new WP_Error('not_connected', 'Facebook Page not connected or access token has expired.');
+            return new WP_Error('not_connected', __( 'Facebook Page not connected or access token has expired.', 'socialsync' ));
         }
 
         $page_id    = get_option( 'socialsync_facebook_page_id', '' );
