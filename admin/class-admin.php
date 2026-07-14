@@ -84,7 +84,7 @@ class SocialSync_Admin {
             'manage_options',
             $page_slug,
             array( $this, 'render_settings_page' ),
-            'dashicons-admin-settings',
+            'dashicons-share',
             92
         );
 
