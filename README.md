@@ -112,6 +112,7 @@ socialsync/
 │   └── class-bluesky-provider.php   # Bluesky AT Protocol API
 ├── socialsync.php          # Main plugin file (entry point, class loader)
 └── uninstall.php           # Cleanup on deletion
+````
 
 ## Development
 
