@@ -1,10 +1,5 @@
 # SocialSync - Automatic social media posting and scheduling
 
-Requires at least: 5.0
-Tested up to: 7.0
-Stable tag: 0.5.8
-License: GPL v2 or later
-
 A lightweight, stable, and maintainable WordPress plugin that automatically pushes published posts to X (Twitter), LinkedIn, Facebook and Bluesky.
 
 ## Features
