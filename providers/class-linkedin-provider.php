@@ -245,7 +245,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'Authorization'              => 'Bearer ' . $this->access_token,
             'Content-Type'               => 'application/json',
             'X-Restli-Protocol-Version'  => '2.0.0',
-            'LinkedIn-Version'           => '202506',
+            'LinkedIn-Version'           => '202606',
         );
 
         SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
