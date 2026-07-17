@@ -39,7 +39,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             array(
                 'headers' => array(
                     'Authorization'      => 'Bearer ' . $this->access_token,
-                    'LinkedIn-Version'   => '202401',
+                    'LinkedIn-Version'   => '202606',
                     'X-Restli-Protocol-Version' => '2.0.0',
                 ),
                 'timeout' => self::DEFAULT_TIMEOUT,
@@ -382,7 +382,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
                 'Authorization' => 'Bearer ' . $this->access_token,
                 'Content-Type'  => 'application/json',
                 'X-Restli-Protocol-Version' => '2.0.0',
-                'LinkedIn-Version'          => '202506',
+                'LinkedIn-Version'          => '202606',
             ),
             'body' => wp_json_encode( array(
                 'initializeUploadRequest' => array(

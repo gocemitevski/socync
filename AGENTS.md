@@ -44,7 +44,7 @@ All classes follow `SocialSync_{Name}` naming convention.
 
 - X uses **OAuth 2.0 Authorization Code with PKCE** (Client ID + Client Secret, confidential client). Must have OAuth 2.0 enabled in X Developer Portal with Read+Write + `offline.access` scopes. **OAuth 1.0a fallback** — if only legacy credentials (API key/secret + access token/secret) are stored, the provider auto-detects and uses OAuth 1.0a.
 - Facebook requires selecting a Page after OAuth (stores `facebook_page_id` + `facebook_page_token` separately).
-- LinkedIn uses the **Posts API** (`/rest/posts`) with `LinkedIn-Version: 202506` — requires the "Posts API" product in the LinkedIn Developer App (not just "Share on LinkedIn"). Thumbnail uploads go through the Images API.
+- LinkedIn uses the **Posts API** (`/rest/posts`) with `LinkedIn-Version: 202606` — requires the "Posts API" product in the LinkedIn Developer App (not just "Share on LinkedIn"). Thumbnail uploads go through the Images API.
 - LinkedIn can post as a person or organization (selectable after OAuth).
 
 ## Admin
