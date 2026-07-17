@@ -428,10 +428,9 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
 
         // Step 2: Download the image
         $image_response = wp_remote_head( $image_url, array(
-            'timeout'     => 10,
-            'sslverify'   => true,
-            'redirection' => 0,
-            'user-agent'  => 'SocialSync/1.0',
+            'timeout'   => 10,
+            'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
         ) );
 
         $max_size = 5 * 1024 * 1024; // 5MB limit
@@ -449,10 +448,9 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         }
 
         $image_response = wp_remote_get( $image_url, array(
-            'timeout'     => 15,
-            'sslverify'   => true,
-            'redirection' => 0,
-            'user-agent'  => 'SocialSync/1.0',
+            'timeout'   => 15,
+            'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
         ) );
 
         if ( is_wp_error( $image_response ) ) {

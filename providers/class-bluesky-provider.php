@@ -326,10 +326,9 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $max_size = 5 * 1024 * 1024; // 5MB limit
 
         $head_response = wp_remote_head( $image_url, array(
-            'timeout'     => 10,
-            'sslverify'   => true,
-            'redirection' => 0,
-            'user-agent'  => 'SocialSync/1.0',
+            'timeout'   => 10,
+            'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
         ) );
 
         if ( ! is_wp_error( $head_response ) ) {
@@ -344,10 +343,9 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         }
 
         $image_response = wp_remote_get( $image_url, array(
-            'timeout'     => 15,
-            'sslverify'   => true,
-            'redirection' => 0,
-            'user-agent'  => 'SocialSync/1.0',
+            'timeout'   => 15,
+            'sslverify' => true,
+            'user-agent' => 'SocialSync/1.0',
         ) );
 
         if ( is_wp_error( $image_response ) ) {
