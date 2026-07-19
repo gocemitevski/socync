@@ -40,7 +40,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      *
      * @return array|WP_Error List of pages or error.
      */
-    public function get_pages(): array|WP_Error {
+    public function get_pages() {
         if ( ! $this->is_connected() ) {
             return new WP_Error('not_connected', __( 'Facebook not connected.', 'socialsync' ));
         }
@@ -152,7 +152,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      * @param string $content Post content (title + excerpt or custom text) for Facebook.
      * @return array|WP_Error Response from Facebook Graph API or error object.
      */
-    public function publish( string $content, string $url = '' ): array|WP_Error {
+    public function publish( string $content, string $url = '' ) {
         if ( ! $this->refresh_token() ) {
             return new WP_Error( 'token_expired', __( 'Facebook access token expired and could not be refreshed. Please reconnect.', 'socialsync' ) );
         }

@@ -29,7 +29,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
      *
      * @return array|WP_Error List of organizations or error.
      */
-    public function get_organizations(): array|WP_Error {
+    public function get_organizations() {
         if ( ! $this->is_connected() ) {
             return new WP_Error('not_connected', __( 'LinkedIn not connected.', 'socialsync' ));
         }
@@ -163,7 +163,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
      * @param string $url     Optional URL to attach as article link.
      * @return array|WP_Error Response from LinkedIn API or error object.
      */
-    public function publish( string $content, string $url = '' ): array|WP_Error {
+    public function publish( string $content, string $url = '' ) {
         // Dev log: entering LinkedIn publish
         SocialSync_Dev_Logger::log( 'linkedin_publish', array(
             'summary' => 'Entering LinkedIn publish()',

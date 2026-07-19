@@ -111,7 +111,7 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
         return $this->is_connected();
     }
 
-    public function publish( string $content, string $url = '' ): array|WP_Error {
+    public function publish( string $content, string $url = '' ) {
         if ( 'oauth2' === $this->auth_mode ) {
             if ( ! $this->refresh_token() ) {
                 return new WP_Error( 'token_expired', __( 'X access token expired and could not be refreshed. Please reconnect.', 'socialsync' ) );

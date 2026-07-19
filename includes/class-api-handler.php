@@ -170,7 +170,7 @@ abstract class SocialSync_API_Handler {
      * @param array  $data Associative array of data to send in POST body
      * @return array|WP_Error Response from API or error object
      */
-    protected function post_api( string $endpoint, array $data ): array|WP_Error {
+    protected function post_api( string $endpoint, array $data ) {
         // Set default timeout and prepare request args per security best practices
         $timeout = self::DEFAULT_TIMEOUT;
 
@@ -248,7 +248,7 @@ abstract class SocialSync_API_Handler {
      * @param string $endpoint API endpoint URL
      * @return array|WP_Error Response from API or error object.
      */
-    protected function get_api( string $endpoint ): array|WP_Error {
+    protected function get_api( string $endpoint ) {
         // Set default timeout per security best practices
         $timeout = self::DEFAULT_TIMEOUT;
 

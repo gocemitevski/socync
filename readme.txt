@@ -3,7 +3,7 @@ Contributors: gocemitevski
 Tags: social media, twitter, x, linkedin, facebook, bluesky, auto-post, scheduling
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 0.5.9
+Stable tag: 0.6.0
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -116,6 +116,9 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 
 == Changelog ==
 
+= 0.6.0 =
+* Fixed PHP 7.4 compatibility: removed union return types (array|WP_Error) which require PHP 8.0+
+
 = 0.5.9 =
 * Fixed LinkedIn image thumbnail upload returning 426 Upgrade Required (LinkedIn-Version header mismatch between Posts API and Images API)
 
@@ -144,6 +147,9 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.6.0 =
+PHP 7.4 compatibility fix. Recommended upgrade for all users.
 
 = 0.5.9 =
 Fixed LinkedIn image upload. Recommended upgrade for LinkedIn users.
