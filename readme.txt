@@ -3,7 +3,7 @@ Contributors: gocemitevski
 Tags: social media, twitter, x, linkedin, facebook, bluesky, auto-post, scheduling
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 0.7.0
+Stable tag: 0.7.1
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -116,6 +116,9 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 
 == Changelog ==
 
+= 0.7.1 =
+* Updated admin screenshots
+
 = 0.7.0 =
 * Renamed plugin from SocialSync to Socync (all internal prefixes, classes, options, hooks, and the text domain now use the socync prefix)
 * Existing SocialSync settings are not migrated automatically — reconnect your accounts after updating
@@ -152,6 +155,9 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.7.1 =
+Updated admin screenshots.
 
 = 0.7.0 =
 Plugin renamed to Socync. Reconnect your accounts after updating — settings are not migrated automatically.
