@@ -1,8 +1,8 @@
-# SocialSync - Automatic social media posting and scheduling
+# Socync - Automatic social media posting and scheduling
 
 A lightweight, stable, and maintainable WordPress plugin that automatically pushes published posts to X (Twitter), LinkedIn, Facebook and Bluesky.
 
-![SocialSync Connections page with OAuth setup for X (Twitter), LinkedIn, Facebook, and Bluesky](assets/screenshot-1.png)
+![Socync Connections page with OAuth setup for X (Twitter), LinkedIn, Facebook, and Bluesky](assets/screenshot-1.png)
 
 ## Features
 
@@ -26,15 +26,15 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 ## Installation
 
-1. Upload the `socialsync` folder to the `/wp-content/plugins/` directory
+1. Upload the `socync` folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Navigate to SocialSync in the admin menu to configure your connections
+3. Navigate to Socync in the admin menu to configure your connections
 
 ## Configuration
 
 ### X (Twitter) — OAuth 2.0 PKCE
 
-1. Go to SocialSync > Connections
+1. Go to Socync > Connections
 2. Click "Connect" for X
 3. Enter your Client ID and Client Secret (Confidential Client with Read+Write + `offline.access` scopes)
 4. Click "Authorize" and log in with your X account
@@ -43,21 +43,21 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 ### LinkedIn — OAuth 2.0
 
-1. Go to SocialSync > Connections
+1. Go to Socync > Connections
 2. Click "Connect" for LinkedIn
 3. Enter your Client ID and Client Secret
-4. Authorize the application via the OAuth redirect (redirects back to `admin-post.php?action=socialsync_oauth_callback_linkedin`)
+4. Authorize the application via the OAuth redirect (redirects back to `admin-post.php?action=socync_oauth_callback_linkedin`)
 
 ### Facebook — OAuth 2.0
 
-1. Go to SocialSync > Connections
+1. Go to Socync > Connections
 2. Click "Connect" for Facebook
 3. Enter your Client ID and Client Secret
 4. Authorize the application via the OAuth redirect, then select a Facebook Page to post as
 
 ### Bluesky — App Password
 
-1. Go to SocialSync > Connections
+1. Go to Socync > Connections
 2. Click "Connect" for Bluesky
 3. Enter your Bluesky handle/email and an App Password (generate one at Settings > App Passwords in Bluesky)
 4. Save credentials (no OAuth redirect)
@@ -66,7 +66,7 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 ### Auto-Posting on Publish
 
-When you publish a new WordPress post, SocialSync automatically enqueues it for delivery to all platforms enabled in **SocialSync > Settings > Autoposting**. The post is sent after a configurable delay (default 2 minutes, set on the Settings page).
+When you publish a new WordPress post, Socync automatically enqueues it for delivery to all platforms enabled in **Socync > Settings > Autoposting**. The post is sent after a configurable delay (default 2 minutes, set on the Settings page).
 
 Content format: `{prefix}: {title} {permalink} {hashtags}` (all on one line).
 
@@ -74,7 +74,7 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 
 ### Creating a Scheduled Post
 
-1. Go to SocialSync > Schedule
+1. Go to Socync > Schedule
 2. Click "Add New Scheduled Post"
 3. Enter the post content and select the platforms to post to
 4. Set the desired date and time
@@ -84,7 +84,7 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 
 ### Viewing Logs
 
-1. Go to SocialSync > Log
+1. Go to Socync > Log
 2. View all posting attempts, their status, and any errors
 
 ![Log viewer with platform filter and detailed error reporting](assets/screenshot-3.png)
@@ -92,7 +92,7 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 ## File Structure
 
 ````
-socialsync/
+socync/
 ├── admin/
 │   ├── css/                # Admin styles
 │   ├── js/                 # JavaScript files
@@ -110,7 +110,7 @@ socialsync/
 │   ├── class-linkedin-provider.php  # LinkedIn OAuth 2.0 API
 │   ├── class-facebook-provider.php  # Facebook Graph API
 │   └── class-bluesky-provider.php   # Bluesky AT Protocol API
-├── socialsync.php          # Main plugin file (entry point, class loader)
+├── socync.php          # Main plugin file (entry point, class loader)
 └── uninstall.php           # Cleanup on deletion
 ````
 
@@ -121,8 +121,8 @@ socialsync/
 No test infrastructure or CI is configured yet. Test manually in a WordPress context:
 
 ```bash
-wp plugin activate socialsync
-wp cron event run socialsync_run_delayed_posts
+wp plugin activate socync
+wp cron event run socync_run_delayed_posts
 ````
 
 ## License
@@ -135,4 +135,4 @@ Contributions are welcome! Please follow the WordPress Coding Standards and subm
 
 ## Support
 
-For issues and questions, please visit the [GitHub repository](https://github.com/gocemitevski/socialsync).
+For issues and questions, please visit the [GitHub repository](https://github.com/gocemitevski/socync).

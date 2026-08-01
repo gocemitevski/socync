@@ -1,9 +1,9 @@
-=== SocialSync - Automatic social media posting and scheduling ===
+=== Socync - Automatic social media posting and scheduling ===
 Contributors: gocemitevski
 Tags: social media, twitter, x, linkedin, facebook, bluesky, auto-post, scheduling
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -12,7 +12,7 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 
 == Description ==
 
-SocialSync connects your WordPress site to four major social platforms and automatically publishes your content when you publish a new post. It also supports standalone scheduled posts for full control over timing and content.
+Socync connects your WordPress site to four major social platforms and automatically publishes your content when you publish a new post. It also supports standalone scheduled posts for full control over timing and content.
 
 = Features =
 
@@ -30,15 +30,15 @@ SocialSync connects your WordPress site to four major social platforms and autom
 
 == Installation ==
 
-1. Upload the `socialsync` folder to the `/wp-content/plugins/` directory
+1. Upload the `socync` folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Navigate to SocialSync in the admin menu to configure your connections
+3. Navigate to Socync in the admin menu to configure your connections
 
 == Configuration ==
 
 = X (Twitter) — OAuth 2.0 PKCE =
 
-1. Go to SocialSync > Connections
+1. Go to Socync > Connections
 2. Click "Connect" for X
 3. Enter your Client ID and Client Secret (Confidential Client with Read+Write + `offline.access` scopes)
 4. Click "Authorize" and log in with your X account
@@ -47,21 +47,21 @@ SocialSync connects your WordPress site to four major social platforms and autom
 
 = LinkedIn — OAuth 2.0 =
 
-1. Go to SocialSync > Connections
+1. Go to Socync > Connections
 2. Click "Connect" for LinkedIn
 3. Enter your Client ID and Client Secret
-4. Authorize the application via the OAuth redirect (redirects back to `admin-post.php?action=socialsync_oauth_callback_linkedin`)
+4. Authorize the application via the OAuth redirect (redirects back to `admin-post.php?action=socync_oauth_callback_linkedin`)
 
 = Facebook — OAuth 2.0 =
 
-1. Go to SocialSync > Connections
+1. Go to Socync > Connections
 2. Click "Connect" for Facebook
 3. Enter your Client ID and Client Secret
 4. Authorize the application via the OAuth redirect, then select a Facebook Page to post as
 
 = Bluesky — App Password =
 
-1. Go to SocialSync > Connections
+1. Go to Socync > Connections
 2. Click "Connect" for Bluesky
 3. Enter your Bluesky handle/email and an App Password (generate one at Settings > App Passwords in Bluesky)
 4. Save credentials (no OAuth redirect)
@@ -70,7 +70,7 @@ SocialSync connects your WordPress site to four major social platforms and autom
 
 = Auto-Posting on Publish =
 
-When you publish a new WordPress post, SocialSync automatically enqueues it for delivery to all platforms enabled in **SocialSync > Settings > Autoposting**. The post is sent after a configurable delay (default 2 minutes, set on the Settings page).
+When you publish a new WordPress post, Socync automatically enqueues it for delivery to all platforms enabled in **Socync > Settings > Autoposting**. The post is sent after a configurable delay (default 2 minutes, set on the Settings page).
 
 Content format: `{prefix}: {title} {permalink} {hashtags}` (all on one line).
 
@@ -78,7 +78,7 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 
 = Creating a Scheduled Post =
 
-1. Go to SocialSync > Schedule
+1. Go to Socync > Schedule
 2. Click "Add New Scheduled Post"
 3. Enter the post content and select the platforms to post to
 4. Set the desired date and time
@@ -86,15 +86,15 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 
 = Viewing Logs =
 
-1. Go to SocialSync > Log
+1. Go to Socync > Log
 2. View all posting attempts, their status, and any errors
 
 == Screenshots ==
 
-1. SocialSync Connections page with OAuth setup for X (Twitter), LinkedIn, Facebook, and Bluesky
+1. Socync Connections page with OAuth setup for X (Twitter), LinkedIn, Facebook, and Bluesky
 2. Scheduled posts management interface with status indicators
 3. Log viewer with platform filter and detailed error reporting
-4. SocialSync Settings page
+4. Socync Settings page
 
 == Frequently Asked Questions ==
 
@@ -108,13 +108,18 @@ X uses OAuth 2.0 Authorization Code with PKCE (with OAuth 1.0a fallback). Linked
 
 = Can I schedule posts in advance? =
 
-Yes. Use the SocialSync > Schedule page to create standalone scheduled posts at any future date and time.
+Yes. Use the Socync > Schedule page to create standalone scheduled posts at any future date and time.
 
 = Is there a dry run mode? =
 
 Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to preview what would be posted without actually sending anything.
 
 == Changelog ==
+
+= 0.7.0 =
+* Renamed plugin from SocialSync to Socync (all internal prefixes, classes, options, hooks, and the text domain now use the socync prefix)
+* Existing SocialSync settings are not migrated automatically — reconnect your accounts after updating
+* Fixed hardcoded admin version reference so asset caching uses the current plugin version
 
 = 0.6.0 =
 * Fixed PHP 7.4 compatibility: removed union return types (array|WP_Error) which require PHP 8.0+
@@ -133,7 +138,7 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 * Added SSRF protection for OG metadata and thumbnail fetches
 * Fixed Bluesky JWT storage (removed sanitize_text_field that could corrupt tokens)
 * Fixed Bluesky handle URL encoding (rawurlencode for RFC 3986 compliance)
-* Disabled autoloading for socialsync_logs option to reduce database overhead
+* Disabled autoloading for socync_logs option to reduce database overhead
 
 = 0.5.6 =
 * Added Settings page integration tests
@@ -147,6 +152,9 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.7.0 =
+Plugin renamed to Socync. Reconnect your accounts after updating — settings are not migrated automatically.
 
 = 0.6.0 =
 PHP 7.4 compatibility fix. Recommended upgrade for all users.

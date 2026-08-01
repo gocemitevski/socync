@@ -1,12 +1,12 @@
-# SocialSync User Guide
+# Socync User Guide
 
 ## Getting Started
 
 ### Installation
 
-1. Upload the `socialsync` folder to `/wp-content/plugins/`
-2. Go to **Plugins** in your WordPress admin and activate **SocialSync**
-3. A new **SocialSync** menu appears at the bottom of the admin sidebar
+1. Upload the `socync` folder to `/wp-content/plugins/`
+2. Go to **Plugins** in your WordPress admin and activate **Socync**
+3. A new **Socync** menu appears at the bottom of the admin sidebar
 
 ### Navigating the Menu
 
@@ -30,7 +30,7 @@ Each network requires credentials from its developer portal. The Connections pag
 5. Save, then copy the **Client ID** and **Client Secret**
 6. Enter them on the Connections page and click **Connect**
 
-If you previously used OAuth 1.0a credentials (API Key/Secret + Access Token/Secret), they continue to work — SocialSync detects and uses whichever credentials are stored.
+If you previously used OAuth 1.0a credentials (API Key/Secret + Access Token/Secret), they continue to work — Socync detects and uses whichever credentials are stored.
 
 ### LinkedIn — OAuth 2.0
 
@@ -53,7 +53,7 @@ If you previously used OAuth 1.0a credentials (API Key/Secret + Access Token/Sec
 ### Bluesky — App Password
 
 1. Sign in to [bsky.app](https://bsky.app) → **Settings** → **App Passwords**
-2. Click **Add App Password**, name it `SocialSync`, and copy the generated password
+2. Click **Add App Password**, name it `Socync`, and copy the generated password
 3. Enter your Bluesky handle (or email) and the app password on the Connections page
 4. Click **Connect** — no OAuth redirect needed
 
@@ -63,9 +63,9 @@ If you previously used OAuth 1.0a credentials (API Key/Secret + Access Token/Sec
 
 ### Autoposting
 
-When you publish a new WordPress post, SocialSync can automatically send it to selected platforms.
+When you publish a new WordPress post, Socync can automatically send it to selected platforms.
 
-1. Go to **SocialSync → Settings**
+1. Go to **Socync → Settings**
 2. Under **Autoposting**, check the platforms you want to auto-post to
 3. Set the **Delay** in minutes — the post will be sent this long after publishing (default 2, set to 0 for instant)
 4. Disconnected platforms are shown disabled with a link to the Connections page
@@ -89,11 +89,11 @@ All on one line, no line breaks. Leave prefix or hashtags empty to omit them.
 
 ## Auto-Publishing WordPress Posts
 
-SocialSync hooks into WordPress's `transition_post_status` to detect when a post is first published. Updates and re-publishes are ignored.
+Socync hooks into WordPress's `transition_post_status` to detect when a post is first published. Updates and re-publishes are ignored.
 
-1. Go to **SocialSync → Settings** and enable autoposting for the platforms you want
+1. Go to **Socync → Settings** and enable autoposting for the platforms you want
 2. The **Delay** setting controls how long after publishing the post is sent
-3. When you publish a WordPress post, SocialSync creates a scheduled entry
+3. When you publish a WordPress post, Socync creates a scheduled entry
 4. WP-Cron processes the entry after the configured delay
 
 ### Content Format
@@ -108,7 +108,7 @@ Configure prefix and hashtags on each platform's tab on the Connections page.
 
 ### Disabling Auto-Posting
 
-Uncheck a platform under **SocialSync → Settings → Autoposting**. Existing scheduled entries are not affected — only future publishes.
+Uncheck a platform under **Socync → Settings → Autoposting**. Existing scheduled entries are not affected — only future publishes.
 
 ---
 
@@ -116,7 +116,7 @@ Uncheck a platform under **SocialSync → Settings → Autoposting**. Existing s
 
 You can create posts directly from the Schedule page without creating a WordPress post first.
 
-1. Go to **SocialSync → Schedule**
+1. Go to **Socync → Schedule**
 2. Enter the post **Content**
 3. Select which **Platforms** to post to (new posts default to your autoposting selection)
 4. Set a **Date and Time**, then click **Schedule**
@@ -131,7 +131,7 @@ The **Post Now** button is found below the date picker, next to the Schedule but
 
 ### Editing and Cancelling
 
-- **Edit** — click the post title on the Log page or go to **SocialSync → Schedule** with the `?edit=` parameter
+- **Edit** — click the post title on the Log page or go to **Socync → Schedule** with the `?edit=` parameter
 - **Cancel** — click the Cancel link next to a scheduled post on the Log page
 - **Delete** — use the Delete action on the Log page for individual entries
 
@@ -141,7 +141,7 @@ The **Post Now** button is found below the date picker, next to the Schedule but
 
 ### Main Log
 
-1. Go to **SocialSync → Log**
+1. Go to **Socync → Log**
 2. See all publishing attempts, their status, and error messages
 3. Use the source filter to show **Posts** (WP post + standalone) or **Developer** entries
 4. Use the status links (Published, Failed, Scheduled, Dry Run, Cancelled) to filter by result
@@ -204,7 +204,7 @@ If your server's `AUTH_KEY` or `AUTH_SALT` constants changed (server migration, 
 
 **What is Dry Run mode?**
 
-Dry Run mode logs everything SocialSync would do — including the exact API request bodies — without actually sending them to any platform. Enable it under **SocialSync → Settings → Developer Mode**, then toggle Dry Run. Check the Developer log to verify your content format before real posting.
+Dry Run mode logs everything Socync would do — including the exact API request bodies — without actually sending them to any platform. Enable it under **Socync → Settings → Developer Mode**, then toggle Dry Run. Check the Developer log to verify your content format before real posting.
 
 **Can I post immediately without waiting for the delay?**
 
@@ -221,7 +221,7 @@ Visit your LinkedIn Page in a browser. The Page ID is the numeric string in the 
 
 **Why does the LinkedIn Organization dropdown show nothing?**
 
-The `organizationalEntityAcls` endpoint requires the **Community Management API** product, which must be approved by LinkedIn/Microsoft. This product can only be requested for new developer applications (not ones with existing products). Without it, SocialSync cannot list your organizations — you must enter the Page ID manually.
+The `organizationalEntityAcls` endpoint requires the **Community Management API** product, which must be approved by LinkedIn/Microsoft. This product can only be requested for new developer applications (not ones with existing products). Without it, Socync cannot list your organizations — you must enter the Page ID manually.
 
 **How long does the OAuth token last?**
 
@@ -232,7 +232,7 @@ The `organizationalEntityAcls` endpoint requires the **Community Management API*
 
 **Can I schedule a post in advance?**
 
-Yes. Go to **SocialSync → Schedule**, set the content, platforms, and a future date/time. The post is processed by WP-Cron when the scheduled time arrives.
+Yes. Go to **Socync → Schedule**, set the content, platforms, and a future date/time. The post is processed by WP-Cron when the scheduled time arrives.
 
 ---
 
@@ -260,7 +260,7 @@ If you see timeout errors in the log, the social platform may be slow to respond
 
 If your `wp-config.php` `AUTH_KEY` value changes, all encrypted credentials become unreadable. This is intentional and by design. After a key change:
 
-1. Go to **SocialSync → Connections**
+1. Go to **Socync → Connections**
 2. Disconnect and reconnect each platform
 3. This re-encrypts your credentials with the new key
 

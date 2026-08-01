@@ -1,8 +1,8 @@
 <?php
 /**
- * SocialSync Facebook Provider Class
+ * Socync Facebook Provider Class
  *
- * @package SocialSync
+ * @package Socync
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,11 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once dirname(dirname(__FILE__)) . '/includes/class-api-handler.php';
 
 /**
- * Facebook Graph API Provider for SocialSync plugin.
+ * Facebook Graph API Provider for Socync plugin.
  *
  * Implements OAuth 2.0 authentication and post publishing using Facebook Graph API v18.0.
  */
-class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
+class Socync_Facebook_Provider extends Socync_API_Handler {
 
     /**
      * Facebook Graph API base URL endpoint.
@@ -42,7 +42,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      */
     public function get_pages() {
         if ( ! $this->is_connected() ) {
-            return new WP_Error('not_connected', __( 'Facebook not connected.', 'socialsync' ));
+            return new WP_Error('not_connected', __( 'Facebook not connected.', 'socync' ));
         }
 
         $response = $this->get_api( self::BASE_URL . '/me/accounts?fields=id,name,access_token,picture' );
@@ -70,7 +70,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
         }
 
         // Extend the existing user/page access token via fb_exchange_token
-        $current_token = get_option( 'socialsync_facebook_token', '' );
+        $current_token = get_option( 'socync_facebook_token', '' );
         if ( empty( $current_token ) ) {
             return false;
         }
@@ -78,8 +78,8 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
         $refresh_endpoint = self::BASE_URL . '/oauth/access_token';
 
         $post_data = array(
-            'client_id'        => get_option('socialsync_facebook_app_id'),
-            'client_secret'    => get_option('socialsync_facebook_app_secret'),
+            'client_id'        => get_option('socync_facebook_app_id'),
+            'client_secret'    => get_option('socync_facebook_app_secret'),
             'grant_type'       => 'fb_exchange_token',
             'fb_exchange_token'=> $current_token,
         );
@@ -136,7 +136,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
         }
 
         // Store updated Facebook Page Access Token in wp_options table with expiry timestamp
-        update_option('socialsync_facebook_token', array(
+        update_option('socync_facebook_token', array(
             'access_token' => $new_access_token,
             'expires_in'   => isset($token_response['expires_in']) ? intval($token_response['expires_in']) : 0,
             'created_at'   => time(),
@@ -154,14 +154,14 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      */
     public function publish( string $content, string $url = '' ) {
         if ( ! $this->refresh_token() ) {
-            return new WP_Error( 'token_expired', __( 'Facebook access token expired and could not be refreshed. Please reconnect.', 'socialsync' ) );
+            return new WP_Error( 'token_expired', __( 'Facebook access token expired and could not be refreshed. Please reconnect.', 'socync' ) );
         }
         if ( ! $this->is_connected() ) {
-            return new WP_Error('not_connected', __( 'Facebook Page not connected or access token has expired.', 'socialsync' ));
+            return new WP_Error('not_connected', __( 'Facebook Page not connected or access token has expired.', 'socync' ));
         }
 
-        $page_id    = get_option( 'socialsync_facebook_page_id', '' );
-        $page_token = get_option( 'socialsync_facebook_page_token', '' );
+        $page_id    = get_option( 'socync_facebook_page_id', '' );
+        $page_token = get_option( 'socync_facebook_page_token', '' );
 
         if ( ! empty( $page_id ) && ! empty( $page_token ) ) {
             $endpoint  = self::BASE_URL . '/' . $page_id . '/feed';
@@ -225,7 +225,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
         } else {
             $preview = sprintf(
                 /* translators: %d: Facebook post ID */
-                __('Facebook Post #%d created successfully.', 'socialsync'),
+                __('Facebook Post #%d created successfully.', 'socync'),
                 $post_id
             );
         }
@@ -242,15 +242,15 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      * @return bool True if disconnect was successful, false on failure.
      */
     public function disconnect(): bool {
-        delete_option('socialsync_facebook_token');
-        delete_option('socialsync_facebook_page_id');
-        delete_option('socialsync_facebook_page_token');
-        delete_option('socialsync_facebook_pages_cache');
-        delete_option('socialsync_facebook_connected');
-        delete_option('socialsync_facebook_app_id');
-        delete_option('socialsync_facebook_app_secret');
-        delete_option('socialsync_facebook_logs');
-        delete_transient('socialsync_facebook_oauth_state');
+        delete_option('socync_facebook_token');
+        delete_option('socync_facebook_page_id');
+        delete_option('socync_facebook_page_token');
+        delete_option('socync_facebook_pages_cache');
+        delete_option('socync_facebook_connected');
+        delete_option('socync_facebook_app_id');
+        delete_option('socync_facebook_app_secret');
+        delete_option('socync_facebook_logs');
+        delete_transient('socync_facebook_oauth_state');
 
         $this->log_success(
             'Facebook Page disconnected',
@@ -266,10 +266,10 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      *
      * @param string $error_message Error message description.
      * @param array  $context       Contextual data for error logging.
-     * @return void Writes error entry to socialsync_logs.
+     * @return void Writes error entry to socync_logs.
      */
     protected function log_error( string $error_message, array $context = array() ): void {
-        $logs = get_option( 'socialsync_logs', array() );
+        $logs = get_option( 'socync_logs', array() );
 
         $full_message = $error_message;
         if ( ! empty( $context ) ) {
@@ -290,7 +290,7 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
             $logs = array_slice( $logs, -50 );
         }
 
-        update_option( 'socialsync_logs', $logs, false );
+        update_option( 'socync_logs', $logs, false );
     }
 
     /**
@@ -300,10 +300,10 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
      * @param string $platform Platform name for log categorization.
      * @param string $status   Operation status (e.g., 'success').
      * @param array  $context  Additional context data.
-     * @return void Writes success entry to socialsync_logs.
+     * @return void Writes success entry to socync_logs.
      */
     protected function log_success( string $message, string $platform, string $status, array $context = array() ): void {
-        $logs = get_option( 'socialsync_logs', array() );
+        $logs = get_option( 'socync_logs', array() );
 
         $full_message = $message;
         if ( ! empty( $context ) ) {
@@ -324,6 +324,6 @@ class SocialSync_Facebook_Provider extends SocialSync_API_Handler {
             $logs = array_slice( $logs, -50 );
         }
 
-        update_option( 'socialsync_logs', $logs, false );
+        update_option( 'socync_logs', $logs, false );
     }
 }

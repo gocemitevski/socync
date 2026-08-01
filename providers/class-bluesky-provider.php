@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once dirname( dirname( __FILE__ ) ) . '/includes/class-api-handler.php';
 
-class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
+class Socync_Bluesky_Provider extends Socync_API_Handler {
 
     const SESSION_ENDPOINT  = 'https://bsky.social/xrpc/com.atproto.server.createSession';
     const REFRESH_ENDPOINT  = 'https://bsky.social/xrpc/com.atproto.server.refreshSession';
@@ -17,26 +17,26 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     private function get_identifier(): string {
-        return get_option( 'socialsync_bluesky_identifier', '' );
+        return get_option( 'socync_bluesky_identifier', '' );
     }
 
     private function get_app_password(): string {
-        return get_option( 'socialsync_bluesky_app_password', '' );
+        return get_option( 'socync_bluesky_app_password', '' );
     }
 
     public function is_connected(): bool {
-        return ! empty( $this->access_token ) && ! empty( get_option( 'socialsync_bluesky_did', '' ) );
+        return ! empty( $this->access_token ) && ! empty( get_option( 'socync_bluesky_did', '' ) );
     }
 
     public function refresh_token(): bool {
-        $stored_token = get_option( 'socialsync_bluesky_token', array() );
+        $stored_token = get_option( 'socync_bluesky_token', array() );
         $has_proper_expiry = ! empty( $stored_token['expires_in'] );
 
         if ( ! empty( $this->access_token ) && $this->is_token_valid() && $has_proper_expiry ) {
             return true;
         }
 
-        $refresh_jwt = get_option( 'socialsync_bluesky_refresh_jwt', '' );
+        $refresh_jwt = get_option( 'socync_bluesky_refresh_jwt', '' );
         if ( empty( $refresh_jwt ) ) {
             return $this->create_session();
         }
@@ -125,26 +125,26 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $this->access_token = $access_jwt;
         $this->token_expiry = time() + 7200;
 
-        update_option( 'socialsync_bluesky_token', array(
+        update_option( 'socync_bluesky_token', array(
             'access_token'  => $access_jwt,
             'expires_in'    => 7200,
             'created_at'    => time(),
         ) );
-        update_option( 'socialsync_bluesky_refresh_jwt', $refresh_jwt );
-        update_option( 'socialsync_bluesky_did', $did );
-        update_option( 'socialsync_bluesky_connected', true );
+        update_option( 'socync_bluesky_refresh_jwt', $refresh_jwt );
+        update_option( 'socync_bluesky_did', $did );
+        update_option( 'socync_bluesky_connected', true );
     }
 
     public function publish( string $content, string $url = '' ) {
         if ( ! $this->refresh_token() ) {
-            return new WP_Error( 'not_connected', __( 'Bluesky account not connected. Please reconnect.', 'socialsync' ) );
+            return new WP_Error( 'not_connected', __( 'Bluesky account not connected. Please reconnect.', 'socync' ) );
         }
 
         if ( ! $this->is_connected() ) {
-            return new WP_Error( 'not_connected', __( 'Bluesky account not connected or session expired.', 'socialsync' ) );
+            return new WP_Error( 'not_connected', __( 'Bluesky account not connected or session expired.', 'socync' ) );
         }
 
-        $did = get_option( 'socialsync_bluesky_did', '' );
+        $did = get_option( 'socync_bluesky_did', '' );
 
         $facets = $this->build_facets( $content );
 
@@ -184,7 +184,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $resp_body   = json_decode( wp_remote_retrieve_body( $response ), true );
 
         if ( ! is_numeric( $status_code ) || intval( $status_code ) < 200 || intval( $status_code ) >= 300 ) {
-            $error_msg = __( 'Unknown Bluesky API error', 'socialsync' );
+            $error_msg = __( 'Unknown Bluesky API error', 'socync' );
             if ( isset( $resp_body['message'] ) ) {
                 $error_msg = sanitize_text_field( $resp_body['message'] );
             } elseif ( isset( $resp_body['error'] ) ) {
@@ -199,7 +199,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             'data'    => array( 'id' => $post_id ),
             'message' => sprintf(
                 /* translators: %s: Bluesky post URI */
-                __( 'Posted to Bluesky (URI: %s)', 'socialsync' ),
+                __( 'Posted to Bluesky (URI: %s)', 'socync' ),
                 $post_id
             ),
         );
@@ -210,8 +210,8 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             return null;
         }
 
-        if ( ! socialsync_is_safe_url( $url ) ) {
-            SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+        if ( ! socync_is_safe_url( $url ) ) {
+            Socync_Dev_Logger::log( 'bluesky_embed', array(
                 'url'     => $url,
                 'summary' => 'Skipped OG fetch: URL points to private/reserved IP range',
             ) );
@@ -222,7 +222,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $description = '';
         $thumb_blob  = null;
 
-        SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+        Socync_Dev_Logger::log( 'bluesky_embed', array(
             'url'     => $url,
             'summary' => 'Fetching OG tags for Bluesky embed from: ' . $url,
         ) );
@@ -230,11 +230,11 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $response = wp_remote_get( $url, array(
             'timeout'     => 10,
             'sslverify'   => true,
-            'user-agent'  => 'SocialSync/1.0',
+            'user-agent'  => 'Socync/1.0',
         ) );
 
         if ( is_wp_error( $response ) ) {
-            SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+            Socync_Dev_Logger::log( 'bluesky_embed', array(
                 'url'     => $url,
                 'error'   => $response->get_error_message(),
                 'summary' => 'Failed to fetch URL for OG tags: ' . $response->get_error_message(),
@@ -247,7 +247,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
                 $description = $this->extract_og_tag( $body, 'og:description' );
                 $og_image    = $this->extract_og_tag( $body, 'og:image' );
 
-                SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+                Socync_Dev_Logger::log( 'bluesky_embed', array(
                     'url'         => $url,
                     'og_title'    => $title,
                     'og_image'    => $og_image,
@@ -256,7 +256,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
 
                 if ( ! empty( $og_image ) ) {
                     $thumb_blob = $this->upload_image_blob( $og_image );
-                    SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+                    Socync_Dev_Logger::log( 'bluesky_embed', array(
                         'url'         => $url,
                         'og_image'    => $og_image,
                         'has_thumb'   => $thumb_blob ? 'yes' : 'no',
@@ -264,7 +264,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
                     ) );
                 }
             } else {
-                SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+                Socync_Dev_Logger::log( 'bluesky_embed', array(
                     'url'    => $url,
                     'status' => $status,
                     'summary' => 'URL fetch returned non-200 status: ' . $status,
@@ -289,7 +289,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             $embed['external']['thumb'] = $thumb_blob;
         }
 
-        SocialSync_Dev_Logger::log( 'bluesky_embed', array(
+        Socync_Dev_Logger::log( 'bluesky_embed', array(
             'url'         => $url,
             'has_thumb'   => $thumb_blob ? 'yes' : 'no',
             'title'       => $title,
@@ -313,11 +313,11 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     private function upload_image_blob( string $image_url ): ?array {
-        if ( ! socialsync_is_safe_url( $image_url ) ) {
+        if ( ! socync_is_safe_url( $image_url ) ) {
             return null;
         }
 
-        SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+        Socync_Dev_Logger::log( 'bluesky_upload', array(
             'image_url' => $image_url,
             'summary'   => 'Downloading OG image: ' . $image_url,
         ) );
@@ -327,13 +327,13 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $head_response = wp_remote_head( $image_url, array(
             'timeout'   => 10,
             'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'user-agent' => 'Socync/1.0',
         ) );
 
         if ( ! is_wp_error( $head_response ) ) {
             $content_length = wp_remote_retrieve_header( $head_response, 'content-length' );
             if ( ! empty( $content_length ) && intval( $content_length ) > $max_size ) {
-                SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+                Socync_Dev_Logger::log( 'bluesky_upload', array(
                     'size'    => intval( $content_length ),
                     'summary' => 'OG image too large (' . size_format( intval( $content_length ) ) . '), skipping thumbnail',
                 ) );
@@ -344,11 +344,11 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $image_response = wp_remote_get( $image_url, array(
             'timeout'   => 15,
             'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'user-agent' => 'Socync/1.0',
         ) );
 
         if ( is_wp_error( $image_response ) ) {
-            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            Socync_Dev_Logger::log( 'bluesky_upload', array(
                 'error'   => $image_response->get_error_message(),
                 'summary' => 'Image download failed: ' . $image_response->get_error_message(),
             ) );
@@ -357,7 +357,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
 
         $status = wp_remote_retrieve_response_code( $image_response );
         if ( ! is_numeric( $status ) || intval( $status ) < 200 || intval( $status ) >= 300 ) {
-            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            Socync_Dev_Logger::log( 'bluesky_upload', array(
                 'status'  => $status,
                 'summary' => 'Image download returned status: ' . $status,
             ) );
@@ -366,14 +366,14 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
 
         $image_data = wp_remote_retrieve_body( $image_response );
         if ( empty( $image_data ) ) {
-            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            Socync_Dev_Logger::log( 'bluesky_upload', array(
                 'summary' => 'Image download returned empty body',
             ) );
             return null;
         }
 
         if ( strlen( $image_data ) > $max_size ) {
-            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            Socync_Dev_Logger::log( 'bluesky_upload', array(
                 'size'    => strlen( $image_data ),
                 'summary' => 'Downloaded image exceeds 5MB, skipping thumbnail',
             ) );
@@ -386,7 +386,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
             $mime_type = $content_type;
         }
 
-        SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+        Socync_Dev_Logger::log( 'bluesky_upload', array(
             'size'      => strlen( $image_data ),
             'mime_type' => $mime_type,
             'summary'   => 'Uploading ' . strlen( $image_data ) . ' bytes as ' . $mime_type . ' to Bluesky',
@@ -403,7 +403,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         ) );
 
         if ( is_wp_error( $blob_response ) ) {
-            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            Socync_Dev_Logger::log( 'bluesky_upload', array(
                 'error'   => $blob_response->get_error_message(),
                 'summary' => 'Blob upload wp_error: ' . $blob_response->get_error_message(),
             ) );
@@ -415,7 +415,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         $blob_body = json_decode( $blob_body_str, true );
 
         if ( ! is_numeric( $blob_status ) || intval( $blob_status ) < 200 || intval( $blob_status ) >= 300 ) {
-            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            Socync_Dev_Logger::log( 'bluesky_upload', array(
                 'status'      => $blob_status,
                 'response'    => $blob_body_str,
                 'summary'     => 'Blob upload returned status ' . $blob_status . ': ' . ( $blob_body['message'] ?? $blob_body_str ),
@@ -424,14 +424,14 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         }
 
         if ( ! isset( $blob_body['blob'] ) ) {
-            SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+            Socync_Dev_Logger::log( 'bluesky_upload', array(
                 'response'  => $blob_body_str,
                 'summary'   => 'Blob upload response missing blob key',
             ) );
             return null;
         }
 
-        SocialSync_Dev_Logger::log( 'bluesky_upload', array(
+        Socync_Dev_Logger::log( 'bluesky_upload', array(
             'blob_ref' => $blob_body['blob']['ref']['$link'] ?? 'unknown',
             'summary'  => 'Blob upload succeeded, CID: ' . ( $blob_body['blob']['ref']['$link'] ?? 'unknown' ),
         ) );
@@ -440,12 +440,12 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     public function disconnect(): bool {
-        delete_option( 'socialsync_bluesky_token' );
-        delete_option( 'socialsync_bluesky_refresh_jwt' );
-        delete_option( 'socialsync_bluesky_did' );
-        delete_option( 'socialsync_bluesky_identifier' );
-        delete_option( 'socialsync_bluesky_app_password' );
-        delete_option( 'socialsync_bluesky_connected' );
+        delete_option( 'socync_bluesky_token' );
+        delete_option( 'socync_bluesky_refresh_jwt' );
+        delete_option( 'socync_bluesky_did' );
+        delete_option( 'socync_bluesky_identifier' );
+        delete_option( 'socync_bluesky_app_password' );
+        delete_option( 'socync_bluesky_connected' );
         return true;
     }
 
@@ -549,7 +549,7 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
     }
 
     protected function log_error( string $message, array $context = array() ): void {
-        $logs = get_option( 'socialsync_logs', array() );
+        $logs = get_option( 'socync_logs', array() );
         $logs[] = array(
             'id'       => uniqid(),
             'post_id'  => 0,
@@ -561,6 +561,6 @@ class SocialSync_Bluesky_Provider extends SocialSync_API_Handler {
         if ( count( $logs ) > 100 ) {
             $logs = array_slice( $logs, -50 );
         }
-        update_option( 'socialsync_logs', $logs, false );
+        update_option( 'socync_logs', $logs, false );
     }
 }

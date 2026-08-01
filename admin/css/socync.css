@@ -1,0 +1,107 @@
+:root {
+    --socync-border: #c3c4c7;
+    --socync-bg-muted: #f0f0f1;
+    --socync-bg: #fff;
+    --socync-bg-subtle: #f7f7f7;
+    --socync-danger: #b32d2e;
+    --socync-radius: 4px;
+    --socync-gap: 12px;
+}
+
+.socync-admin-wrapper {
+    margin-top: 20px;
+}
+
+.socync-tabs {
+    margin-bottom: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--socync-border);
+}
+
+.socync-tab {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 0 0 -1px 0;
+    background: var(--socync-bg-muted);
+    border: 1px solid var(--socync-border);
+    border-bottom: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.socync-tab.active {
+    background: var(--socync-bg);
+    border-bottom: 1px solid var(--socync-bg);
+}
+
+.socync-tab-content {
+    display: none;
+    padding: 20px;
+    border: 1px solid var(--socync-border);
+    border-top: none;
+    background: var(--socync-bg);
+}
+
+.socync-tab-content.active {
+    display: block;
+}
+
+.notice.notice-success.inline {
+    margin: 0;
+    padding: 7px 12px;
+}
+
+.socync-connected-row {
+    display: flex;
+    align-items: center;
+    gap: var(--socync-gap);
+}
+
+.socync-connected-row .notice {
+    flex: 1;
+    margin: 0;
+}
+
+.socync-connected-row .button {
+    flex-shrink: 0;
+}
+
+.button.button-disconnect {
+    color: var(--socync-danger);
+    border-color: var(--socync-danger);
+}
+
+.button.button-disconnect:hover,
+.button.button-disconnect:focus,
+.button.button-disconnect:active {
+    color: var(--socync-bg);
+    background: var(--socync-danger);
+    border-color: var(--socync-danger);
+}
+
+.socync-tab-content details {
+    margin: 1em 0;
+    padding: 10px 14px;
+    background: var(--socync-bg-subtle);
+    border: 1px solid var(--socync-border);
+}
+
+.socync-tab-content summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.socync-tab-content details[open] summary {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--socync-border);
+}
+
+.socync-tab-content details ol {
+    margin: 0 0 0 1.5em;
+}
+
+.socync-tab-content details ol li {
+    margin-bottom: 6px;
+}

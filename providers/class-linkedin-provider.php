@@ -1,8 +1,8 @@
 <?php
 /**
- * SocialSync LinkedIn Provider Class
+ * Socync LinkedIn Provider Class
  *
- * @package SocialSync
+ * @package Socync
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once dirname(dirname(__FILE__)) . '/includes/class-api-handler.php';
 
 /**
- * LinkedIn API Provider for SocialSync plugin.
+ * LinkedIn API Provider for Socync plugin.
  */
-class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
+class Socync_Linkedin_Provider extends Socync_API_Handler {
 
     const BASE_URL     = 'https://api.linkedin.com/v2';
     const POSTS_URL    = 'https://api.linkedin.com/rest/posts';
@@ -31,7 +31,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
      */
     public function get_organizations() {
         if ( ! $this->is_connected() ) {
-            return new WP_Error('not_connected', __( 'LinkedIn not connected.', 'socialsync' ));
+            return new WP_Error('not_connected', __( 'LinkedIn not connected.', 'socync' ));
         }
 
         $response = wp_remote_get(
@@ -55,7 +55,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
 
         if ( ! is_numeric( $status ) || intval( $status ) < 200 || intval( $status ) >= 300 ) {
             $err_msg = isset( $body['message'] ) ? $body['message'] : '';
-            return new WP_Error( 'linkedin_api_error', '' !== $err_msg ? sanitize_text_field( $err_msg ) : __( 'Unknown error', 'socialsync' ) );
+            return new WP_Error( 'linkedin_api_error', '' !== $err_msg ? sanitize_text_field( $err_msg ) : __( 'Unknown error', 'socync' ) );
         }
 
         if ( ! isset( $body['elements'] ) || ! is_array( $body['elements'] ) ) {
@@ -86,7 +86,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             return true;
         }
 
-        $token_data = get_option( 'socialsync_linkedin_token', array() );
+        $token_data = get_option( 'socync_linkedin_token', array() );
         $refresh_token = isset( $token_data['refresh_token'] ) ? $token_data['refresh_token'] : '';
 
         if ( empty( $refresh_token ) ) {
@@ -97,8 +97,8 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         $post_data = array(
             'grant_type'    => 'refresh_token',
             'refresh_token' => $refresh_token,
-            'client_id'     => get_option('socialsync_linkedin_client_id'),
-            'client_secret' => get_option('socialsync_linkedin_client_secret'),
+            'client_id'     => get_option('socync_linkedin_client_id'),
+            'client_secret' => get_option('socync_linkedin_client_secret'),
         );
 
         $response = wp_remote_post(
@@ -146,7 +146,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             $this->token_expiry = time() + 86400;
         }
 
-        update_option('socialsync_linkedin_token', array(
+        update_option('socync_linkedin_token', array(
             'access_token'  => $new_access_token,
             'refresh_token' => isset( $token_response['refresh_token'] ) ? $token_response['refresh_token'] : $refresh_token,
             'expires_in'    => isset($token_response['expires_in']) ? intval($token_response['expires_in']) : 0,
@@ -165,40 +165,40 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
      */
     public function publish( string $content, string $url = '' ) {
         // Dev log: entering LinkedIn publish
-        SocialSync_Dev_Logger::log( 'linkedin_publish', array(
+        Socync_Dev_Logger::log( 'linkedin_publish', array(
             'summary' => 'Entering LinkedIn publish()',
         ) );
 
         if ( ! $this->refresh_token() ) {
-            SocialSync_Dev_Logger::log( 'linkedin_publish', array(
+            Socync_Dev_Logger::log( 'linkedin_publish', array(
                 'summary' => 'LinkedIN publish: refresh_token() FAILED. Token valid: ' . ( $this->is_token_valid() ? 'yes' : 'no' ) . ', token_expiry: ' . ( $this->token_expiry ?? 'null' ) . ', time(): ' . time(),
             ) );
-            return new WP_Error( 'token_expired', __( 'LinkedIn access token expired and could not be refreshed. Please reconnect.', 'socialsync' ) );
+            return new WP_Error( 'token_expired', __( 'LinkedIn access token expired and could not be refreshed. Please reconnect.', 'socync' ) );
         }
 
-        SocialSync_Dev_Logger::log( 'linkedin_publish', array(
+        Socync_Dev_Logger::log( 'linkedin_publish', array(
             'summary' => 'LinkedIn publish: refresh_token() OK, is_connected: ' . ( $this->is_connected() ? 'yes' : 'no' ) . ', has_token: ' . ( ! empty( $this->access_token ) ? 'yes' : 'no' ),
         ) );
 
         if ( ! $this->is_connected() ) {
-            return new WP_Error('not_connected', __( 'LinkedIn account not connected or access token has expired.', 'socialsync' ));
+            return new WP_Error('not_connected', __( 'LinkedIn account not connected or access token has expired.', 'socync' ));
         }
 
-        $org_id    = get_option( 'socialsync_linkedin_org_id', '' );
-        $person_id = get_option( 'socialsync_linkedin_person_id', '' );
+        $org_id    = get_option( 'socync_linkedin_org_id', '' );
+        $person_id = get_option( 'socync_linkedin_person_id', '' );
 
         if ( ! empty( $org_id ) ) {
             $author = 'urn:li:organization:' . $org_id;
         } elseif ( ! empty( $person_id ) ) {
             $author = 'urn:li:person:' . $person_id;
         } else {
-            SocialSync_Dev_Logger::log( 'linkedin_publish', array(
+            Socync_Dev_Logger::log( 'linkedin_publish', array(
                 'summary' => 'LinkedIn publish: no author (both org_id and person_id are empty)',
             ) );
-            return new WP_Error( 'no_author', __( 'No LinkedIn profile or organization selected. Go to SocialSync settings.', 'socialsync' ) );
+            return new WP_Error( 'no_author', __( 'No LinkedIn profile or organization selected. Go to Socync settings.', 'socync' ) );
         }
 
-        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+        Socync_Dev_Logger::log( 'linkedin_publish_step', array(
             'step'    => 'before_api_call',
             'author'  => $author,
             'summary' => 'About to call LinkedIn API for author: ' . $author,
@@ -248,7 +248,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'LinkedIn-Version'           => '202606', // Version expires annually and needs to be updated! Next one will be 202706.
         );
 
-        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+        Socync_Dev_Logger::log( 'linkedin_publish_step', array(
             'step'    => 'wp_remote_post_start',
             'summary' => 'Sending POST to ' . self::POSTS_URL,
         ) );
@@ -263,7 +263,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             )
         );
 
-        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+        Socync_Dev_Logger::log( 'linkedin_publish_step', array(
             'step'    => 'wp_remote_post_end',
             'is_wp_error' => is_wp_error( $response ) ? 'yes' : 'no',
             'summary' => 'wp_remote_post completed for LinkedIn' . ( is_wp_error( $response ) ? ' (WP_Error: ' . $response->get_error_message() . ')' : '' ),
@@ -275,7 +275,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
 
         $status_code = wp_remote_retrieve_response_code( $response );
 
-        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+        Socync_Dev_Logger::log( 'linkedin_publish_step', array(
             'step'        => 'response_handling',
             'status_code' => $status_code,
             'summary'     => 'LinkedIn API returned status ' . $status_code,
@@ -287,7 +287,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
 
             $message = isset( $error_data['message'] ) ? sanitize_text_field( $error_data['message'] ) : sanitize_text_field( $body );
 
-            SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+            Socync_Dev_Logger::log( 'linkedin_publish_step', array(
                 'step'    => 'api_error',
                 'message' => $message,
                 'summary' => 'LinkedIn API error: ' . $message,
@@ -307,7 +307,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             $post_id = $decoded['id'] ?? '';
         }
 
-        SocialSync_Dev_Logger::log( 'linkedin_publish_step', array(
+        Socync_Dev_Logger::log( 'linkedin_publish_step', array(
             'step'    => 'success',
             'post_id' => $post_id,
             'summary' => 'LinkedIn publish succeeded, post_id: ' . ( $post_id ?: 'unknown' ),
@@ -317,8 +317,8 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'success' => true,
             'message' => sprintf(
                 /* translators: %s: LinkedIn post ID */
-                __( 'Posted to LinkedIn (Post ID: %s)', 'socialsync' ),
-                $post_id ? esc_html( $post_id ) : __( 'Success', 'socialsync' )
+                __( 'Posted to LinkedIn (Post ID: %s)', 'socync' ),
+                $post_id ? esc_html( $post_id ) : __( 'Success', 'socync' )
             ),
         );
     }
@@ -330,14 +330,14 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             'image_url'   => '',
         );
 
-        if ( ! socialsync_is_safe_url( $url ) ) {
+        if ( ! socync_is_safe_url( $url ) ) {
             return $meta;
         }
 
         $response = wp_remote_get( $url, array(
             'timeout'     => 10,
             'sslverify'   => true,
-            'user-agent'  => 'SocialSync/1.0',
+            'user-agent'  => 'Socync/1.0',
         ) );
 
         if ( is_wp_error( $response ) ) {
@@ -372,7 +372,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
     }
 
     private function upload_thumbnail( string $image_url, string $author ): ?string {
-        if ( ! socialsync_is_safe_url( $image_url ) ) {
+        if ( ! socync_is_safe_url( $image_url ) ) {
             return null;
         }
 
@@ -394,7 +394,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         ) );
 
         if ( is_wp_error( $register_response ) ) {
-            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+            Socync_Dev_Logger::log( 'linkedin_upload', array(
                 'step'    => 'register',
                 'error'   => $register_response->get_error_message(),
                 'summary' => 'Image register failed: ' . $register_response->get_error_message(),
@@ -406,7 +406,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         $register_body   = json_decode( wp_remote_retrieve_body( $register_response ), true );
 
         if ( ! is_numeric( $register_status ) || intval( $register_status ) < 200 || intval( $register_status ) >= 300 ) {
-            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+            Socync_Dev_Logger::log( 'linkedin_upload', array(
                 'step'    => 'register',
                 'status'  => $register_status,
                 'summary' => 'Image register returned status ' . $register_status,
@@ -418,7 +418,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         $image_urn  = $register_body['value']['image'] ?? '';
 
         if ( empty( $upload_url ) || empty( $image_urn ) ) {
-            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+            Socync_Dev_Logger::log( 'linkedin_upload', array(
                 'step'    => 'register',
                 'summary' => 'Image register response missing uploadUrl or image URN',
             ) );
@@ -429,7 +429,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         $image_response = wp_remote_head( $image_url, array(
             'timeout'   => 10,
             'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'user-agent' => 'Socync/1.0',
         ) );
 
         $max_size = 5 * 1024 * 1024; // 5MB limit
@@ -437,7 +437,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         if ( ! is_wp_error( $image_response ) ) {
             $content_length = wp_remote_retrieve_header( $image_response, 'content-length' );
             if ( ! empty( $content_length ) && intval( $content_length ) > $max_size ) {
-                SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+                Socync_Dev_Logger::log( 'linkedin_upload', array(
                     'step'    => 'download',
                     'size'    => intval( $content_length ),
                     'summary' => 'OG image too large (' . size_format( intval( $content_length ) ) . '), skipping thumbnail',
@@ -449,11 +449,11 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         $image_response = wp_remote_get( $image_url, array(
             'timeout'   => 15,
             'sslverify' => true,
-            'user-agent' => 'SocialSync/1.0',
+            'user-agent' => 'Socync/1.0',
         ) );
 
         if ( is_wp_error( $image_response ) ) {
-            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+            Socync_Dev_Logger::log( 'linkedin_upload', array(
                 'step'    => 'download',
                 'error'   => $image_response->get_error_message(),
                 'summary' => 'Image download failed: ' . $image_response->get_error_message(),
@@ -465,7 +465,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         $image_data = wp_remote_retrieve_body( $image_response );
 
         if ( ! is_numeric( $dl_status ) || intval( $dl_status ) < 200 || intval( $dl_status ) >= 300 || empty( $image_data ) ) {
-            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+            Socync_Dev_Logger::log( 'linkedin_upload', array(
                 'step'    => 'download',
                 'status'  => $dl_status,
                 'summary' => 'Image download failed with status ' . $dl_status,
@@ -474,7 +474,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         }
 
         if ( strlen( $image_data ) > $max_size ) {
-            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+            Socync_Dev_Logger::log( 'linkedin_upload', array(
                 'step'    => 'download',
                 'size'    => strlen( $image_data ),
                 'summary' => 'Downloaded image exceeds 5MB, skipping thumbnail',
@@ -500,7 +500,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
         ) );
 
         if ( is_wp_error( $upload_response ) ) {
-            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+            Socync_Dev_Logger::log( 'linkedin_upload', array(
                 'step'    => 'binary_upload',
                 'error'   => $upload_response->get_error_message(),
                 'summary' => 'Binary upload failed: ' . $upload_response->get_error_message(),
@@ -510,7 +510,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
 
         $upload_status = wp_remote_retrieve_response_code( $upload_response );
         if ( ! is_numeric( $upload_status ) || intval( $upload_status ) < 200 || intval( $upload_status ) >= 300 ) {
-            SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+            Socync_Dev_Logger::log( 'linkedin_upload', array(
                 'step'    => 'binary_upload',
                 'status'  => $upload_status,
                 'summary' => 'Binary upload returned status ' . $upload_status,
@@ -518,7 +518,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             return null;
         }
 
-        SocialSync_Dev_Logger::log( 'linkedin_upload', array(
+        Socync_Dev_Logger::log( 'linkedin_upload', array(
             'step'      => 'complete',
             'image_urn' => $image_urn,
             'summary'   => 'Thumbnail uploaded: ' . $image_urn,
@@ -528,16 +528,16 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
     }
 
     public function disconnect(): bool {
-        delete_option('socialsync_linkedin_token');
-        delete_option('socialsync_linkedin_org_id');
-        delete_option('socialsync_linkedin_person_id');
-        delete_option('socialsync_linkedin_connected');
-        delete_option('socialsync_linkedin_client_id');
-        delete_option('socialsync_linkedin_client_secret');
-        delete_option('socialsync_linkedin_redirect_url');
-        delete_option('socialsync_linkedin_code_verifier');
-        delete_option('socialsync_linkedin_logs');
-        delete_transient('socialsync_linkedin_oauth_state');
+        delete_option('socync_linkedin_token');
+        delete_option('socync_linkedin_org_id');
+        delete_option('socync_linkedin_person_id');
+        delete_option('socync_linkedin_connected');
+        delete_option('socync_linkedin_client_id');
+        delete_option('socync_linkedin_client_secret');
+        delete_option('socync_linkedin_redirect_url');
+        delete_option('socync_linkedin_code_verifier');
+        delete_option('socync_linkedin_logs');
+        delete_transient('socync_linkedin_oauth_state');
 
         $this->log_success(
             'LinkedIn account disconnected',
@@ -549,7 +549,7 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
     }
 
     protected function log_error( string $error_message, array $context = array() ): void {
-        $logs = get_option( 'socialsync_logs', array() );
+        $logs = get_option( 'socync_logs', array() );
 
         $full_message = $error_message;
         if ( ! empty( $context ) ) {
@@ -570,11 +570,11 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             $logs = array_slice( $logs, -50 );
         }
 
-        update_option( 'socialsync_logs', $logs, false );
+        update_option( 'socync_logs', $logs, false );
     }
 
     protected function log_success( string $message, string $platform, string $status, array $context = array() ): void {
-        $logs = get_option( 'socialsync_logs', array() );
+        $logs = get_option( 'socync_logs', array() );
 
         $full_message = $message;
         if ( ! empty( $context ) ) {
@@ -595,6 +595,6 @@ class SocialSync_Linkedin_Provider extends SocialSync_API_Handler {
             $logs = array_slice( $logs, -50 );
         }
 
-        update_option( 'socialsync_logs', $logs, false );
+        update_option( 'socync_logs', $logs, false );
     }
 }

@@ -4,17 +4,17 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class SocialSync_Dev_Logger {
+class Socync_Dev_Logger {
 
-    const LOG_KEY = 'socialsync_dev_logs';
+    const LOG_KEY = 'socync_dev_logs';
     const MAX_LOG = 500;
 
     public static function is_active(): bool {
-        return (bool) get_option( 'socialsync_dev_mode', false );
+        return (bool) get_option( 'socync_dev_mode', false );
     }
 
     public static function is_dry_run(): bool {
-        return self::is_active() && (bool) get_option( 'socialsync_dry_run', false );
+        return self::is_active() && (bool) get_option( 'socync_dry_run', false );
     }
 
     public static function log( string $event, array $data = array() ): void {

@@ -1,19 +1,19 @@
 <?php
 /**
- * SocialSync Scheduled Post Model
+ * Socync Scheduled Post Model
  *
- * @package SocialSync
+ * @package Socync
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class SocialSync_Scheduled_Post {
+class Socync_Scheduled_Post {
 
     public static function table_name(): string {
         global $wpdb;
-        return $wpdb->prefix . 'socialsync_scheduled_posts'; // phpcs:ignore WordPress.DB.DatabaseValue
+        return $wpdb->prefix . 'socync_scheduled_posts'; // phpcs:ignore WordPress.DB.DatabaseValue
     }
 
     public static function create_table(): void {

@@ -1,15 +1,15 @@
 <?php
 /**
- * SocialSync Deactivator
+ * Socync Deactivator
  *
- * @package SocialSync
+ * @package Socync
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class SocialSync_Deactivator {
+class Socync_Deactivator {
 
     /**
      * Deactivate the plugin.
@@ -18,8 +18,8 @@ class SocialSync_Deactivator {
      */
     public static function deactivate(): void {
         // Clear the scheduled cron events
-        wp_clear_scheduled_hook( 'socialsync_run_delayed_posts' );
-        wp_clear_scheduled_hook( 'socialsync_purge_old_logs' );
+        wp_clear_scheduled_hook( 'socync_run_delayed_posts' );
+        wp_clear_scheduled_hook( 'socync_purge_old_logs' );
 
         // Flush rewrite rules
         flush_rewrite_rules();

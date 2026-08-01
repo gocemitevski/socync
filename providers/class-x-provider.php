@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once dirname( dirname( __FILE__ ) ) . '/includes/class-api-handler.php';
 
-class SocialSync_X_Provider extends SocialSync_API_Handler {
+class Socync_X_Provider extends Socync_API_Handler {
 
     const TWEETS_ENDPOINT = 'https://api.x.com/2/tweets';
 
@@ -22,19 +22,19 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
     }
 
     private function get_api_key(): string {
-        return get_option( 'socialsync_x_api_key', '' );
+        return get_option( 'socync_x_api_key', '' );
     }
 
     private function get_api_key_secret(): string {
-        return get_option( 'socialsync_x_api_key_secret', '' );
+        return get_option( 'socync_x_api_key_secret', '' );
     }
 
     private function get_access_token(): string {
-        return get_option( 'socialsync_x_access_token', '' );
+        return get_option( 'socync_x_access_token', '' );
     }
 
     private function get_access_token_secret(): string {
-        return get_option( 'socialsync_x_access_token_secret', '' );
+        return get_option( 'socync_x_access_token_secret', '' );
     }
 
     private function has_legacy_credentials(): bool {
@@ -57,15 +57,15 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
                 return true;
             }
 
-            $token_data = get_option( 'socialsync_x_token', array() );
+            $token_data = get_option( 'socync_x_token', array() );
             $refresh_token = isset( $token_data['refresh_token'] ) ? $token_data['refresh_token'] : '';
 
             if ( empty( $refresh_token ) ) {
                 return false;
             }
 
-            $client_id     = get_option( 'socialsync_x_client_id' );
-            $client_secret = get_option( 'socialsync_x_client_secret' );
+            $client_id     = get_option( 'socync_x_client_id' );
+            $client_secret = get_option( 'socync_x_client_secret' );
             $basic_auth    = base64_encode( $client_id . ':' . $client_secret );
 
             $response = wp_remote_post(
@@ -96,7 +96,7 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
             $this->token_expiry = time() + ( isset( $body['expires_in'] ) ? intval( $body['expires_in'] ) : 7200 );
 
             update_option(
-                'socialsync_x_token',
+                'socync_x_token',
                 array(
                     'access_token'  => $this->access_token,
                     'refresh_token' => isset( $body['refresh_token'] ) ? $body['refresh_token'] : $refresh_token,
@@ -114,10 +114,10 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
     public function publish( string $content, string $url = '' ) {
         if ( 'oauth2' === $this->auth_mode ) {
             if ( ! $this->refresh_token() ) {
-                return new WP_Error( 'token_expired', __( 'X access token expired and could not be refreshed. Please reconnect.', 'socialsync' ) );
+                return new WP_Error( 'token_expired', __( 'X access token expired and could not be refreshed. Please reconnect.', 'socync' ) );
             }
             if ( ! $this->is_connected() ) {
-                return new WP_Error( 'not_connected', __( 'X account not connected.', 'socialsync' ) );
+                return new WP_Error( 'not_connected', __( 'X account not connected.', 'socync' ) );
             }
 
             $args = array(
@@ -132,7 +132,7 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
             $response = wp_remote_post( self::TWEETS_ENDPOINT, $args );
         } else {
             if ( ! $this->is_connected() ) {
-                return new WP_Error( 'not_connected', __( 'X account not connected. Please add your API credentials.', 'socialsync' ) );
+                return new WP_Error( 'not_connected', __( 'X account not connected. Please add your API credentials.', 'socync' ) );
             }
 
             $api_key    = $this->get_api_key();
@@ -193,7 +193,7 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
         $resp_body   = json_decode( wp_remote_retrieve_body( $response ), true );
 
         if ( 201 !== $status_code ) {
-            $error_msg = __( 'Unknown X API error', 'socialsync' );
+            $error_msg = __( 'Unknown X API error', 'socync' );
             if ( isset( $resp_body['detail'] ) ) {
                 $error_msg = sanitize_text_field( $resp_body['detail'] );
             } elseif ( isset( $resp_body['errors'][0]['message'] ) && is_array( $resp_body['errors'] ) ) {
@@ -202,7 +202,7 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
                 $error_msg = sanitize_text_field( $resp_body['title'] );
             }
             if ( 401 === $status_code ) {
-                $error_msg .= ' ' . __( 'Check that your app has the correct OAuth configuration in X Developer Portal.', 'socialsync' );
+                $error_msg .= ' ' . __( 'Check that your app has the correct OAuth configuration in X Developer Portal.', 'socync' );
             }
             return new WP_Error(
                 'x_post_error',
@@ -217,23 +217,23 @@ class SocialSync_X_Provider extends SocialSync_API_Handler {
             'data'    => array( 'id' => $post_id ),
             'message' => sprintf(
                 /* translators: %s: X/Twitter tweet ID */
-                __( 'Posted to X (Tweet ID: %s)', 'socialsync' ),
+                __( 'Posted to X (Tweet ID: %s)', 'socync' ),
                 $post_id
             ),
         );
     }
 
     public function disconnect(): bool {
-        delete_option( 'socialsync_x_token' );
-        delete_option( 'socialsync_x_client_id' );
-        delete_option( 'socialsync_x_client_secret' );
-        delete_option( 'socialsync_x_api_key' );
-        delete_option( 'socialsync_x_api_key_secret' );
-        delete_option( 'socialsync_x_access_token' );
-        delete_option( 'socialsync_x_access_token_secret' );
-        delete_option( 'socialsync_x_connected' );
-        delete_transient( 'socialsync_x_oauth_state' );
-        delete_transient( 'socialsync_x_code_verifier' );
+        delete_option( 'socync_x_token' );
+        delete_option( 'socync_x_client_id' );
+        delete_option( 'socync_x_client_secret' );
+        delete_option( 'socync_x_api_key' );
+        delete_option( 'socync_x_api_key_secret' );
+        delete_option( 'socync_x_access_token' );
+        delete_option( 'socync_x_access_token_secret' );
+        delete_option( 'socync_x_connected' );
+        delete_transient( 'socync_x_oauth_state' );
+        delete_transient( 'socync_x_code_verifier' );
         return true;
     }
 }

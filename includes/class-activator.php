@@ -1,8 +1,8 @@
 <?php
 /**
- * SocialSync Activation/Deactivation Logic
+ * Socync Activation/Deactivation Logic
  *
- * @package SocialSync
+ * @package Socync
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,11 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * SocialSync Activator Class.
+ * Socync Activator Class.
  *
  * Handles plugin activation and deactivation hooks.
  */
-class SocialSync_Activator {
+class Socync_Activator {
 
     /**
      * Plugin activation: set up scheduled events, validate API keys.
@@ -34,22 +34,22 @@ class SocialSync_Activator {
         }
 
         // Create custom database table for standalone scheduled posts
-        if ( class_exists( 'SocialSync_Scheduled_Post' ) ) {
-            SocialSync_Scheduled_Post::create_table();
+        if ( class_exists( 'Socync_Scheduled_Post' ) ) {
+            Socync_Scheduled_Post::create_table();
         }
 
         // Schedule the one-time delayed posts queue event for first activation
         self::schedule_delayed_posts_queue();
 
         // Schedule daily log purge
-        if ( ! wp_next_scheduled( 'socialsync_purge_old_logs' ) ) {
-            wp_schedule_event( time(), 'daily', 'socialsync_purge_old_logs' );
+        if ( ! wp_next_scheduled( 'socync_purge_old_logs' ) ) {
+            wp_schedule_event( time(), 'daily', 'socync_purge_old_logs' );
         }
 
-        // Register uninstall cleanup script in socialsync.php
+        // Register uninstall cleanup script in socync.php
         register_uninstall_hook(
-            dirname(dirname(dirname(__FILE__))) . '/socialsync.php',
-            'socialsync_uninstall'
+            dirname(dirname(dirname(__FILE__))) . '/socync.php',
+            'socync_uninstall'
         );
     }
 
@@ -59,7 +59,7 @@ class SocialSync_Activator {
      * @return void Schedules a single-event cron to process pending social posts.
      */
     private static function schedule_delayed_posts_queue(): void {
-        $event_key = 'socialsync_run_delayed_posts';
+        $event_key = 'socync_run_delayed_posts';
 
         // Check if the cron event is already scheduled
         $scheduled = wp_next_scheduled( $event_key );

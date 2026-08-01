@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: SocialSync - Automatic social media posting and scheduling
+ * Plugin Name: Socync - Automatic social media posting and scheduling
  * Description: Automatically publish your WordPress posts to X (Twitter), LinkedIn, Facebook and Bluesky when you publish content on your site.
- * Version: 0.6.0
+ * Version: 0.7.0
  * Requires at least: 5.0
  * Requires PHP: 7.4
  * Tested up to: 7.0
@@ -10,7 +10,7 @@
  * Author URI: https://www.gocemitevski.com/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: socialsync
+ * Text Domain: socync
  * Domain Path: /languages
  */
 
@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( ! defined( 'SOCIALSYNC_VERSION' ) ) {
-    define( 'SOCIALSYNC_VERSION', '0.6.0' );
+if ( ! defined( 'SOCYNC_VERSION' ) ) {
+    define( 'SOCYNC_VERSION', '0.7.0' );
 }
-if ( ! defined( 'SOCIALSYNC_PLUGIN_DIR' ) ) {
-    define( 'SOCIALSYNC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'SOCYNC_PLUGIN_DIR' ) ) {
+    define( 'SOCYNC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 }
 
 /**
@@ -45,14 +45,14 @@ require_once dirname( __FILE__ ) . '/providers/class-linkedin-provider.php';
 require_once dirname( __FILE__ ) . '/providers/class-facebook-provider.php';
 require_once dirname( __FILE__ ) . '/providers/class-bluesky-provider.php';
 
-const SOCIALSYNC_ENC_PREFIX = 'SSENC:';
+const SOCYNC_ENC_PREFIX = 'SSENC:';
 
 /**
  * Get the encryption key for credential storage.
  *
  * @return string
  */
-function socialsync_encryption_key(): string {
+function socync_encryption_key(): string {
     $raw = defined( 'AUTH_KEY' ) ? AUTH_KEY : wp_salt( 'auth' );
     return hash( 'sha256', $raw, true );
 }
@@ -63,12 +63,12 @@ function socialsync_encryption_key(): string {
  * @param  string $value Plaintext value.
  * @return string Encrypted value (marker + base64-encoded IV + ciphertext), or original value on failure.
  */
-function socialsync_encrypt( string $value ): string {
+function socync_encrypt( string $value ): string {
     if ( '' === $value ) {
         return $value;
     }
 
-    $key       = socialsync_encryption_key();
+    $key       = socync_encryption_key();
     $method    = 'aes-256-cbc';
     $iv_length = openssl_cipher_iv_length( $method );
     $iv        = openssl_random_pseudo_bytes( $iv_length );
@@ -79,7 +79,7 @@ function socialsync_encrypt( string $value ): string {
         return $value;
     }
 
-    return SOCIALSYNC_ENC_PREFIX . base64_encode( $iv . $encrypted );
+    return SOCYNC_ENC_PREFIX . base64_encode( $iv . $encrypted );
 }
 
 /**
@@ -88,23 +88,23 @@ function socialsync_encrypt( string $value ): string {
  * @param  string $value Encrypted value (marker + base64-encoded IV + ciphertext).
  * @return string Decrypted plaintext, or original value if not encrypted.
  */
-function socialsync_decrypt( string $value ): string {
+function socync_decrypt( string $value ): string {
     if ( '' === $value ) {
         return $value;
     }
 
-    if ( 0 !== strpos( $value, SOCIALSYNC_ENC_PREFIX ) ) {
+    if ( 0 !== strpos( $value, SOCYNC_ENC_PREFIX ) ) {
         return $value;
     }
 
-    $raw     = substr( $value, strlen( SOCIALSYNC_ENC_PREFIX ) );
+    $raw     = substr( $value, strlen( SOCYNC_ENC_PREFIX ) );
     $decoded = base64_decode( $raw, true );
 
     if ( false === $decoded ) {
         return $value;
     }
 
-    $key       = socialsync_encryption_key();
+    $key       = socync_encryption_key();
     $method    = 'aes-256-cbc';
     $iv_length = openssl_cipher_iv_length( $method );
 
@@ -129,21 +129,21 @@ function socialsync_decrypt( string $value ): string {
  *
  * @return string[]
  */
-function socialsync_encrypted_options(): array {
+function socync_encrypted_options(): array {
     return array(
-        'socialsync_x_api_key_secret',
-        'socialsync_x_access_token',
-        'socialsync_x_access_token_secret',
-        'socialsync_x_client_secret',
-        'socialsync_x_token',
-        'socialsync_linkedin_client_secret',
-        'socialsync_facebook_app_secret',
-        'socialsync_bluesky_app_password',
-        'socialsync_bluesky_refresh_jwt',
-        'socialsync_facebook_page_token',
-        'socialsync_linkedin_token',
-        'socialsync_facebook_token',
-        'socialsync_bluesky_token',
+        'socync_x_api_key_secret',
+        'socync_x_access_token',
+        'socync_x_access_token_secret',
+        'socync_x_client_secret',
+        'socync_x_token',
+        'socync_linkedin_client_secret',
+        'socync_facebook_app_secret',
+        'socync_bluesky_app_password',
+        'socync_bluesky_refresh_jwt',
+        'socync_facebook_page_token',
+        'socync_linkedin_token',
+        'socync_facebook_token',
+        'socync_bluesky_token',
     );
 }
 
@@ -155,18 +155,18 @@ function socialsync_encrypted_options(): array {
  * @param  mixed $value The value to encrypt.
  * @return mixed The encrypted value.
  */
-function socialsync_encrypt_option_value( $value ) {
+function socync_encrypt_option_value( $value ) {
     if ( is_array( $value ) ) {
         $sensitive_keys = array( 'access_token', 'refresh_token' );
         foreach ( $value as $k => $v ) {
             if ( in_array( $k, $sensitive_keys, true ) && is_string( $v ) && '' !== $v ) {
-                $value[ $k ] = socialsync_encrypt( $v );
+                $value[ $k ] = socync_encrypt( $v );
             }
         }
         return $value;
     }
     if ( is_string( $value ) && '' !== $value ) {
-        return socialsync_encrypt( $value );
+        return socync_encrypt( $value );
     }
     return $value;
 }
@@ -179,12 +179,12 @@ function socialsync_encrypt_option_value( $value ) {
  * @param  mixed $value The value to decrypt.
  * @return mixed The decrypted value.
  */
-function socialsync_decrypt_option_value( $value ) {
+function socync_decrypt_option_value( $value ) {
     if ( is_array( $value ) ) {
         $sensitive_keys = array( 'access_token', 'refresh_token' );
         foreach ( $value as $k => $v ) {
             if ( in_array( $k, $sensitive_keys, true ) && is_string( $v ) && '' !== $v ) {
-                $decrypted = socialsync_decrypt( $v );
+                $decrypted = socync_decrypt( $v );
                 if ( $decrypted !== $v ) {
                     $value[ $k ] = $decrypted;
                 }
@@ -193,7 +193,7 @@ function socialsync_decrypt_option_value( $value ) {
         return $value;
     }
     if ( is_string( $value ) && '' !== $value ) {
-        $decrypted = socialsync_decrypt( $value );
+        $decrypted = socync_decrypt( $value );
         if ( $decrypted !== $value ) {
             return $decrypted;
         }
@@ -204,14 +204,14 @@ function socialsync_decrypt_option_value( $value ) {
 /**
  * Register encryption/decryption filters for sensitive credential options.
  */
-function socialsync_register_encryption_filters(): void {
-    $options = socialsync_encrypted_options();
+function socync_register_encryption_filters(): void {
+    $options = socync_encrypted_options();
     foreach ( $options as $option ) {
-        add_filter( 'option_' . $option, 'socialsync_decrypt_option_value', 5 );
-        add_filter( 'pre_update_option_' . $option, 'socialsync_encrypt_option_value', 5 );
+        add_filter( 'option_' . $option, 'socync_decrypt_option_value', 5 );
+        add_filter( 'pre_update_option_' . $option, 'socync_encrypt_option_value', 5 );
     }
 }
-add_action( 'init', 'socialsync_register_encryption_filters', 0 );
+add_action( 'init', 'socync_register_encryption_filters', 0 );
 
 /**
  * Migrate existing plaintext credentials to encrypted storage.
@@ -220,12 +220,12 @@ add_action( 'init', 'socialsync_register_encryption_filters', 0 );
  * (which returns plaintext via the decrypt filter — no-op for unencrypted data)
  * and re-saves it (which encrypts it via the pre_update filter).
  */
-function socialsync_migrate_plaintext_credentials(): void {
-    if ( get_option( 'socialsync_credentials_encrypted', false ) ) {
+function socync_migrate_plaintext_credentials(): void {
+    if ( get_option( 'socync_credentials_encrypted', false ) ) {
         return;
     }
 
-    $options = socialsync_encrypted_options();
+    $options = socync_encrypted_options();
     foreach ( $options as $option ) {
         $value = get_option( $option, null );
         if ( null !== $value ) {
@@ -233,9 +233,9 @@ function socialsync_migrate_plaintext_credentials(): void {
         }
     }
 
-    update_option( 'socialsync_credentials_encrypted', true );
+    update_option( 'socync_credentials_encrypted', true );
 }
-add_action( 'init', 'socialsync_migrate_plaintext_credentials', 20 );
+add_action( 'init', 'socync_migrate_plaintext_credentials', 20 );
 
 /**
  * Validate that a URL points to a safe external host (not private/reserved IP range).
@@ -246,7 +246,7 @@ add_action( 'init', 'socialsync_migrate_plaintext_credentials', 20 );
  * @param  string $url URL to validate.
  * @return bool True if the URL is safe to fetch.
  */
-function socialsync_is_safe_url( string $url ): bool {
+function socync_is_safe_url( string $url ): bool {
     $host = wp_parse_url( $url, PHP_URL_HOST );
     if ( ! $host ) {
         return false;
@@ -265,20 +265,20 @@ function socialsync_is_safe_url( string $url ): bool {
 }
 
 /**
- * SocialSync Plugin Class.
+ * Socync Plugin Class.
  *
  * @since 1.0.0
  */
-class SocialSync_Plugin {
+class Socync_Plugin {
 
-    /** @var SocialSync_Plugin Single instance of the plugin. */
+    /** @var Socync_Plugin Single instance of the plugin. */
     private static $instance = null;
 
-    /** @var SocialSync_Admin Admin handler instance. */
+    /** @var Socync_Admin Admin handler instance. */
     public $admin = null;
 
     /** @var string Current plugin version. */
-    public $version = SOCIALSYNC_VERSION;
+    public $version = SOCYNC_VERSION;
 
     /**
      * Initialize the plugin.
@@ -299,29 +299,29 @@ class SocialSync_Plugin {
      */
     public function __construct() {
         // Register activation hook
-        register_activation_hook( __FILE__, array( 'SocialSync_Activator', 'activate' ) );
+        register_activation_hook( __FILE__, array( 'Socync_Activator', 'activate' ) );
 
         // Register deactivation hook
-        register_deactivation_hook( __FILE__, array( 'SocialSync_Deactivator', 'deactivate' ) );
+        register_deactivation_hook( __FILE__, array( 'Socync_Deactivator', 'deactivate' ) );
 
         // Initialize the admin interface and scheduler
-        $this->admin = new SocialSync_Admin();
-        SocialSync_Scheduler::get_instance();
+        $this->admin = new Socync_Admin();
+        Socync_Scheduler::get_instance();
     }
 }
 
 /**
  * Load plugin text domain.
  */
-function socialsync_load_textdomain(): void {
-    load_plugin_textdomain( 'socialsync', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+function socync_load_textdomain(): void {
+    load_plugin_textdomain( 'socync', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
-add_action( 'init', 'socialsync_load_textdomain' );
+add_action( 'init', 'socync_load_textdomain' );
 
 // Load plugin instance
-function socialsync_plugin_instance(): SocialSync_Plugin {
-    return SocialSync_Plugin::instance();
+function socync_plugin_instance(): Socync_Plugin {
+    return Socync_Plugin::instance();
 }
 
 // Instantiate the plugin on activation
-add_action( 'plugins_loaded', 'socialsync_plugin_instance' );
+add_action( 'plugins_loaded', 'socync_plugin_instance' );

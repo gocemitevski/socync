@@ -1,8 +1,8 @@
 <?php
 /**
- * SocialSync Base API Handler Class
+ * Socync Base API Handler Class
  *
- * @package SocialSync
+ * @package Socync
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Provides common functionality like token management, request handling,
  * and response parsing that can be extended by X, LinkedIn, Facebook providers.
  */
-abstract class SocialSync_API_Handler {
+abstract class Socync_API_Handler {
 
     /**
      * Platform identifier slug (e.g., 'x', 'linkedin', 'facebook').
@@ -77,7 +77,7 @@ abstract class SocialSync_API_Handler {
         }
 
         // Get stored token from wp_options table
-        $token_data = get_option( 'socialsync_' . $this->platform . '_token', array() );
+        $token_data = get_option( 'socync_' . $this->platform . '_token', array() );
 
         if ( ! is_array( $token_data ) || empty( $token_data['access_token'] ) ) {
             return;
@@ -195,7 +195,7 @@ abstract class SocialSync_API_Handler {
             $args
         );
 
-        SocialSync_Dev_Logger::log( 'api_request', array(
+        Socync_Dev_Logger::log( 'api_request', array(
             'platform'      => $this->platform,
             'endpoint'      => $endpoint,
             'request_body'  => $this->redact_sensitive_body( $args['body'] ),
@@ -204,7 +204,7 @@ abstract class SocialSync_API_Handler {
 
         // Check for HTTP errors in response headers or body
         if ( is_wp_error( $response ) ) {
-            SocialSync_Dev_Logger::log( 'api_response', array(
+            Socync_Dev_Logger::log( 'api_response', array(
                 'platform'       => $this->platform,
                 'endpoint'       => $endpoint,
                 'response_body'  => $response->get_error_message(),
@@ -218,7 +218,7 @@ abstract class SocialSync_API_Handler {
 
         $body = wp_remote_retrieve_body( $response );
 
-        SocialSync_Dev_Logger::log( 'api_response', array(
+        Socync_Dev_Logger::log( 'api_response', array(
             'platform'       => $this->platform,
             'endpoint'       => $endpoint,
             'response_body'  => $this->redact_sensitive_body( $body ),
@@ -271,7 +271,7 @@ abstract class SocialSync_API_Handler {
             $args
         );
 
-        SocialSync_Dev_Logger::log( 'api_request', array(
+        Socync_Dev_Logger::log( 'api_request', array(
             'platform'      => $this->platform,
             'endpoint'      => $endpoint,
             'summary'       => 'GET ' . $endpoint,
@@ -279,7 +279,7 @@ abstract class SocialSync_API_Handler {
 
         // Check for HTTP errors in response headers or body
         if ( is_wp_error( $response ) ) {
-            SocialSync_Dev_Logger::log( 'api_response', array(
+            Socync_Dev_Logger::log( 'api_response', array(
                 'platform'       => $this->platform,
                 'endpoint'       => $endpoint,
                 'response_body'  => $response->get_error_message(),
@@ -292,7 +292,7 @@ abstract class SocialSync_API_Handler {
         $status_code = wp_remote_retrieve_response_code( $response );
         $body        = wp_remote_retrieve_body( $response );
 
-        SocialSync_Dev_Logger::log( 'api_response', array(
+        Socync_Dev_Logger::log( 'api_response', array(
             'platform'       => $this->platform,
             'endpoint'       => $endpoint,
             'response_body'  => $this->redact_sensitive_body( $body ),

@@ -1,10 +1,10 @@
 jQuery(document).ready(function($) {
     // --- Tabbed UI ---
-    var $tabs = $('.socialsync-tab');
+    var $tabs = $('.socync-tab');
 
     function activateTab(tabId) {
         $tabs.removeClass('active').attr('aria-selected', 'false').attr('tabindex', '-1');
-        $('.socialsync-tab-content').removeClass('active');
+        $('.socync-tab-content').removeClass('active');
         $tabs.filter('[data-tab="' + tabId + '"]').addClass('active').attr('aria-selected', 'true').attr('tabindex', '0');
         $('#' + tabId).addClass('active');
     }
@@ -21,13 +21,13 @@ jQuery(document).ready(function($) {
     });
 
     // --- Confirmation dialogs for scheduled post actions ---
-    $(document).on('click', '.socialsync-confirm-delete', function(e) {
-        if (!confirm(SocialSyncAdmin.confirm_delete || 'Delete this scheduled post?')) {
+    $(document).on('click', '.socync-confirm-delete', function(e) {
+        if (!confirm(SocyncAdmin.confirm_delete || 'Delete this scheduled post?')) {
             e.preventDefault();
         }
     });
-    $(document).on('click', '.socialsync-confirm-cancel', function(e) {
-        if (!confirm(SocialSyncAdmin.confirm_cancel || 'Cancel this scheduled post?')) {
+    $(document).on('click', '.socync-confirm-cancel', function(e) {
+        if (!confirm(SocyncAdmin.confirm_cancel || 'Cancel this scheduled post?')) {
             e.preventDefault();
         }
     });

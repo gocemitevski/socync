@@ -2,7 +2,7 @@
 /**
  * Logs page view.
  *
- * @package SocialSync
+ * @package Socync
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $status_filter = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '';
 $source_filter = isset( $_GET['source'] ) ? sanitize_key( $_GET['source'] ) : '';
-$page_url      = menu_page_url( 'social-sync-log', false );
+$page_url      = menu_page_url( 'socync-log', false );
 
 $platform_labels = array(
     'x'        => 'X (Twitter)',
@@ -23,26 +23,26 @@ $platform_labels = array(
 );
 
 $dev_event_labels = array(
-    'enqueue_post'        => __( 'Enqueue Post', 'socialsync' ),
-    'publish_event'       => __( 'Publish Event', 'socialsync' ),
-    'cron_run'            => __( 'Cron Run', 'socialsync' ),
-    'publish_to_platform' => __( 'Publish', 'socialsync' ),
-    'dry_run_skip'        => __( 'DRY RUN - Skipped', 'socialsync' ),
-    'api_request'         => __( 'API Request', 'socialsync' ),
-    'api_response'        => __( 'API Response', 'socialsync' ),
-    'post_built'          => __( 'Post Content Built', 'socialsync' ),
-    'oauth_callback'      => __( 'OAuth Callback', 'socialsync' ),
+    'enqueue_post'        => __( 'Enqueue Post', 'socync' ),
+    'publish_event'       => __( 'Publish Event', 'socync' ),
+    'cron_run'            => __( 'Cron Run', 'socync' ),
+    'publish_to_platform' => __( 'Publish', 'socync' ),
+    'dry_run_skip'        => __( 'DRY RUN - Skipped', 'socync' ),
+    'api_request'         => __( 'API Request', 'socync' ),
+    'api_response'        => __( 'API Response', 'socync' ),
+    'post_built'          => __( 'Post Content Built', 'socync' ),
+    'oauth_callback'      => __( 'OAuth Callback', 'socync' ),
 );
 
 /**
  * Translate a platform slug to its display label.
  */
-function socialsync_platform_label( string $slug, array $labels ): string {
+function socync_platform_label( string $slug, array $labels ): string {
     return isset( $labels[ $slug ] ) ? $labels[ $slug ] : ucfirst( $slug );
 }
 
 // Gather WP post logs.
-$wp_logs = get_option( 'socialsync_logs', array() );
+$wp_logs = get_option( 'socync_logs', array() );
 $entries = array();
 
 foreach ( $wp_logs as $entry ) {
@@ -54,7 +54,7 @@ foreach ( $wp_logs as $entry ) {
     if ( 'wp_post' === $log_type && $post_id ) {
         $log_version = isset( $entry['log_version'] ) ? (int) $entry['log_version'] : 0;
         if ( $log_version < 2 ) {
-            $scheduled = SocialSync_Scheduled_Post::get( $post_id );
+            $scheduled = Socync_Scheduled_Post::get( $post_id );
             if ( $scheduled && $scheduled->post_id ) {
                 $post_id = (int) $scheduled->post_id;
             }
@@ -66,7 +66,7 @@ foreach ( $wp_logs as $entry ) {
     $entries[]  = array(
         'type'      => $log_type,
         'post_id'   => $post_id,
-        'title'     => $post_title ?: ( 'standalone' === $log_type ? '—' : __( '(untitled)', 'socialsync' ) ),
+        'title'     => $post_title ?: ( 'standalone' === $log_type ? '—' : __( '(untitled)', 'socync' ) ),
         'platform'  => isset( $entry['platform'] ) ? $entry['platform'] : '',
         'status'    => 'pending' === $raw_status ? 'scheduled' : $raw_status,
         'date'      => isset( $entry['date'] ) ? $entry['date'] : '',
@@ -76,7 +76,7 @@ foreach ( $wp_logs as $entry ) {
 }
 
 // Gather standalone scheduled posts.
-$scheduled_posts = SocialSync_Scheduled_Post::get_all( '', 200, 0 );
+$scheduled_posts = Socync_Scheduled_Post::get_all( '', 200, 0 );
 foreach ( $scheduled_posts as $item ) {
     $platforms = json_decode( $item->platforms, true );
     if ( ! is_array( $platforms ) ) {
@@ -95,7 +95,7 @@ foreach ( $scheduled_posts as $item ) {
 }
 
 // Gather developer log entries.
-$dev_logs = SocialSync_Dev_Logger::get_logs( SocialSync_Dev_Logger::MAX_LOG );
+$dev_logs = Socync_Dev_Logger::get_logs( Socync_Dev_Logger::MAX_LOG );
 foreach ( $dev_logs as $entry ) {
     $event    = isset( $entry['event'] ) ? $entry['event'] : '';
     $label    = isset( $dev_event_labels[ $event ] ) ? $dev_event_labels[ $event ] : ucfirst( $event );
@@ -160,9 +160,9 @@ if ( $status_filter ) {
 }
 
 // Pagination.
-$per_page = get_user_option( 'socialsync_log_per_page' );
+$per_page = get_user_option( 'socync_log_per_page' );
 if ( false === $per_page ) {
-    $per_page = intval( get_option( 'socialsync_log_per_page', 20 ) );
+    $per_page = intval( get_option( 'socync_log_per_page', 20 ) );
 }
 if ( $per_page < 1 ) {
     $per_page = 20;
@@ -174,29 +174,29 @@ $offset      = ( $paged - 1 ) * $per_page;
 $entries     = array_slice( $entries, $offset, $per_page );
 ?>
 <div class="wrap">
-    <h1><?php echo esc_html__( 'Log', 'socialsync' ); ?></h1>
+    <h1><?php echo esc_html__( 'Log', 'socync' ); ?></h1>
 
     <?php if ( isset( $_GET['cancelled'] ) ) : ?>
-        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Scheduled post cancelled.', 'socialsync' ); ?></p></div>
+        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Scheduled post cancelled.', 'socync' ); ?></p></div>
     <?php endif; ?>
     <?php if ( isset( $_GET['log_cleared'] ) ) : ?>
-        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Log cleared.', 'socialsync' ); ?></p></div>
+        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Log cleared.', 'socync' ); ?></p></div>
     <?php endif; ?>
     <?php if ( isset( $_GET['settings_saved'] ) ) : ?>
-        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Log settings saved.', 'socialsync' ); ?></p></div>
+        <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Log settings saved.', 'socync' ); ?></p></div>
     <?php endif; ?>
 
     <hr class="wp-header-end">
 
     <ul class="subsubsub">
-        <li><a href="<?php echo esc_url( remove_query_arg( array( 'source', 'status', 'paged' ), $page_url ) ); ?>" class="<?php echo empty( $source_filter ) && empty( $status_filter ) ? 'current' : ''; ?>"><?php esc_html_e( 'All', 'socialsync' ); ?> <span class="count">(<?php echo esc_html( $count_all ); ?>)</span></a> |</li>
-        <li><a href="<?php echo esc_url( add_query_arg( 'source', 'post', remove_query_arg( array( 'status', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'post' === $source_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Posts', 'socialsync' ); ?> <span class="count">(<?php echo esc_html( $count_any_post ); ?>)</span></a> |</li>
-        <li><a href="<?php echo esc_url( add_query_arg( 'source', 'dev', remove_query_arg( array( 'status', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'dev' === $source_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Developer', 'socialsync' ); ?> <span class="count">(<?php echo esc_html( $count_dev ); ?>)</span></a> |</li>
-        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'published', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'published' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Published', 'socialsync' ); ?> <span class="count">(<?php echo esc_html( $count_published ); ?>)</span></a> |</li>
-        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'failed', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'failed' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Failed', 'socialsync' ); ?> <span class="count">(<?php echo esc_html( $count_failed ); ?>)</span></a> |</li>
-        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'scheduled', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'scheduled' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Scheduled', 'socialsync' ); ?> <span class="count">(<?php echo esc_html( $count_scheduled ); ?>)</span></a> |</li>
-        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'dry_run', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'dry_run' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Dry Run', 'socialsync' ); ?> <span class="count">(<?php echo esc_html( $count_dry_run ); ?>)</span></a> |</li>
-        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'cancelled', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'cancelled' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Cancelled', 'socialsync' ); ?> <span class="count">(<?php echo esc_html( $count_cancelled ); ?>)</span></a></li>
+        <li><a href="<?php echo esc_url( remove_query_arg( array( 'source', 'status', 'paged' ), $page_url ) ); ?>" class="<?php echo empty( $source_filter ) && empty( $status_filter ) ? 'current' : ''; ?>"><?php esc_html_e( 'All', 'socync' ); ?> <span class="count">(<?php echo esc_html( $count_all ); ?>)</span></a> |</li>
+        <li><a href="<?php echo esc_url( add_query_arg( 'source', 'post', remove_query_arg( array( 'status', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'post' === $source_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Posts', 'socync' ); ?> <span class="count">(<?php echo esc_html( $count_any_post ); ?>)</span></a> |</li>
+        <li><a href="<?php echo esc_url( add_query_arg( 'source', 'dev', remove_query_arg( array( 'status', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'dev' === $source_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Developer', 'socync' ); ?> <span class="count">(<?php echo esc_html( $count_dev ); ?>)</span></a> |</li>
+        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'published', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'published' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Published', 'socync' ); ?> <span class="count">(<?php echo esc_html( $count_published ); ?>)</span></a> |</li>
+        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'failed', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'failed' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Failed', 'socync' ); ?> <span class="count">(<?php echo esc_html( $count_failed ); ?>)</span></a> |</li>
+        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'scheduled', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'scheduled' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Scheduled', 'socync' ); ?> <span class="count">(<?php echo esc_html( $count_scheduled ); ?>)</span></a> |</li>
+        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'dry_run', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'dry_run' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Dry Run', 'socync' ); ?> <span class="count">(<?php echo esc_html( $count_dry_run ); ?>)</span></a> |</li>
+        <li><a href="<?php echo esc_url( add_query_arg( 'status', 'cancelled', remove_query_arg( array( 'source', 'paged' ), $page_url ) ) ); ?>" class="<?php echo 'cancelled' === $status_filter ? 'current' : ''; ?>"><?php esc_html_e( 'Cancelled', 'socync' ); ?> <span class="count">(<?php echo esc_html( $count_cancelled ); ?>)</span></a></li>
     </ul>
 
     <div class="tablenav top">
@@ -204,33 +204,33 @@ $entries     = array_slice( $entries, $offset, $per_page );
             <span class="displaying-num"><?php
                 printf(
                     /* translators: %d: Number of log items */
-                    esc_html__( '%d items', 'socialsync' ),
+                    esc_html__( '%d items', 'socync' ),
                     intval( $total_items )
                 );
             ?></span>
             <?php if ( $total_pages > 1 ) : ?>
             <span class="pagination-links">
                 <?php if ( $paged > 1 ) : ?>
-                    <a class="first-page button" href="<?php echo esc_url( remove_query_arg( 'paged', $page_url ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'First page', 'socialsync' ); ?></span><span aria-hidden="true">&laquo;</span></a>
-                    <a class="prev-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged - 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Previous page', 'socialsync' ); ?></span><span aria-hidden="true">&lsaquo;</span></a>
+                    <a class="first-page button" href="<?php echo esc_url( remove_query_arg( 'paged', $page_url ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'First page', 'socync' ); ?></span><span aria-hidden="true">&laquo;</span></a>
+                    <a class="prev-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged - 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Previous page', 'socync' ); ?></span><span aria-hidden="true">&lsaquo;</span></a>
                 <?php else : ?>
                     <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&laquo;</span>
                     <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&lsaquo;</span>
                 <?php endif; ?>
                 <span class="paging-input">
-                    <label for="socialsync-current-page-selector" class="screen-reader-text"><?php esc_html_e( 'Current Page', 'socialsync' ); ?></label>
-                    <input class="current-page" id="socialsync-current-page-selector" type="text" name="paged" value="<?php echo esc_attr( $paged ); ?>" size="2" aria-describedby="socialsync-table-paging">
-                    <span class="tablenav-paging-text" id="socialsync-table-paging"><?php
+                    <label for="socync-current-page-selector" class="screen-reader-text"><?php esc_html_e( 'Current Page', 'socync' ); ?></label>
+                    <input class="current-page" id="socync-current-page-selector" type="text" name="paged" value="<?php echo esc_attr( $paged ); ?>" size="2" aria-describedby="socync-table-paging">
+                    <span class="tablenav-paging-text" id="socync-table-paging"><?php
                         printf(
                             /* translators: %s: Total number of pages */
-                            esc_html__( 'of %s', 'socialsync' ),
+                            esc_html__( 'of %s', 'socync' ),
                             '<span class="total-pages">' . esc_html( $total_pages ) . '</span>'
                         );
                     ?></span>
                 </span>
                 <?php if ( $paged < $total_pages ) : ?>
-                    <a class="next-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged + 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Next page', 'socialsync' ); ?></span><span aria-hidden="true">&rsaquo;</span></a>
-                    <a class="last-page button" href="<?php echo esc_url( add_query_arg( 'paged', $total_pages ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Last page', 'socialsync' ); ?></span><span aria-hidden="true">&raquo;</span></a>
+                    <a class="next-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged + 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Next page', 'socync' ); ?></span><span aria-hidden="true">&rsaquo;</span></a>
+                    <a class="last-page button" href="<?php echo esc_url( add_query_arg( 'paged', $total_pages ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Last page', 'socync' ); ?></span><span aria-hidden="true">&raquo;</span></a>
                 <?php else : ?>
                     <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&rsaquo;</span>
                     <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span>
@@ -242,9 +242,9 @@ $entries     = array_slice( $entries, $offset, $per_page );
     </div>
 
     <style>
-        .socialsync-dev-details { display: none; margin: 8px 0 0; padding: 10px; background: #f6f7f7; border: 1px solid #c3c4c7; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; max-height: 400px; overflow: auto; }
-        .socialsync-dev-toggle { cursor: pointer; color: #2271b1; text-decoration: underline; }
-        .socialsync-dev-dry-tag { display: inline-block; background: #b32d2e; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 3px; margin-left: 6px; font-weight: 600; }
+        .socync-dev-details { display: none; margin: 8px 0 0; padding: 10px; background: #f6f7f7; border: 1px solid #c3c4c7; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; max-height: 400px; overflow: auto; }
+        .socync-dev-toggle { cursor: pointer; color: #2271b1; text-decoration: underline; }
+        .socync-dev-dry-tag { display: inline-block; background: #b32d2e; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 3px; margin-left: 6px; font-weight: 600; }
         .column-status .event-type { font-weight: 600; }
         .column-status .event-type.dry-run { color: #b32d2e; }
         .column-status .event-type.api-request { color: #2271b1; }
@@ -276,17 +276,17 @@ $entries     = array_slice( $entries, $offset, $per_page );
     <table class="wp-list-table widefat fixed striped table-view-list">
         <thead>
             <tr>
-                <th scope="col" class="manage-column column-date"><?php esc_html_e( 'Date', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-source"><?php esc_html_e( 'Source', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-content column-primary"><?php esc_html_e( 'Content', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-platform"><?php esc_html_e( 'Platform', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-status"><?php esc_html_e( 'Status', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-message"><?php esc_html_e( 'Message', 'socialsync' ); ?></th>
+                <th scope="col" class="manage-column column-date"><?php esc_html_e( 'Date', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-source"><?php esc_html_e( 'Source', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-content column-primary"><?php esc_html_e( 'Content', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-platform"><?php esc_html_e( 'Platform', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-status"><?php esc_html_e( 'Status', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-message"><?php esc_html_e( 'Message', 'socync' ); ?></th>
             </tr>
         </thead>
         <tbody id="the-list">
             <?php if ( empty( $entries ) ) : ?>
-                <tr class="no-items"><td class="colspanchange" colspan="6"><?php esc_html_e( 'No log entries found.', 'socialsync' ); ?></td></tr>
+                <tr class="no-items"><td class="colspanchange" colspan="6"><?php esc_html_e( 'No log entries found.', 'socync' ); ?></td></tr>
             <?php else : ?>
                 <?php foreach ( $entries as $entry ) : ?>
                     <tr>
@@ -294,19 +294,19 @@ $entries     = array_slice( $entries, $offset, $per_page );
                         <td class="column-source">
                             <?php
                             if ( 'dev_log' === $entry['type'] ) {
-                                esc_html_e( 'Developer', 'socialsync' );
+                                esc_html_e( 'Developer', 'socync' );
                             } elseif ( 'oauth' === $entry['platform'] ) {
-                                esc_html_e( 'SocialSync', 'socialsync' );
+                                esc_html_e( 'Socync', 'socync' );
                             } elseif ( 'wp_post' === $entry['type'] ) {
-                                esc_html_e( 'WP Post', 'socialsync' );
+                                esc_html_e( 'WP Post', 'socync' );
                             } elseif ( 'standalone' === $entry['type'] ) {
-                                esc_html_e( 'Scheduled', 'socialsync' );
+                                esc_html_e( 'Scheduled', 'socync' );
                             } else {
-                                esc_html_e( 'SocialSync', 'socialsync' );
+                                esc_html_e( 'Socync', 'socync' );
                             }
                             ?>
                         </td>
-                        <td class="column-content column-primary" data-colname="<?php esc_attr_e( 'Content', 'socialsync' ); ?>">
+                        <td class="column-content column-primary" data-colname="<?php esc_attr_e( 'Content', 'socync' ); ?>">
                             <?php if ( 'dev_log' === $entry['type'] ) : ?>
                                 <strong><em><?php echo esc_html( $entry['title'] ); ?></em></strong>
                             <?php elseif ( 'oauth' === $entry['type'] ) : ?>
@@ -318,15 +318,15 @@ $entries     = array_slice( $entries, $offset, $per_page );
                             <?php endif; ?>
                             <?php if ( 'wp_post' === $entry['type'] && $entry['log_id'] ) : ?>
                                 <div class="row-actions">
-                                    <span class="delete"><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=socialsync_delete_log&log_id=' . $entry['log_id'] ), 'socialsync_delete_log' ) ); ?>" class="socialsync-delete-log" data-log-id="<?php echo esc_attr( $entry['log_id'] ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'socialsync_delete_log' ) ); ?>"><?php esc_html_e( 'Delete', 'socialsync' ); ?></a></span>
+                                    <span class="delete"><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=socync_delete_log&log_id=' . $entry['log_id'] ), 'socync_delete_log' ) ); ?>" class="socync-delete-log" data-log-id="<?php echo esc_attr( $entry['log_id'] ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'socync_delete_log' ) ); ?>"><?php esc_html_e( 'Delete', 'socync' ); ?></a></span>
                                 </div>
                             <?php elseif ( 'scheduled' === $entry['type'] && $entry['post_id'] ) : ?>
                                 <div class="row-actions">
                                     <?php if ( in_array( $entry['status'], array( 'scheduled', 'failed' ), true ) ) : ?>
-                                        <span class="edit"><a href="<?php echo esc_url( admin_url( 'admin.php?page=social-sync-scheduled&edit=' . $entry['post_id'] ) ); ?>"><?php esc_html_e( 'Edit', 'socialsync' ); ?></a> | </span>
+                                        <span class="edit"><a href="<?php echo esc_url( admin_url( 'admin.php?page=socync-scheduled&edit=' . $entry['post_id'] ) ); ?>"><?php esc_html_e( 'Edit', 'socync' ); ?></a> | </span>
                                     <?php endif; ?>
                                     <?php if ( 'scheduled' === $entry['status'] ) : ?>
-                                        <span class="cancel"><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=socialsync_cancel_scheduled_post&id=' . $entry['post_id'] . '&_redirect=log' ), 'socialsync_cancel_scheduled_post_' . $entry['post_id'] ) ); ?>"><?php esc_html_e( 'Cancel', 'socialsync' ); ?></a></span>
+                                        <span class="cancel"><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=socync_cancel_scheduled_post&id=' . $entry['post_id'] . '&_redirect=log' ), 'socync_cancel_scheduled_post_' . $entry['post_id'] ) ); ?>"><?php esc_html_e( 'Cancel', 'socync' ); ?></a></span>
                                     <?php endif; ?>
                                 </div>
                             <?php endif; ?>
@@ -334,9 +334,9 @@ $entries     = array_slice( $entries, $offset, $per_page );
                         <td class="column-platform">
                             <?php
                             if ( 'dev_log' === $entry['type'] ) {
-                                echo esc_html( $entry['platform'] ? socialsync_platform_label( $entry['platform'], $platform_labels ) : '' );
+                                echo esc_html( $entry['platform'] ? socync_platform_label( $entry['platform'], $platform_labels ) : '' );
                             } else {
-                                echo esc_html( 'wp_post' === $entry['type'] ? socialsync_platform_label( $entry['platform'], $platform_labels ) : implode( ', ', array_map( function( $s ) use ( $platform_labels ) { return socialsync_platform_label( trim( $s ), $platform_labels ); }, explode( ',', $entry['platform'] ) ) ) );
+                                echo esc_html( 'wp_post' === $entry['type'] ? socync_platform_label( $entry['platform'], $platform_labels ) : implode( ', ', array_map( function( $s ) use ( $platform_labels ) { return socync_platform_label( trim( $s ), $platform_labels ); }, explode( ',', $entry['platform'] ) ) ) );
                             }
                             ?>
                         </td>
@@ -345,7 +345,7 @@ $entries     = array_slice( $entries, $offset, $per_page );
                                 <span class="event-type <?php echo esc_attr( sanitize_html_class( $entry['status'] ) ); ?>">
                                     <?php echo esc_html( isset( $dev_event_labels[ $entry['status'] ] ) ? $dev_event_labels[ $entry['status'] ] : ucfirst( $entry['status'] ) ); ?>
                                     <?php if ( 'dry_run_skip' === $entry['status'] ) : ?>
-                                        <span class="socialsync-dev-dry-tag">DRY</span>
+                                        <span class="socync-dev-dry-tag">DRY</span>
                                     <?php endif; ?>
                                 </span>
                             <?php else : ?>
@@ -358,8 +358,8 @@ $entries     = array_slice( $entries, $offset, $per_page );
                                     <div><?php echo esc_html( $entry['message'] ); ?></div>
                                 <?php endif; ?>
                                 <?php if ( ! empty( $entry['detail_lines'] ) ) : ?>
-                                    <a class="socialsync-dev-toggle" data-target="dev-detail-<?php echo esc_attr( $entry['log_id'] ); ?>" href="#"><?php esc_html_e( 'Show details', 'socialsync' ); ?></a>
-                                    <pre id="dev-detail-<?php echo esc_attr( $entry['log_id'] ); ?>" class="socialsync-dev-details"><?php echo esc_html( implode( "\n\n---\n\n", $entry['detail_lines'] ) ); ?></pre>
+                                    <a class="socync-dev-toggle" data-target="dev-detail-<?php echo esc_attr( $entry['log_id'] ); ?>" href="#"><?php esc_html_e( 'Show details', 'socync' ); ?></a>
+                                    <pre id="dev-detail-<?php echo esc_attr( $entry['log_id'] ); ?>" class="socync-dev-details"><?php echo esc_html( implode( "\n\n---\n\n", $entry['detail_lines'] ) ); ?></pre>
                                 <?php endif; ?>
                             <?php else : ?>
                                 <?php echo esc_html( $entry['message'] ?: '—' ); ?>
@@ -371,12 +371,12 @@ $entries     = array_slice( $entries, $offset, $per_page );
         </tbody>
         <tfoot>
             <tr>
-                <th scope="col" class="manage-column column-date"><?php esc_html_e( 'Date', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-source"><?php esc_html_e( 'Source', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-content column-primary"><?php esc_html_e( 'Content', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-platform"><?php esc_html_e( 'Platform', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-status"><?php esc_html_e( 'Status', 'socialsync' ); ?></th>
-                <th scope="col" class="manage-column column-message"><?php esc_html_e( 'Message', 'socialsync' ); ?></th>
+                <th scope="col" class="manage-column column-date"><?php esc_html_e( 'Date', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-source"><?php esc_html_e( 'Source', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-content column-primary"><?php esc_html_e( 'Content', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-platform"><?php esc_html_e( 'Platform', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-status"><?php esc_html_e( 'Status', 'socync' ); ?></th>
+                <th scope="col" class="manage-column column-message"><?php esc_html_e( 'Message', 'socync' ); ?></th>
             </tr>
         </tfoot>
     </table>
@@ -387,14 +387,14 @@ $entries     = array_slice( $entries, $offset, $per_page );
             <span class="displaying-num"><?php
                 printf(
                     /* translators: %d: Number of log items */
-                    esc_html__( '%d items', 'socialsync' ),
+                    esc_html__( '%d items', 'socync' ),
                     intval( $total_items )
                 );
             ?></span>
             <span class="pagination-links">
                 <?php if ( $paged > 1 ) : ?>
-                    <a class="first-page button" href="<?php echo esc_url( remove_query_arg( 'paged', $page_url ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'First page', 'socialsync' ); ?></span><span aria-hidden="true">&laquo;</span></a>
-                    <a class="prev-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged - 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Previous page', 'socialsync' ); ?></span><span aria-hidden="true">&lsaquo;</span></a>
+                    <a class="first-page button" href="<?php echo esc_url( remove_query_arg( 'paged', $page_url ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'First page', 'socync' ); ?></span><span aria-hidden="true">&laquo;</span></a>
+                    <a class="prev-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged - 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Previous page', 'socync' ); ?></span><span aria-hidden="true">&lsaquo;</span></a>
                 <?php else : ?>
                     <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&laquo;</span>
                     <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&lsaquo;</span>
@@ -403,15 +403,15 @@ $entries     = array_slice( $entries, $offset, $per_page );
                     <span class="tablenav-paging-text"><?php
                         printf(
                             /* translators: 1: Current page number 2: Total number of pages */
-                            esc_html_x( '%1$s of %2$s', 'paging', 'socialsync' ),
+                            esc_html_x( '%1$s of %2$s', 'paging', 'socync' ),
                             esc_html( $paged ),
                             '<span class="total-pages">' . esc_html( $total_pages ) . '</span>'
                         );
                     ?></span>
                 </span>
                 <?php if ( $paged < $total_pages ) : ?>
-                    <a class="next-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged + 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Next page', 'socialsync' ); ?></span><span aria-hidden="true">&rsaquo;</span></a>
-                    <a class="last-page button" href="<?php echo esc_url( add_query_arg( 'paged', $total_pages ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Last page', 'socialsync' ); ?></span><span aria-hidden="true">&raquo;</span></a>
+                    <a class="next-page button" href="<?php echo esc_url( add_query_arg( 'paged', $paged + 1 ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Next page', 'socync' ); ?></span><span aria-hidden="true">&rsaquo;</span></a>
+                    <a class="last-page button" href="<?php echo esc_url( add_query_arg( 'paged', $total_pages ) ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Last page', 'socync' ); ?></span><span aria-hidden="true">&raquo;</span></a>
                 <?php else : ?>
                     <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&rsaquo;</span>
                     <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span>
@@ -425,24 +425,24 @@ $entries     = array_slice( $entries, $offset, $per_page );
     <script>
     (function() {
         // Dev log detail toggle.
-        document.querySelectorAll('.socialsync-dev-toggle').forEach(function(link) {
+        document.querySelectorAll('.socync-dev-toggle').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 var target = document.getElementById(this.getAttribute('data-target'));
                 if (target) {
                     if (target.style.display === 'block') {
                         target.style.display = 'none';
-                        this.textContent = '<?php echo esc_js( __( 'Show details', 'socialsync' ) ); ?>';
+                        this.textContent = '<?php echo esc_js( __( 'Show details', 'socync' ) ); ?>';
                     } else {
                         target.style.display = 'block';
-                        this.textContent = '<?php echo esc_js( __( 'Hide details', 'socialsync' ) ); ?>';
+                        this.textContent = '<?php echo esc_js( __( 'Hide details', 'socync' ) ); ?>';
                     }
                 }
             });
         });
 
         // Pagination page input: navigate on Enter.
-        var pageInput = document.getElementById('socialsync-current-page-selector');
+        var pageInput = document.getElementById('socync-current-page-selector');
         if (pageInput) {
             pageInput.addEventListener('keydown', function(e) {
                 if (13 === e.keyCode) {
@@ -457,24 +457,24 @@ $entries     = array_slice( $entries, $offset, $per_page );
     })();
     </script>
 
-    <h2><?php esc_html_e( 'Log Management', 'socialsync' ); ?></h2>
+    <h2><?php esc_html_e( 'Log Management', 'socync' ); ?></h2>
 
     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-        <?php wp_nonce_field( 'socialsync_save_log_settings', 'socialsync-log-settings-nonce' ); ?>
-        <input type="hidden" name="action" value="socialsync_save_log_settings">
+        <?php wp_nonce_field( 'socync_save_log_settings', 'socync-log-settings-nonce' ); ?>
+        <input type="hidden" name="action" value="socync_save_log_settings">
         <table class="form-table" role="presentation">
             <tr>
-                <th scope="row"><label for="log_retention_days"><?php esc_html_e( 'Auto-clear after', 'socialsync' ); ?></label></th>
+                <th scope="row"><label for="log_retention_days"><?php esc_html_e( 'Auto-clear after', 'socync' ); ?></label></th>
                 <td>
-                    <input type="number" id="log_retention_days" name="log_retention_days" value="<?php echo esc_attr( get_option( 'socialsync_log_retention_days', 0 ) ); ?>" min="0" class="small-text">
-                    <span class="description"><?php esc_html_e( 'days. Set to 0 to disable automatic clearing.', 'socialsync' ); ?></span>
-                    <p class="description"><?php esc_html_e( 'Logs and terminal-status scheduled posts older than this will be purged daily.', 'socialsync' ); ?></p>
+                    <input type="number" id="log_retention_days" name="log_retention_days" value="<?php echo esc_attr( get_option( 'socync_log_retention_days', 0 ) ); ?>" min="0" class="small-text">
+                    <span class="description"><?php esc_html_e( 'days. Set to 0 to disable automatic clearing.', 'socync' ); ?></span>
+                    <p class="description"><?php esc_html_e( 'Logs and terminal-status scheduled posts older than this will be purged daily.', 'socync' ); ?></p>
                 </td>
             </tr>
         </table>
         <p class="submit">
-            <button type="submit" class="button button-primary"><?php esc_html_e( 'Save', 'socialsync' ); ?></button>
-            <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=socialsync_clear_log' ), 'socialsync_clear_log' ) ); ?>" class="button button-disconnect" onclick="return confirm('<?php echo esc_js( __( 'Clear all log entries? This cannot be undone.', 'socialsync' ) ); ?>');"><?php esc_html_e( 'Clear Log', 'socialsync' ); ?></a>
+            <button type="submit" class="button button-primary"><?php esc_html_e( 'Save', 'socync' ); ?></button>
+            <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=socync_clear_log' ), 'socync_clear_log' ) ); ?>" class="button button-disconnect" onclick="return confirm('<?php echo esc_js( __( 'Clear all log entries? This cannot be undone.', 'socync' ) ); ?>');"><?php esc_html_e( 'Clear Log', 'socync' ); ?></a>
         </p>
     </form>
 
