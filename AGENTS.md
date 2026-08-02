@@ -72,3 +72,17 @@ No commands, test runners, linters, or CI are configured. To run manually in a W
 
 - Activate plugin → `wp plugin activate socync`
 - Trigger cron → `wp cron event run socync_run_delayed_posts`
+
+## Packaging (WP Plugin Directory)
+
+The plugin zip submitted to the WP Plugin Directory must **exclude** non-plugin files. Only these are shipped:
+
+- `socync.php`, `uninstall.php`, `readme.txt`
+- `admin/`, `includes/`, `providers/`
+
+Excluded from the zip (tracked in git but never packaged):
+
+- `assets/` (screenshot PNGs — uploaded separately to SVN `/assets/`, never shipped in the plugin zip)
+- `.git/`, `.github/`, `.gitignore`, `AGENTS.md`, `README.md`, and any other docs
+
+Build the zip at the repo root so `socync.php` sits at the zip root (or use a `socync/` folder).
