@@ -660,7 +660,7 @@ class Socync_Admin {
      */
     private function process_oauth_callback( string $platform ): void {
         // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
-        $safe_get = $_GET;
+        $safe_get = array_map( 'sanitize_text_field', wp_unslash( $_GET ) );
         unset( $safe_get['code'], $safe_get['state'] );
         $this->log_callback_event( 'OAuth callback received for ' . $platform, array(
             'get_params' => $safe_get,
