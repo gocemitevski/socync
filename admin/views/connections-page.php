@@ -104,7 +104,7 @@ $bluesky_token = get_option( 'socync_bluesky_token', '' );
                     </ol>
                 </details>
                 <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'socync' ); ?></strong></p>
-                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socync_oauth_callback_x' ) ); ?>" />
+                <input type="text" class="large-text socync-select-on-click" readonly value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socync_oauth_callback_x' ) ); ?>" />
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socync_connect_x', 'socync-connect-x-nonce' ); ?>
                     <input type="hidden" name="action" value="socync_connect_x">
@@ -171,7 +171,7 @@ $bluesky_token = get_option( 'socync_bluesky_token', '' );
                     </ol>
                 </details>
                 <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'socync' ); ?></strong></p>
-                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socync_oauth_callback_linkedin' ) ); ?>" />
+                <input type="text" class="large-text socync-select-on-click" readonly value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socync_oauth_callback_linkedin' ) ); ?>" />
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socync_connect_linkedin', 'socync-connect-linkedin-nonce' ); ?>
                     <input type="hidden" name="action" value="socync_connect_linkedin">
@@ -266,7 +266,7 @@ $bluesky_token = get_option( 'socync_bluesky_token', '' );
                     </ol>
                 </details>
                 <p class="description"><strong><?php esc_html_e( 'OAuth Redirect URL', 'socync' ); ?></strong></p>
-                <input type="text" class="large-text" readonly onclick="this.select()" value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socync_oauth_callback_facebook' ) ); ?>" />
+                <input type="text" class="large-text socync-select-on-click" readonly value="<?php echo esc_attr( admin_url( 'admin-post.php?action=socync_oauth_callback_facebook' ) ); ?>" />
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                     <?php wp_nonce_field( 'socync_connect_facebook', 'socync-connect-facebook-nonce' ); ?>
                     <input type="hidden" name="action" value="socync_connect_facebook">

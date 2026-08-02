@@ -94,7 +94,7 @@ $page_url = menu_page_url( 'socync-scheduled', false );
                         foreach ( $platform_labels as $key => $label ) :
                             $checked = in_array( $key, $selected_platforms, true );
                             printf(
-                                '<label style="display:inline-block;margin-right:16px"><input type="checkbox" name="platforms[]" value="%s" %s /> %s</label>',
+                                '<label class="socync-platform-checkbox"><input type="checkbox" name="platforms[]" value="%s" %s /> %s</label>',
                                 esc_attr( $key ),
                                 checked( $checked, true, false ),
                                 esc_html( $label )

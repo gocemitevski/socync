@@ -1019,8 +1019,11 @@ class Socync_Admin {
         wp_enqueue_script('socync-admin-script', plugin_dir_url( __FILE__ ) . 'js/socync.js', array('jquery'), $this->version, true);
 
         wp_localize_script('socync-admin-script', 'SocyncAdmin', array(
-            'confirm_delete' => __( 'Delete this scheduled post?', 'socync' ),
-            'confirm_cancel' => __( 'Cancel this scheduled post?', 'socync' ),
+            'confirm_delete'    => __( 'Delete this scheduled post?', 'socync' ),
+            'confirm_cancel'    => __( 'Cancel this scheduled post?', 'socync' ),
+            'confirm_clear_log' => __( 'Clear all log entries? This cannot be undone.', 'socync' ),
+            'show_details'      => __( 'Show details', 'socync' ),
+            'hide_details'      => __( 'Hide details', 'socync' ),
         ));
     }
 

@@ -105,3 +105,82 @@
 .socync-tab-content details ol li {
     margin-bottom: 6px;
 }
+
+.socync-dev-details {
+    display: none;
+    margin: 8px 0 0;
+    padding: 10px;
+    background: #f6f7f7;
+    border: 1px solid var(--socync-border);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 400px;
+    overflow: auto;
+}
+
+.socync-dev-toggle {
+    cursor: pointer;
+    color: #2271b1;
+    text-decoration: underline;
+}
+
+.socync-dev-dry-tag {
+    display: inline-block;
+    background: var(--socync-danger);
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    font-weight: 600;
+}
+
+.column-status .event-type {
+    font-weight: 600;
+}
+
+.column-status .event-type.dry-run {
+    color: var(--socync-danger);
+}
+
+.column-status .event-type.api-request {
+    color: #2271b1;
+}
+
+.column-status .event-type.api-response {
+    color: #2c8a2c;
+}
+
+.tablenav-pages-navspan.button.disabled {
+    min-width: 28px;
+    text-align: center;
+    opacity: 0.5;
+    cursor: default;
+}
+
+.tablenav-pages .pagination-links .button,
+.tablenav-pages .pagination-links .tablenav-pages-navspan {
+    min-width: 28px;
+    text-align: center;
+}
+
+.tablenav-pages .current-page {
+    width: auto;
+}
+
+.paging-input {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.tablenav-paging-text {
+    margin-left: 2px;
+}
+
+.socync-platform-checkbox {
+    display: inline-block;
+    margin-right: 16px;
+}

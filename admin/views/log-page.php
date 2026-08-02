@@ -219,7 +219,7 @@ $entries     = array_slice( $entries, $offset, $per_page );
                 <?php endif; ?>
                 <span class="paging-input">
                     <label for="socync-current-page-selector" class="screen-reader-text"><?php esc_html_e( 'Current Page', 'socync' ); ?></label>
-                    <input class="current-page" id="socync-current-page-selector" type="text" name="paged" value="<?php echo esc_attr( $paged ); ?>" size="2" aria-describedby="socync-table-paging">
+                    <input class="current-page" id="socync-current-page-selector" type="text" name="paged" value="<?php echo esc_attr( $paged ); ?>" size="2" aria-describedby="socync-table-paging" data-total-pages="<?php echo esc_attr( $total_pages ); ?>" data-page-url="<?php echo esc_attr( esc_url_raw( add_query_arg( 'paged', '__PAGE__' ) ) ); ?>">
                     <span class="tablenav-paging-text" id="socync-table-paging"><?php
                         printf(
                             /* translators: %s: Total number of pages */
@@ -240,38 +240,6 @@ $entries     = array_slice( $entries, $offset, $per_page );
         </div>
         <br class="clear">
     </div>
-
-    <style>
-        .socync-dev-details { display: none; margin: 8px 0 0; padding: 10px; background: #f6f7f7; border: 1px solid #c3c4c7; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; max-height: 400px; overflow: auto; }
-        .socync-dev-toggle { cursor: pointer; color: #2271b1; text-decoration: underline; }
-        .socync-dev-dry-tag { display: inline-block; background: #b32d2e; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 3px; margin-left: 6px; font-weight: 600; }
-        .column-status .event-type { font-weight: 600; }
-        .column-status .event-type.dry-run { color: #b32d2e; }
-        .column-status .event-type.api-request { color: #2271b1; }
-        .column-status .event-type.api-response { color: #2c8a2c; }
-
-        .tablenav-pages-navspan.button.disabled {
-            min-width: 28px;
-            text-align: center;
-            opacity: 0.5;
-            cursor: default;
-        }
-        .tablenav-pages .pagination-links .button,
-        .tablenav-pages .pagination-links .tablenav-pages-navspan {
-            min-width: 28px;
-            text-align: center;
-        }
-        .tablenav-pages .current-page {
-            width: auto;
-        }
-        .paging-input {
-            margin-left: 2px;
-            margin-right: 2px;
-        }
-        .tablenav-paging-text {
-            margin-left: 2px;
-        }
-    </style>
 
     <table class="wp-list-table widefat fixed striped table-view-list">
         <thead>
@@ -422,41 +390,6 @@ $entries     = array_slice( $entries, $offset, $per_page );
     </div>
     <?php endif; ?>
 
-    <script>
-    (function() {
-        // Dev log detail toggle.
-        document.querySelectorAll('.socync-dev-toggle').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                var target = document.getElementById(this.getAttribute('data-target'));
-                if (target) {
-                    if (target.style.display === 'block') {
-                        target.style.display = 'none';
-                        this.textContent = '<?php echo esc_js( __( 'Show details', 'socync' ) ); ?>';
-                    } else {
-                        target.style.display = 'block';
-                        this.textContent = '<?php echo esc_js( __( 'Hide details', 'socync' ) ); ?>';
-                    }
-                }
-            });
-        });
-
-        // Pagination page input: navigate on Enter.
-        var pageInput = document.getElementById('socync-current-page-selector');
-        if (pageInput) {
-            pageInput.addEventListener('keydown', function(e) {
-                if (13 === e.keyCode) {
-                    e.preventDefault();
-                    var page = parseInt(this.value, 10);
-                    if (page > 0 && page <= <?php echo esc_js( $total_pages ); ?>) {
-                        window.location.href = <?php echo wp_json_encode( esc_url_raw( add_query_arg( 'paged', '%PAGE%' ) ) ); ?>.replace('%PAGE%', page);
-                    }
-                }
-            });
-        }
-    })();
-    </script>
-
     <h2><?php esc_html_e( 'Log Management', 'socync' ); ?></h2>
 
     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -474,7 +407,7 @@ $entries     = array_slice( $entries, $offset, $per_page );
         </table>
         <p class="submit">
             <button type="submit" class="button button-primary"><?php esc_html_e( 'Save', 'socync' ); ?></button>
-            <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=socync_clear_log' ), 'socync_clear_log' ) ); ?>" class="button button-disconnect" onclick="return confirm('<?php echo esc_js( __( 'Clear all log entries? This cannot be undone.', 'socync' ) ); ?>');"><?php esc_html_e( 'Clear Log', 'socync' ); ?></a>
+            <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=socync_clear_log' ), 'socync_clear_log' ) ); ?>" class="button button-disconnect socync-confirm-clear"><?php esc_html_e( 'Clear Log', 'socync' ); ?></a>
         </p>
     </form>
 

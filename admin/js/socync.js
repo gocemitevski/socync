@@ -31,4 +31,39 @@ jQuery(document).ready(function($) {
             e.preventDefault();
         }
     });
+    $(document).on('click', '.socync-confirm-clear', function(e) {
+        if (!confirm(SocyncAdmin.confirm_clear_log || 'Clear all log entries? This cannot be undone.')) {
+            e.preventDefault();
+        }
+    });
+
+    // --- Select-on-click for read-only OAuth redirect URL inputs ---
+    $(document).on('click', '.socync-select-on-click', function() {
+        this.select();
+    });
+
+    // --- Dev log detail toggle ---
+    $(document).on('click', '.socync-dev-toggle', function(e) {
+        e.preventDefault();
+        var $target = $('#' + $(this).data('target'));
+        if (!$target.length) return;
+        if ($target.is(':visible')) {
+            $target.hide();
+            $(this).text(SocyncAdmin.show_details || 'Show details');
+        } else {
+            $target.show();
+            $(this).text(SocyncAdmin.hide_details || 'Hide details');
+        }
+    });
+
+    // --- Pagination page input: navigate on Enter ---
+    $(document).on('keydown', '#socync-current-page-selector', function(e) {
+        if (13 !== e.keyCode) return;
+        e.preventDefault();
+        var page = parseInt(this.value, 10);
+        var totalPages = parseInt($(this).data('total-pages'), 10) || 0;
+        if (page > 0 && page <= totalPages) {
+            window.location.href = $(this).data('page-url').replace('__PAGE__', page);
+        }
+    });
 });
