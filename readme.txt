@@ -3,7 +3,7 @@ Contributors: gocemitevski
 Tags: social media, twitter, x, linkedin, facebook, bluesky, auto-post, scheduling
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 0.7.1
+Stable tag: 0.7.2
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -157,6 +157,13 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 
 == Changelog ==
 
+= 0.7.2 =
+* Documented external services (what data is sent, when, and links to each provider's terms/privacy policy)
+* Removed register_uninstall_hook in favor of uninstall.php for reliable cleanup
+* Sanitized OAuth callback query parameters (security hardening)
+* Moved inline admin JavaScript and CSS into enqueued assets
+* Fixed page-number navigation (Enter key) on the Log page
+
 = 0.7.1 =
 * Updated admin screenshots
 
@@ -196,6 +203,9 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.7.2 =
+Security hardening and coding-standards fixes. Recommended upgrade.
 
 = 0.7.1 =
 Updated admin screenshots.
