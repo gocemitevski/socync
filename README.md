@@ -62,6 +62,47 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 3. Enter your Bluesky handle/email and an App Password (generate one at Settings > App Passwords in Bluesky)
 4. Save credentials (no OAuth redirect)
 
+## External Services
+
+Socync sends data to the following third-party services so it can publish content to your connected accounts. Data is only transmitted when you connect an account or publish a post (automatically when a WordPress post is published, or from the Schedule page). The plugin never shares this data with anyone else.
+
+### X (Twitter)
+
+Socync publishes your post text (title, permalink, and any configured prefix/hashtags) to your X account using the X API v2. During connection it performs an OAuth 2.0 authorization flow and stores/refreshes the access token.
+
+- **Data sent:** your X OAuth credentials (client ID, client secret, access/refresh tokens) and the post text you publish.
+- **When:** when you connect your X account and when you publish a WordPress post or a scheduled post to X.
+- [X Terms of Service](https://x.com/en/tos)
+- [X Privacy Policy](https://x.com/en/privacy)
+
+### LinkedIn
+
+Socync publishes your post text (and optionally a thumbnail image) to your LinkedIn profile or Page using the LinkedIn Posts API and Images API. During connection it performs an OAuth 2.0 authorization flow and stores/refreshes the access token.
+
+- **Data sent:** your LinkedIn OAuth credentials, the post text you publish, and any thumbnail image you attach.
+- **When:** when you connect your LinkedIn account and when you publish a WordPress post or a scheduled post to LinkedIn.
+- [LinkedIn User Agreement](https://www.linkedin.com/legal/user-agreement)
+- [LinkedIn Privacy Policy](https://www.linkedin.com/legal/privacy-policy)
+
+### Facebook (Meta)
+
+Socync publishes your post text (and optionally a thumbnail image) to your selected Facebook Page or personal timeline using the Facebook Graph API. During connection it performs an OAuth 2.0 authorization flow and stores/refreshes the access and Page tokens.
+
+- **Data sent:** your Facebook app/Page credentials (app secret, access and Page tokens), the post text you publish, and any thumbnail image you attach.
+- **When:** when you connect your Facebook account and when you publish a WordPress post or a scheduled post to Facebook.
+- [Meta Platform Terms](https://developers.facebook.com/terms/dfc_platform_terms/)
+- [Meta Developer Policy](https://developers.facebook.com/devpolicy/)
+- [Meta Privacy Policy](https://www.facebook.com/privacy/policy/)
+
+### Bluesky
+
+Socync authenticates using your Bluesky handle/email and an App Password (via the AT Protocol session API) and publishes your post text (and optionally a thumbnail image) to your Bluesky account.
+
+- **Data sent:** your Bluesky identifier (handle or email), your App Password (for authentication only), the post text you publish, and any thumbnail image you attach.
+- **When:** when you connect your Bluesky account and when you publish a WordPress post or a scheduled post to Bluesky.
+- [Bluesky Terms of Service](https://bsky.social/about/support/tos)
+- [Bluesky Privacy Policy](https://bsky.social/about/support/privacy-policy)
+
 ## Usage
 
 ### Auto-Posting on Publish
