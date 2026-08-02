@@ -46,11 +46,8 @@ class Socync_Activator {
             wp_schedule_event( time(), 'daily', 'socync_purge_old_logs' );
         }
 
-        // Register uninstall cleanup script in socync.php
-        register_uninstall_hook(
-            dirname(dirname(dirname(__FILE__))) . '/socync.php',
-            'socync_uninstall'
-        );
+        // Uninstall cleanup is handled by uninstall.php (WP_UNINSTALL_PLUGIN guard),
+        // which is the canonical WordPress mechanism — no register_uninstall_hook() needed.
     }
 
     /**
