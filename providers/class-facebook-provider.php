@@ -70,7 +70,10 @@ class Socync_Facebook_Provider extends Socync_API_Handler {
         }
 
         // Extend the existing user/page access token via fb_exchange_token
-        $current_token = get_option( 'socync_facebook_token', '' );
+        $token_data    = get_option( 'socync_facebook_token', array() );
+        $current_token = is_array( $token_data ) && isset( $token_data['access_token'] )
+            ? $token_data['access_token']
+            : ( is_string( $token_data ) ? $token_data : '' );
         if ( empty( $current_token ) ) {
             return false;
         }
