@@ -23,7 +23,7 @@ All classes follow `Socync_{Name}` naming convention.
 ## Storage
 
 - **`wp_options`**: tokens, API keys, settings, logs (`socync_*` prefixed)
-- **Custom table**: `{$wpdb->prefix}socync_scheduled_posts` (created on activation via `Socync_Scheduled_Post::create_table()`)
+- **Custom table**: `{$wpdb->prefix}socync_scheduled_posts` (created via `Socync_Scheduled_Post::create_table()`, version-gated by the `socync_db_version` option — runs `dbDelta` only when `DB_VERSION` is bumped; safe to call on every request)
   - Columns: `id`, `post_id` (WP post ID for auto-posts, 0 for standalone), `title`, `content`, `platforms`, `scheduled_date`, `status`, `error_message`, `created_at`, `updated_at`
 - **`wp_postmeta`** (legacy): `_socync_*` keys from the removed metabox — no longer actively used
 

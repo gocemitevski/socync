@@ -11,12 +11,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Socync_Scheduled_Post {
 
+    const DB_VERSION        = '1.0.0';
+    const DB_VERSION_OPTION = 'socync_db_version';
+
     public static function table_name(): string {
         global $wpdb;
         return $wpdb->prefix . 'socync_scheduled_posts'; // phpcs:ignore WordPress.DB.DatabaseValue
     }
 
     public static function create_table(): void {
+        if ( get_option( self::DB_VERSION_OPTION ) === self::DB_VERSION ) {
+            return;
+        }
+
         global $wpdb;
         $table   = self::table_name(); // phpcs:ignore WordPress.DB.DatabaseValue
         $charset = $wpdb->get_charset_collate();
@@ -45,6 +52,8 @@ class Socync_Scheduled_Post {
         if ( ! $column ) {
             $wpdb->query( "ALTER TABLE {$table} ADD COLUMN post_id BIGINT UNSIGNED DEFAULT 0 AFTER id, ADD KEY post_id (post_id)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange
         }
+
+        update_option( self::DB_VERSION_OPTION, self::DB_VERSION );
     }
 
     public static function insert( array $data ): int {
