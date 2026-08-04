@@ -317,18 +317,16 @@ class Socync_Scheduler {
      * @return bool True if scheduled for future (should skip), false if ready or immediate.
      */
     private function is_post_scheduled_for_future( array $post ): bool {
-        if ( ! isset($post['scheduled']) || empty($post['scheduled']) ) {
+        if ( empty( $post['scheduled'] ) ) {
             return false;
         }
 
-        $schedule_date = strval( wp_unslash( $post['scheduled'] ) );
+        // scheduled_date is stored as site-local wall-clock time encoded like a
+        // UTC string (see enqueue_post / current_time('mysql')). Force UTC
+        // parsing so this check is independent of the PHP timezone setting.
+        $scheduled_ts = strtotime( strval( $post['scheduled'] ) . ' UTC' );
 
-        $offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
-        if ( ! empty($schedule_date) && strtotime( $schedule_date ) - $offset > time() ) {
-            return true;
-        }
-
-        return false;
+        return $scheduled_ts && $scheduled_ts > current_time( 'timestamp' );
     }
 
     /**
