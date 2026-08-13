@@ -101,6 +101,26 @@ $dry_run   = get_option( 'socync_dry_run', false );
             </tbody>
         </table>
 
+        <hr>
+
+        <h2><?php esc_html_e( 'Uninstall', 'socync' ); ?></h2>
+        <p><?php esc_html_e( 'Choose what happens to Socync data when the plugin is deleted.', 'socync' ); ?></p>
+
+        <table class="form-table" role="presentation">
+            <tbody>
+                <tr>
+                    <th scope="row"><?php esc_html_e( 'Delete data on uninstall', 'socync' ); ?></th>
+                    <td>
+                        <label>
+                            <input type="checkbox" name="delete_data_on_uninstall" value="1" <?php checked( get_option( 'socync_delete_data_on_uninstall', false ) ); ?>>
+                            <?php esc_html_e( 'Delete all Socync settings, connection data, and scheduled posts when the plugin is removed.', 'socync' ); ?>
+                        </label>
+                        <p class="description"><?php esc_html_e( 'Leave unchecked to keep your data so it is restored if you re-install the plugin.', 'socync' ); ?></p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
         <p class="submit">
             <button type="submit" name="save" class="button button-primary">
                 <?php esc_html_e( 'Save', 'socync' ); ?>

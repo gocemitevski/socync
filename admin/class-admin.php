@@ -1237,6 +1237,8 @@ class Socync_Admin {
         $delay = isset( $_POST['autopost_delay'] ) ? max( 0, intval( wp_unslash( $_POST['autopost_delay'] ) ) ) : 2;
         update_option( 'socync_autopost_delay', $delay );
 
+        update_option( 'socync_delete_data_on_uninstall', isset( $_POST['delete_data_on_uninstall'] ) ? 1 : 0 );
+
         wp_safe_redirect( admin_url( 'admin.php?page=socync-dev&saved=1' ) );
         exit;
     }
