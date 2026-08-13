@@ -14,6 +14,7 @@ A lightweight, stable, and maintainable WordPress plugin that automatically push
 - **Flexible Scheduling**: Schedule standalone posts at a specific date and time
 - **Custom Content**: Full control over post content for each platform (prefix, hashtags per platform)
 - **Dry Run Mode**: Preview what would be posted without actually publishing
+- **Uninstall Data Control**: Choose whether Socync data is deleted or preserved when the plugin is removed
 - **Clean Admin Interface**: Tabbed settings page with unified Log view
 - **Comprehensive Logging**: Track all posting attempts, errors, and developer-level API details
 - **Multiple Auth Methods**: OAuth 2.0 (X, LinkedIn, Facebook), OAuth 1.0a legacy (X fallback), App Password (Bluesky)

@@ -26,6 +26,7 @@ All classes follow `Socync_{Name}` naming convention.
 - **Custom table**: `{$wpdb->prefix}socync_scheduled_posts` (created via `Socync_Scheduled_Post::create_table()`, version-gated by the `socync_db_version` option — runs `dbDelta` only when `DB_VERSION` is bumped; safe to call on every request)
   - Columns: `id`, `post_id` (WP post ID for auto-posts, 0 for standalone), `title`, `content`, `platforms`, `scheduled_date`, `status`, `error_message`, `created_at`, `updated_at`
 - **`wp_postmeta`** (legacy): `_socync_*` keys from the removed metabox — no longer actively used
+- **Uninstall gate**: `uninstall.php` preserves all persistent data by default unless the `socync_delete_data_on_uninstall` option is enabled (Settings page). On the preserve path it cancels pending `scheduled` rows in the custom tables and clears cron hooks + `socync_cron_lock`; with the option set it deletes all `socync_*`/`socialsync_*` options and postmeta and drops the tables.
 
 ## Key Flows
 

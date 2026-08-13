@@ -3,7 +3,7 @@ Contributors: gocemitevski
 Tags: social media, twitter, x, linkedin, facebook, bluesky, auto-post, scheduling
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 0.7.2
+Stable tag: 0.7.3
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -155,7 +155,18 @@ Yes. Use the Socync > Schedule page to create standalone scheduled posts at any 
 
 Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to preview what would be posted without actually sending anything.
 
+= What happens to my data when I delete the plugin? =
+
+Your Socync settings, connection data, and scheduled posts are preserved so they are restored if you re-install the plugin. To remove all plugin data on deletion, enable the "Delete data on uninstall" option on the Settings page.
+
 == Changelog ==
+
+= 0.7.3 =
+* Added option to preserve plugin data on uninstall (data is kept by default; enable deletion in Settings > Uninstall)
+* Fixed Facebook token refresh to use the stored access token
+* Fixed timezone-dependent future-date check for scheduled posts
+* Added plugin icon assets for the WordPress Plugin Directory
+* Gated scheduled posts table creation behind a versioned option
 
 = 0.7.2 =
 * Documented external services (what data is sent, when, and links to each provider's terms/privacy policy)
@@ -203,6 +214,9 @@ Yes. Enable Developer Mode on the Settings page and then use Dry Run mode to pre
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.7.3 =
+Uninstall is now non-destructive by default: plugin data is preserved unless the "Delete data on uninstall" option is enabled on the Settings page.
 
 = 0.7.2 =
 Security hardening and coding-standards fixes. Recommended upgrade.
