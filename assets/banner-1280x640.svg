@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1280"
+   height="640"
+   viewBox="0 0 338.66668 169.33334"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="banner-1280x640.svg"
+   inkscape:export-filename="banner-1280x640.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title
+     id="title5">Socync icon</title>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#f2f2f2"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="1.1476684"
+     inkscape:cx="522.36343"
+     inkscape:cy="421.72461"
+     inkscape:window-width="2560"
+     inkscape:window-height="1384"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:connector-spacing="10"
+     inkscape:export-bgcolor="#f9f9f9ff">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="2.1166667"
+       spacingy="2.1166667"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="1"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g52"
+       transform="matrix(1.6745692,0,0,1.6745692,-11.482725,10.055114)">
+      <rect
+         style="font-variation-settings:'wght' 600;fill:#333333;fill-opacity:1;stroke-width:3.49999;stroke-linejoin:round;stroke-dasharray:none"
+         id="rect52"
+         width="21.167"
+         height="21.166668"
+         x="177.8"
+         y="4.2333331"
+         rx="3" />
+      <g
+         id="g5"
+         transform="matrix(0.33721305,0,0,0.33721305,176.96322,4.7504247)"
+         style="stroke:#ffffff">
+        <path
+           style="fill:#333333;fill-rule:evenodd;stroke:#ffffff;stroke-width:3.13022;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+           d="M 42.673834,15.235138 25.059503,22.761445"
+           id="path3"
+           inkscape:connector-curvature="0"
+           inkscape:connector-type="polyline"
+           inkscape:connection-end="#circle1"
+           inkscape:connection-start="#path1" />
+        <path
+           style="fill:#333333;fill-rule:evenodd;stroke:#ffffff;stroke-width:3.13022;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+           d="m 25.059503,26.08813 17.614331,7.526306"
+           id="path4"
+           inkscape:connector-type="polyline"
+           inkscape:connector-curvature="0"
+           inkscape:connection-end="#circle2"
+           inkscape:connection-start="#circle1" />
+        <path
+           style="fill:#333333;fill-rule:evenodd;stroke:#ffffff;stroke-width:3.13022;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+           d="M 42.673834,36.941122 25.059503,44.467429"
+           id="path5"
+           inkscape:connector-type="polyline"
+           inkscape:connector-curvature="0"
+           inkscape:connection-end="#circle3"
+           inkscape:connection-start="#circle2" />
+        <circle
+           style="font-variation-settings:'opsz' 32, 'wght' 200;fill:none;stroke:#ffffff;stroke-width:3.13022;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:5.66929"
+           id="path1"
+           cx="46.566669"
+           cy="13.571795"
+           r="4.2333331" />
+        <circle
+           style="font-variation-settings:'opsz' 32, 'wght' 200;fill:none;stroke:#ffffff;stroke-width:3.13022;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:5.66929"
+           id="circle1"
+           cx="21.166668"
+           cy="24.424788"
+           r="4.2333331" />
+        <circle
+           style="font-variation-settings:'opsz' 32, 'wght' 200;fill:none;stroke:#ffffff;stroke-width:3.13022;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:5.66929"
+           id="circle2"
+           cx="46.566669"
+           cy="35.277779"
+           r="4.2333331" />
+        <circle
+           style="font-variation-settings:'opsz' 32, 'wght' 200;fill:none;stroke:#ffffff;stroke-width:3.13022;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:5.66929"
+           id="circle3"
+           cx="21.166668"
+           cy="46.130772"
+           r="4.2333331" />
+      </g>
+    </g>
+    <g
+       id="g2"
+       transform="translate(-63.078634,-8.2587804)">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.63px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;writing-mode:lr-tb;direction:ltr;fill:#333333;fill-opacity:1;stroke:none;stroke-width:6.36336;stroke-linejoin:round"
+         x="89.836784"
+         y="99.368317"
+         id="text1"><tspan
+           sodipodi:role="line"
+           id="tspan1"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.63px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;fill:#333333;fill-opacity:1;stroke:none;stroke-width:6.36336"
+           x="89.836784"
+           y="99.368317">Socync</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.6335px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=500';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 500;writing-mode:lr-tb;direction:ltr;fill:#00aad4;fill-opacity:1;stroke:none;stroke-width:6.36336;stroke-linejoin:round"
+         x="90.432259"
+         y="115.67304"
+         id="text2"><tspan
+           sodipodi:role="line"
+           id="tspan2"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.6335px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=500';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 500;fill:#00aad4;fill-opacity:1;stroke:none;stroke-width:6.36336"
+           x="90.432259"
+           y="115.67304">Automatic social media posting and scheduling</tspan></text>
+      <g
+         id="g20"
+         transform="matrix(1.6745692,0,0,1.6745692,-15.673684,47.382254)"
+         style="fill:#333333;fill-opacity:1">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;writing-mode:lr-tb;direction:ltr;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8;stroke-linejoin:round"
+           x="63.404045"
+           y="48.655109"
+           id="text13"><tspan
+             sodipodi:role="line"
+             id="tspan13"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8"
+             x="63.404045"
+             y="48.655109">Auto-Post on Publish</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;writing-mode:lr-tb;direction:ltr;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8;stroke-linejoin:round"
+           x="104.35219"
+           y="48.655109"
+           id="text14"><tspan
+             sodipodi:role="line"
+             id="tspan14"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8"
+             x="104.35219"
+             y="48.655109">Multi-Platform Support</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;writing-mode:lr-tb;direction:ltr;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8;stroke-linejoin:round"
+           x="148.8934"
+           y="48.655109"
+           id="text15"><tspan
+             sodipodi:role="line"
+             id="tspan15"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8"
+             x="148.8934"
+             y="48.655109">Link Previews with Thumbnails</tspan></text>
+      </g>
+      <g
+         id="g21"
+         transform="matrix(1.6745692,0,0,1.6745692,-15.716229,47.382257)"
+         style="fill:#333333;fill-opacity:1">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;writing-mode:lr-tb;direction:ltr;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8;stroke-linejoin:round"
+           x="97.236717"
+           y="55.005108"
+           id="text16"><tspan
+             sodipodi:role="line"
+             id="tspan16"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8"
+             x="97.236717"
+             y="55.005108">Flexible Scheduling</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;writing-mode:lr-tb;direction:ltr;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8;stroke-linejoin:round"
+           x="63.358894"
+           y="55.005112"
+           id="text17"><tspan
+             sodipodi:role="line"
+             id="tspan17"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8"
+             x="63.358894"
+             y="55.005112">Custom Content</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;writing-mode:lr-tb;direction:ltr;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8;stroke-linejoin:round"
+           x="182.76007"
+           y="55.005108"
+           id="text18"><tspan
+             sodipodi:role="line"
+             id="tspan18"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8"
+             x="182.76007"
+             y="55.005108">Dry Run Mode</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;writing-mode:lr-tb;direction:ltr;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8;stroke-linejoin:round"
+           x="135.66364"
+           y="55.033333"
+           id="text19"><tspan
+             sodipodi:role="line"
+             id="tspan19"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;fill:#333333;fill-opacity:1;stroke:none;stroke-width:3.8"
+             x="135.66364"
+             y="55.033333">Comprehensive Logging</tspan></text>
+      </g>
+    </g>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.443063px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 12.7,-16.933334 v 0"
+       id="path6"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#333333;fill-opacity:1;stroke:none;stroke-width:0.410003;stroke-linecap:round;stroke-linejoin:round;stroke-dashoffset:11.3386"
+       id="rect3"
+       width="82.550003"
+       height="8.4666662"
+       x="27.516666"
+       y="139.7"
+       rx="4" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;writing-mode:lr-tb;direction:ltr;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:6.36336;stroke-linejoin:round"
+       x="32.510563"
+       y="145.41252"
+       id="text3"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:6.36336"
+         x="32.510563"
+         y="145.41252">wordpress.org/plugins/socync/</tspan></text>
+  </g>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Socync icon</dc:title>
+        <dc:date>12.08.2026</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Goce Mitevski</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>(c) Goce Mitevski. All rights reserved.</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>WordPress</rdf:li>
+            <rdf:li>plugin</rdf:li>
+            <rdf:li>Socync</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>
