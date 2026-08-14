@@ -32,15 +32,15 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="1.1476684"
-     inkscape:cx="522.36343"
-     inkscape:cy="421.72461"
+     inkscape:zoom="0.81152411"
+     inkscape:cx="373.37153"
+     inkscape:cy="298.20433"
      inkscape:window-width="2560"
      inkscape:window-height="1384"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g2"
      inkscape:connector-spacing="10"
      inkscape:export-bgcolor="#f9f9f9ff">
     <inkscape:grid
@@ -131,32 +131,32 @@
     </g>
     <g
        id="g2"
-       transform="translate(-63.078634,-8.2587804)">
+       transform="translate(-63.078634,-10.541009)">
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.63px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;writing-mode:lr-tb;direction:ltr;fill:#333333;fill-opacity:1;stroke:none;stroke-width:6.36336;stroke-linejoin:round"
          x="89.836784"
-         y="99.368317"
+         y="97.884239"
          id="text1"><tspan
            sodipodi:role="line"
            id="tspan1"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.63px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 600;fill:#333333;fill-opacity:1;stroke:none;stroke-width:6.36336"
            x="89.836784"
-           y="99.368317">Socync</tspan></text>
+           y="97.884239">Socync</tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.6335px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=500';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 500;writing-mode:lr-tb;direction:ltr;fill:#00aad4;fill-opacity:1;stroke:none;stroke-width:6.36336;stroke-linejoin:round"
          x="90.432259"
-         y="115.67304"
+         y="114.18895"
          id="text2"><tspan
            sodipodi:role="line"
            id="tspan2"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.6335px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=500';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 500;fill:#00aad4;fill-opacity:1;stroke:none;stroke-width:6.36336"
            x="90.432259"
-           y="115.67304">Automatic social media posting and scheduling</tspan></text>
+           y="114.18895">Automatic social media posting and scheduling</tspan></text>
       <g
          id="g20"
-         transform="matrix(1.6745692,0,0,1.6745692,-15.673684,47.382254)"
+         transform="matrix(1.6745692,0,0,1.6745692,-15.673684,47.468705)"
          style="fill:#333333;fill-opacity:1">
         <text
            xml:space="preserve"
@@ -194,7 +194,7 @@
       </g>
       <g
          id="g21"
-         transform="matrix(1.6745692,0,0,1.6745692,-15.716229,47.382257)"
+         transform="matrix(1.6745692,0,0,1.6745692,-15.716229,47.468708)"
          style="fill:#333333;fill-opacity:1">
         <text
            xml:space="preserve"
@@ -259,14 +259,14 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;writing-mode:lr-tb;direction:ltr;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:6.36336;stroke-linejoin:round"
-       x="32.510563"
+       x="33.84901"
        y="145.41252"
        id="text3"><tspan
          sodipodi:role="line"
-         id="tspan3"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;font-family:Quicksand;-inkscape-font-specification:'Quicksand, @wght=400';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 400;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:6.36336"
-         x="32.510563"
-         y="145.41252">wordpress.org/plugins/socync/</tspan></text>
+         x="33.84901"
+         y="145.41252"
+         id="tspan4">wordpress.org/plugins/socync</tspan></text>
   </g>
   <metadata
      id="metadata5">
