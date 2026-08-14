@@ -1,6 +1,8 @@
 # Socync - Automatic social media posting and scheduling
 
-A lightweight, stable, and maintainable WordPress plugin that automatically pushes published posts to X (Twitter), LinkedIn, Facebook and Bluesky.
+![Socync banner](assets/banner-1280x640.png)
+
+[Socync](https://wordpress.org/plugins/socync/) connects your WordPress site to major social platforms and automatically publishes your content when you publish a new post. It also supports standalone scheduled posts for full control over timing and content.
 
 ![Socync Connections page with OAuth setup for X (Twitter), LinkedIn, Facebook, and Bluesky](assets/screenshot-1.png)
 
