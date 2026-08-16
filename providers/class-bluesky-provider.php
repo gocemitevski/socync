@@ -245,7 +245,7 @@ class Socync_Bluesky_Provider extends Socync_API_Handler {
                 $body = wp_remote_retrieve_body( $response );
                 $title       = $this->extract_og_tag( $body, 'og:title' );
                 $description = $this->extract_og_tag( $body, 'og:description' );
-                $og_image    = $this->extract_og_tag( $body, 'og:image' );
+                $og_image    = esc_url_raw( $this->extract_og_tag( $body, 'og:image' ) );
 
                 Socync_Dev_Logger::log( 'bluesky_embed', array(
                     'url'         => $url,
@@ -306,7 +306,7 @@ class Socync_Bluesky_Provider extends Socync_API_Handler {
         );
         foreach ( $patterns as $pattern ) {
             if ( preg_match( $pattern, $html, $m ) ) {
-                return sanitize_text_field( $m[1] );
+                return sanitize_text_field( html_entity_decode( $m[1], ENT_QUOTES, 'UTF-8' ) );
             }
         }
         return '';

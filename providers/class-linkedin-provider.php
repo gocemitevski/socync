@@ -365,7 +365,7 @@ class Socync_Linkedin_Provider extends Socync_API_Handler {
         );
         foreach ( $patterns as $pattern ) {
             if ( preg_match( $pattern, $html, $m ) ) {
-                return $m[1];
+                return html_entity_decode( $m[1], ENT_QUOTES, 'UTF-8' );
             }
         }
         return '';
