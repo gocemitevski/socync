@@ -2,10 +2,10 @@
 /**
  * Plugin Name: Socync - Automatic social media posting and scheduling
  * Description: Automatically publish your WordPress posts to X (Twitter), LinkedIn, Facebook and Bluesky when you publish content on your site.
- * Version: 0.7.3
+ * Version: 0.7.4
  * Requires at least: 5.0
  * Requires PHP: 7.4
- * Tested up to: 7.0
+ * Tested up to: 7.1
  * Author: Goce Mitevski
  * Author URI: https://www.gocemitevski.com/
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'SOCYNC_VERSION' ) ) {
-    define( 'SOCYNC_VERSION', '0.7.3' );
+    define( 'SOCYNC_VERSION', '0.7.4' );
 }
 if ( ! defined( 'SOCYNC_PLUGIN_DIR' ) ) {
     define( 'SOCYNC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );

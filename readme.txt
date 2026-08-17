@@ -2,8 +2,8 @@
 Contributors: gocemitevski
 Tags: twitter, linkedin, facebook, bluesky, auto-post
 Requires at least: 5.0
-Tested up to: 7.0
-Stable tag: 0.7.3
+Tested up to: 7.1
+Stable tag: 0.7.4
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -161,6 +161,11 @@ Your Socync settings, connection data, and scheduled posts are preserved so they
 
 == Changelog ==
 
+= 0.7.4 =
+* Fixed HTML entity decoding in Open Graph metadata so Bluesky and LinkedIn link previews show clean titles and descriptions
+* Limited readme tags to five to comply with WordPress Plugin Directory requirements
+* Tested up to WordPress 7.1
+
 = 0.7.3 =
 * Added option to preserve plugin data on uninstall (data is kept by default; enable deletion in Settings > Uninstall)
 * Fixed Facebook token refresh to use the stored access token
@@ -214,6 +219,9 @@ Your Socync settings, connection data, and scheduled posts are preserved so they
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.7.4 =
+Fixes Open Graph metadata decoding for Bluesky and LinkedIn link previews. Tested up to WordPress 7.1.
 
 = 0.7.3 =
 Uninstall is now non-destructive by default: plugin data is preserved unless the "Delete data on uninstall" option is enabled on the Settings page.
