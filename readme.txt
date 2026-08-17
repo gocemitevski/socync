@@ -3,7 +3,7 @@ Contributors: gocemitevski
 Tags: twitter, linkedin, facebook, bluesky, auto-post
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 0.7.4
+Stable tag: 0.7.5
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -161,6 +161,12 @@ Your Socync settings, connection data, and scheduled posts are preserved so they
 
 == Changelog ==
 
+= 0.7.5 =
+* Upgraded Facebook publishing to Graph API v25.0 (v18.0 is deprecated)
+* Corrected the LinkedIn connection guide: the Posts API product is required for publishing, alongside Share on LinkedIn for posting permissions
+* Corrected the Facebook connection guide: use the pages_manage_posts and pages_read_engagement permissions
+* Added detailed step-by-step connection guides for X, LinkedIn, Facebook, and Bluesky
+
 = 0.7.4 =
 * Fixed HTML entity decoding in Open Graph metadata so Bluesky and LinkedIn link previews show clean titles and descriptions
 * Limited readme tags to five to comply with WordPress Plugin Directory requirements
@@ -219,6 +225,9 @@ Your Socync settings, connection data, and scheduled posts are preserved so they
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.7.5 =
+Upgraded Facebook publishing to Graph API v25.0 and improved the LinkedIn and Facebook connection guides. Recommended upgrade.
 
 = 0.7.4 =
 Fixes Open Graph metadata decoding for Bluesky and LinkedIn link previews. Tested up to WordPress 7.1.
