@@ -165,7 +165,7 @@ $bluesky_token = get_option( 'socync_bluesky_token', '' );
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'socync' ); ?></strong></summary>
                     <ol>
                         <li><?php echo wp_kses( __( 'Go to <a href="https://developer.linkedin.com" target="_blank" rel="noopener">developer.linkedin.com</a> → <strong>My Apps</strong> → <strong>Create App</strong>.', 'socync' ), array( 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ); ?></li>
-                        <li><?php echo wp_kses( __( 'In the <strong>Products</strong> tab, add <strong>Share on LinkedIn</strong>. Also request <strong>Posts API</strong> if available.', 'socync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'In the <strong>Products</strong> tab, add the <strong>Posts API</strong> product (required for publishing) and <strong>Share on LinkedIn</strong> (for posting permissions).', 'socync' ), array( 'strong' => array() ) ); ?></li>
                         <li><?php echo wp_kses( __( 'In the <strong>Auth</strong> tab, add the redirect URL above to <strong>Authorized redirect URLs</strong> for your app.', 'socync' ), array( 'strong' => array() ) ); ?></li>
                         <li><?php echo wp_kses( __( 'From the <strong>Auth</strong> tab, copy the <strong>Client ID</strong> and <strong>Client Secret</strong>.', 'socync' ), array( 'strong' => array() ) ); ?></li>
                     </ol>
@@ -260,7 +260,7 @@ $bluesky_token = get_option( 'socync_bluesky_token', '' );
                     <summary><strong><?php esc_html_e( 'Setup Guide', 'socync' ); ?></strong></summary>
                     <ol>
                         <li><?php echo wp_kses( __( 'Go to <a href="https://developers.facebook.com" target="_blank" rel="noopener">developers.facebook.com</a> → <strong>My Apps</strong> → <strong>Create App</strong> → <strong>Business</strong>.', 'socync' ), array( 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ); ?></li>
-                        <li><?php echo wp_kses( __( 'Add the <strong>Pages API</strong> permission to your app.', 'socync' ), array( 'strong' => array() ) ); ?></li>
+                        <li><?php echo wp_kses( __( 'Add the <strong>pages_manage_posts</strong> and <strong>pages_read_engagement</strong> permissions to your app.', 'socync' ), array( 'strong' => array() ) ); ?></li>
                         <li><?php echo wp_kses( __( 'From <strong>Settings → Basic</strong>, copy the <strong>App ID</strong> and <strong>App Secret</strong>.', 'socync' ), array( 'strong' => array() ) ); ?></li>
                         <li><?php echo wp_kses( __( 'Under <strong>Facebook Login → Settings</strong>, add the redirect URL above to <strong>Valid OAuth Redirect URIs</strong>.', 'socync' ), array( 'strong' => array() ) ); ?></li>
                     </ol>
