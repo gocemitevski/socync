@@ -133,6 +133,17 @@ Configure per-platform prefix and hashtags on the Connections page. Toggle autop
 
 ![Log viewer with platform filter and detailed error reporting](assets/screenshot-3.png)
 
+## Documentation
+
+Detailed, step-by-step connection guides for each supported platform:
+
+- [Connecting X (Twitter)](docs/connecting-x.md)
+- [Connecting LinkedIn](docs/connecting-linkedin.md)
+- [Connecting Facebook](docs/connecting-facebook.md)
+- [Connecting Bluesky](docs/connecting-bluesky.md)
+
+Start with the [overview](docs/index.md) for shared prerequisites and troubleshooting.
+
 ## File Structure
 
 ````
