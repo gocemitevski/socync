@@ -14,7 +14,7 @@ require_once dirname(dirname(__FILE__)) . '/includes/class-api-handler.php';
 /**
  * Facebook Graph API Provider for Socync plugin.
  *
- * Implements OAuth 2.0 authentication and post publishing using Facebook Graph API v18.0.
+ * Implements OAuth 2.0 authentication and post publishing using Facebook Graph API v25.0.
  */
 class Socync_Facebook_Provider extends Socync_API_Handler {
 
@@ -23,7 +23,9 @@ class Socync_Facebook_Provider extends Socync_API_Handler {
      *
      * @var string Facebook Graph API endpoints.
      */
-    const BASE_URL = 'https://graph.facebook.com/v18.0';
+    const API_VERSION = 'v25.0';
+
+    const BASE_URL = 'https://graph.facebook.com/' . self::API_VERSION;
 
     /**
      * Constructor for Facebook provider class.

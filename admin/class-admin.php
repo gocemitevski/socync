@@ -471,7 +471,7 @@ class Socync_Admin {
 
         $redirect_uri = admin_url( 'admin-post.php?action=socync_oauth_callback_facebook' );
 
-        $auth_url = 'https://www.facebook.com/v18.0/dialog/oauth?' . http_build_query( array(
+        $auth_url = 'https://www.facebook.com/' . Socync_Facebook_Provider::API_VERSION . '/dialog/oauth?' . http_build_query( array(
             'response_type' => 'code',
             'client_id'     => $client_id,
             'redirect_uri'  => $redirect_uri,
@@ -838,7 +838,7 @@ class Socync_Admin {
             'redirect_uri'  => $redirect_uri,
             'client_secret' => $client_secret,
             'code'          => $code,
-        ), 'https://graph.facebook.com/v18.0/oauth/access_token' );
+        ), 'https://graph.facebook.com/' . Socync_Facebook_Provider::API_VERSION . '/oauth/access_token' );
 
         $response = wp_remote_get( $token_url, array(
             'timeout' => 30,
