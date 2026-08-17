@@ -226,7 +226,7 @@ The `organizationalEntityAcls` endpoint requires the **Community Management API*
 **How long does the OAuth token last?**
 
 - **X** — access tokens last 2 hours. With the `offline.access` scope, a refresh token is provided for automatic renewal
-- **LinkedIn** — access tokens last approximately 1 year. A refresh token may also be provided depending on the app configuration
+- **LinkedIn** — access tokens last about 60 days. A refresh token may also be provided depending on the app configuration; if your app is eligible, Socync refreshes automatically. Otherwise you will need to reconnect and authorize again when the token expires
 - **Facebook** — user tokens last about 60 days. Page tokens may last longer. Tokens are refreshed when expired
 - **Bluesky** — session tokens last 24 hours. A refresh JWT is stored for automatic re-authentication
 
