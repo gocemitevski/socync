@@ -1,6 +1,6 @@
 === Socync - Automatic social media posting and scheduling ===
 Contributors: gocemitevski
-Tags: social media, twitter, x, linkedin, facebook, bluesky, auto-post, scheduling
+Tags: twitter, linkedin, facebook, bluesky, auto-post
 Requires at least: 5.0
 Tested up to: 7.0
 Stable tag: 0.7.3
