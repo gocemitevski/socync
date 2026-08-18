@@ -84,7 +84,7 @@ class Socync_Admin {
             'manage_options',
             $page_slug,
             array( $this, 'render_settings_page' ),
-            'dashicons-share',
+            plugin_dir_url( __FILE__ ) . 'images/icon.svg',
             92
         );
 

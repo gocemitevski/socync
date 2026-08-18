@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="20"
+   height="20"
+   viewBox="0 0 66.666667 66.666667"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="../admin/images/icon.svg"
+   inkscape:export-xdpi="7.5"
+   inkscape:export-ydpi="7.5"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title
+     id="title5">Socync menu icon</title>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="45.254834"
+     inkscape:cx="5.8225824"
+     inkscape:cy="10.562408"
+     inkscape:window-width="2560"
+     inkscape:window-height="1384"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     showguides="false">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="3.3333333"
+       spacingy="3.3333333"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="4"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Socync"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="circle3"
+       style="font-variation-settings:'opsz' 32, 'wght' 200;fill:#ffffff;stroke:#ffffff;stroke-width:4.59075;stroke-linecap:round;stroke-linejoin:round;stroke-dashoffset:5.66929"
+       d="m 24.210114,53.061099 a 6.2085631,6.2085631 0 0 1 -6.208562,6.208564 6.2085631,6.2085631 0 0 1 -6.208564,-6.208564 6.2085631,6.2085631 0 0 1 6.208564,-6.208563 6.2085631,6.2085631 0 0 1 6.208562,6.208563 z M 54.873679,39.9872 A 6.2085631,6.2085631 0 0 1 48.665115,46.195763 6.2085631,6.2085631 0 0 1 42.456552,39.9872 6.2085631,6.2085631 0 0 1 48.665115,33.778637 6.2085631,6.2085631 0 0 1 54.873679,39.9872 Z M 24.295039,26.006117 a 6.2085631,6.2085631 0 0 1 -6.208564,6.208563 6.2085631,6.2085631 0 0 1 -6.208563,-6.208563 6.2085631,6.2085631 0 0 1 6.208563,-6.208563 6.2085631,6.2085631 0 0 1 6.208564,6.208563 z m 30.268719,-12.40055 a 6.2085631,6.2085631 0 0 1 -6.208563,6.208564 6.2085631,6.2085631 0 0 1 -6.208564,-6.208564 6.2085631,6.2085631 0 0 1 6.208564,-6.2085632 6.2085631,6.2085631 0 0 1 6.208563,6.2085632 z M 42.954053,42.422202 23.712614,50.626097 m 0.02021,-22.038372 19.285942,8.817866 M 42.610159,15.959204 23.831505,23.652481"
+       inkscape:label="icon" />
+  </g>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Socync menu icon</dc:title>
+        <dc:date>18.08.2026</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Goce Mitevski</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>(c) Goce Mitevski. All rights reserved.</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>WordPress</rdf:li>
+            <rdf:li>plugin</rdf:li>
+            <rdf:li>Socync</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>
