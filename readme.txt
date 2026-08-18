@@ -3,7 +3,7 @@ Contributors: gocemitevski
 Tags: twitter, linkedin, facebook, bluesky, auto-post
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 0.7.5
+Stable tag: 0.7.6
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -161,6 +161,10 @@ Your Socync settings, connection data, and scheduled posts are preserved so they
 
 == Changelog ==
 
+= 0.7.6 =
+* Log entries for auto-published posts now show the source article title, making auto-posted items identifiable in the Log
+* Replaced the default admin menu icon with a custom Socync SVG icon
+
 = 0.7.5 =
 * Upgraded Facebook publishing to Graph API v25.0 (v18.0 is deprecated)
 * Corrected the LinkedIn connection guide: the Posts API product is required for publishing, alongside Share on LinkedIn for posting permissions
@@ -225,6 +229,9 @@ Your Socync settings, connection data, and scheduled posts are preserved so they
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.7.6 =
+Improved Log display for auto-published posts and a new custom admin menu icon. Recommended upgrade.
 
 = 0.7.5 =
 Upgraded Facebook publishing to Graph API v25.0 and improved the LinkedIn and Facebook connection guides. Recommended upgrade.
