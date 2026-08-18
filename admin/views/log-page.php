@@ -82,10 +82,23 @@ foreach ( $scheduled_posts as $item ) {
     if ( ! is_array( $platforms ) ) {
         $platforms = array();
     }
+
+    $preview = trim( $item->content );
+    if ( '' === $preview && (int) $item->post_id > 0 ) {
+        $source_title = get_the_title( (int) $item->post_id );
+        $preview = $source_title
+            ? sprintf(
+                /* translators: %s: WordPress post title */
+                __( 'Autopost: %s', 'socync' ),
+                $source_title
+            )
+            : __( 'Autoposted article', 'socync' );
+    }
+
     $entries[] = array(
         'type'      => 'scheduled',
         'post_id'   => $item->id,
-        'title'     => mb_substr( $item->content, 0, 60 ) . ( mb_strlen( $item->content ) > 60 ? '...' : '' ),
+        'title'     => mb_substr( $preview, 0, 60 ) . ( mb_strlen( $preview ) > 60 ? '...' : '' ),
         'platform'  => implode( ', ', $platforms ),
         'status'    => $item->status,
         'date'      => $item->scheduled_date,
