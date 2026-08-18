@@ -38,6 +38,9 @@ class Socync_Admin {
         // Enqueue admin scripts and styles for settings page
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 
+        // Enqueue the menu icon style on every admin page (menu is global).
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_menu_style' ) );
+
         // Register admin_post handlers for OAuth flows and settings
         add_action( 'admin_post_socync_connect_x', array( $this, 'handle_connect_x' ) );
         add_action( 'admin_post_socync_disconnect_x', array( $this, 'handle_disconnect_x' ) );
@@ -1025,6 +1028,23 @@ class Socync_Admin {
             'show_details'      => __( 'Show details', 'socync' ),
             'hide_details'      => __( 'Hide details', 'socync' ),
         ));
+    }
+
+    /**
+     * Enqueue the admin menu icon stylesheet on all admin pages.
+     *
+     * The menu is present on every admin page, so this must not be gated on
+     * the page hook like enqueue_admin_assets().
+     *
+     * @return void
+     */
+    public function enqueue_menu_style(): void {
+        wp_enqueue_style(
+            'socync-menu',
+            plugin_dir_url( __FILE__ ) . 'css/menu.css',
+            array(),
+            (string) filemtime( dirname( __FILE__ ) . '/css/menu.css' )
+        );
     }
 
     /**

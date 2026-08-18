@@ -1,0 +1,6 @@
+/* Render the custom menu icon at full opacity to match the native dashicons. */
+#adminmenu li#toplevel_page_socync-settings .wp-menu-image img,
+#adminmenu .wp-menu-image img[src*="admin/images/icon.svg"] {
+    opacity: 1;
+    filter: none;
+}
