@@ -1,0 +1,26 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/wp-admin/admin.php?page=socync-settings",
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "latest"
+  },
+  "features": {
+    "networking": true
+  },
+  "steps": [
+    { "step": "login" },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "socync"
+      },
+      "options": { "activate": true }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php\nrequire '/wordpress/wp-load.php';\nupdate_option( 'socync_dev_mode', 1 );\nupdate_option( 'socync_dry_run', 1 );\nupdate_option( 'socync_autopost_platforms', array( 'x', 'linkedin', 'facebook', 'bluesky' ) );\n"
+    }
+  ]
+}
