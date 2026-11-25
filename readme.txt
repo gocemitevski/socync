@@ -2,8 +2,8 @@
 Contributors: gocemitevski
 Tags: twitter, linkedin, facebook, bluesky, auto-post
 Requires at least: 5.0
-Tested up to: 7.1
-Stable tag: 0.7.6
+Tested up to: 7.2
+Stable tag: 0.7.7
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -161,6 +161,12 @@ Your Socync settings, connection data, and scheduled posts are preserved so they
 
 == Changelog ==
 
+= 0.7.7 =
+* Fixed plugin activation and deactivation hooks not running on activation
+* Deferred scheduler initialization to the init action so translations load correctly
+* Ensured the daily log purge is scheduled on sites upgrading from older versions
+* Tested up to WordPress 7.2
+
 = 0.7.6 =
 * Log entries for auto-published posts now show the source article title, making auto-posted items identifiable in the Log
 * Replaced the default admin menu icon with a custom Socync SVG icon
@@ -229,6 +235,9 @@ Your Socync settings, connection data, and scheduled posts are preserved so they
 * Security audit fixes: token storage sanitization removal, body redaction fallback, dev logger HTML stripping
 
 == Upgrade Notice ==
+
+= 0.7.7 =
+Fixes activation hooks and scheduler initialization. Adds WordPress 7.2 compatibility. Recommended upgrade.
 
 = 0.7.6 =
 Improved Log display for auto-published posts and a new custom admin menu icon. Recommended upgrade.
