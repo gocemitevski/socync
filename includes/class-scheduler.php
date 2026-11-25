@@ -49,8 +49,10 @@ class Socync_Scheduler {
         // Set up WP-Cron event for running delayed posts queue
         add_action( self::CRON_EVENT, array( $this, 'run_delayed_posts' ), 1 );
 
-        // Initialize scheduler on plugin activation
-        $this->init();
+        // Initialize after init (priority 20) so translations are loaded before
+        // wp_schedule_event() triggers wp_get_schedules() and the translated
+        // schedule label in register_cron_schedule().
+        add_action( 'init', array( $this, 'init' ), 20 );
     }
 
     /**
@@ -81,11 +83,11 @@ class Socync_Scheduler {
     }
 
     /**
-     * Initialize the scheduler - called on plugin activation.
+     * Initialize the scheduler on the init action.
      *
-     * @return void Sets up initial cron event with one-time schedule.
+     * @return void Creates the custom table and registers recurring cron events.
      */
-    private function init(): void {
+    public function init(): void {
         if ( class_exists( 'Socync_Scheduled_Post' ) ) {
             Socync_Scheduled_Post::create_table();
         }
@@ -96,6 +98,12 @@ class Socync_Scheduler {
                 'socync_every_minute',
                 self::CRON_EVENT
             );
+        }
+
+        // Ensure the daily log purge is scheduled on sites that upgraded from a
+        // version where the activation hook did not run.
+        if ( ! wp_next_scheduled( 'socync_purge_old_logs' ) ) {
+            wp_schedule_event( time(), 'daily', 'socync_purge_old_logs' );
         }
     }
 

@@ -45,6 +45,12 @@ require_once dirname( __FILE__ ) . '/providers/class-linkedin-provider.php';
 require_once dirname( __FILE__ ) . '/providers/class-facebook-provider.php';
 require_once dirname( __FILE__ ) . '/providers/class-bluesky-provider.php';
 
+// Register activation/deactivation hooks at file scope. Registering them from a
+// plugins_loaded callback is too late on activation, where WordPress includes the
+// plugin file after plugins_loaded has already fired.
+register_activation_hook( __FILE__, array( 'Socync_Activator', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'Socync_Deactivator', 'deactivate' ) );
+
 const SOCYNC_ENC_PREFIX = 'SSENC:';
 
 /**
@@ -298,12 +304,6 @@ class Socync_Plugin {
      * @since 1.0.0
      */
     public function __construct() {
-        // Register activation hook
-        register_activation_hook( __FILE__, array( 'Socync_Activator', 'activate' ) );
-
-        // Register deactivation hook
-        register_deactivation_hook( __FILE__, array( 'Socync_Deactivator', 'deactivate' ) );
-
         // Initialize the admin interface and scheduler
         $this->admin = new Socync_Admin();
         Socync_Scheduler::get_instance();
